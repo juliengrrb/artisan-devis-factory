@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { useAppContext } from "@/context/AppContext";
@@ -8,10 +7,11 @@ import { QuoteNumberForm } from "@/components/QuoteNumberForm";
 import { QuoteItem as QuoteItemComponent } from "@/components/QuoteItem";
 import { QuoteSelectors } from "@/components/QuoteSelectors";
 import { Button } from "@/components/ui/button";
-import { Textarea, EditableTextarea } from "@/components/ui/textarea";
-import { PenLine, Plus, FileText, Eye, EyeOff } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { PenLine, Plus, Eye, Hash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { QuoteItem } from "@/types";
 
 export default function Quote() {
   const { 
@@ -60,6 +60,48 @@ export default function Quote() {
       setFooterNotes(currentQuote.footer);
     }
   }, [currentQuote]);
+
+  const getItemNumber = (item: QuoteItem, index: number, items: QuoteItem[]) => {
+    if (item.type === 'Titre' || item.type === 'Sous-titre' || item.type === 'Texte' || item.type === 'Saut de page') {
+      return ''; // No numbering for text items
+    }
+    
+    let level1Count = 0;
+    let level2Count = 0;
+    let level3Count = 0;
+    
+    for (let i = 0; i <= index; i++) {
+      const currentItem = items[i];
+      
+      if (currentItem.type === 'Titre' || currentItem.type === 'Sous-titre' || 
+          currentItem.type === 'Texte' || currentItem.type === 'Saut de page') {
+        continue;
+      }
+      
+      if (currentItem.level === 1) {
+        level1Count++;
+        level2Count = 0;
+        level3Count = 0;
+      } else if (currentItem.level === 2) {
+        level2Count++;
+        level3Count = 0;
+      } else if (currentItem.level === 3) {
+        level3Count++;
+      }
+      
+      if (i === index) break;
+    }
+    
+    if (item.level === 1) {
+      return `${level1Count}`;
+    } else if (item.level === 2) {
+      return `${level1Count}.${level2Count}`;
+    } else if (item.level === 3) {
+      return `${level1Count}.${level2Count}.${level3Count}`;
+    }
+    
+    return '';
+  };
 
   const handleSaveQuote = () => {
     if (!currentQuote) return;
@@ -130,7 +172,6 @@ export default function Quote() {
     setShowValiditySelector(true);
   };
 
-  // Update these methods to add items to the table instead of the description
   const handleAddTitle = () => {
     if (!currentQuote) return;
     
@@ -142,7 +183,7 @@ export default function Quote() {
       unitPrice: 0,
       vat: 0,
       totalHT: 0,
-      type: 'Titre',
+      type: 'Titre' as const,
       level: 1,
       position: currentQuote.items.length
     };
@@ -167,8 +208,8 @@ export default function Quote() {
       unitPrice: 0,
       vat: 0,
       totalHT: 0,
-      type: 'Sous-titre',
-      level: 1,
+      type: 'Sous-titre' as const,
+      level: 2,
       position: currentQuote.items.length
     };
     
@@ -192,7 +233,7 @@ export default function Quote() {
       unitPrice: 0,
       vat: 0,
       totalHT: 0,
-      type: 'Texte',
+      type: 'Texte' as const,
       level: 1,
       position: currentQuote.items.length
     };
@@ -217,7 +258,7 @@ export default function Quote() {
       unitPrice: 0,
       vat: 0,
       totalHT: 0,
-      type: 'Saut de page',
+      type: 'Saut de page' as const,
       level: 1,
       position: currentQuote.items.length
     };
@@ -232,6 +273,8 @@ export default function Quote() {
   };
 
   const handleAddSection = (type: 'Fourniture' | 'Main d\'oeuvre' | 'Ouvrage') => {
+    if (!currentQuote) return;
+    
     const newItem = {
       id: Date.now().toString(),
       designation: type,
@@ -241,17 +284,16 @@ export default function Quote() {
       vat: 0,
       totalHT: 0,
       level: 1,
-      position: currentQuote?.items.length || 0
+      position: currentQuote.items.length || 0
     };
     
-    if (currentQuote) {
-      const updatedQuote = {
-        ...currentQuote,
-        items: [...currentQuote.items, newItem]
-      };
-      
-      updateQuote(updatedQuote);
-    }
+    const updatedQuote = {
+      ...currentQuote,
+      items: [...currentQuote.items, newItem]
+    };
+    
+    updateQuote(updatedQuote);
+    toast.success(`${type} ajouté`);
   };
 
   const handleToggleDescription = () => {
@@ -477,12 +519,13 @@ export default function Quote() {
                         </td>
                       </tr>
                     ) : (
-                      currentQuote.items.map(item => (
+                      currentQuote.items.map((item, index) => (
                         <QuoteItemComponent 
                           key={item.id} 
                           item={item} 
                           onUpdate={updateQuoteItem}
                           isEditing={mode === 'edit'}
+                          itemNumber={getItemNumber(item, index, currentQuote.items)}
                         />
                       ))
                     )}

@@ -3,15 +3,16 @@ import { QuoteItem as QuoteItemType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Hash } from "lucide-react";
 
 interface QuoteItemProps {
   item: QuoteItemType;
   onUpdate: (item: QuoteItemType) => void;
   isEditing: boolean;
+  itemNumber?: string; // Add a prop for the hierarchical item number
 }
 
-export function QuoteItem({ item, onUpdate, isEditing }: QuoteItemProps) {
+export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemProps) {
   const [isEditable, setIsEditable] = useState(false);
   const [editedItem, setEditedItem] = useState<QuoteItemType>(item);
 
@@ -81,7 +82,8 @@ export function QuoteItem({ item, onUpdate, isEditing }: QuoteItemProps) {
       <tr className={`${getBgColor()} border-b border-gray-200 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`}>
         <td className="py-2 px-4">
           <div className="flex items-center">
-            <span className="mr-2">{item.id}</span>
+            <Hash className="h-4 w-4 mr-1 text-gray-400" />
+            <span>{itemNumber || item.id}</span>
           </div>
         </td>
         <td className={`py-2 px-4 ${getTextItemStyles()}`} style={{ paddingLeft: getPaddingLeft() }} colSpan={isTextItem() ? 6 : 1}>
@@ -98,7 +100,10 @@ export function QuoteItem({ item, onUpdate, isEditing }: QuoteItemProps) {
             <td className="py-2 px-4 text-center">{item.unit || '-'}</td>
             <td className="py-2 px-4 text-right">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
             <td className="py-2 px-4 text-right">{item.vat ? `${item.vat} %` : '-'}</td>
-            <td className="py-2 px-4 text-right">{item.totalHT.toFixed(2)} €</td>
+            <td className="py-2 px-4 text-right">
+              {item.totalHT.toFixed(2)} €
+              {isTextItem() && <span className="ml-2 text-sm text-gray-500">Sous-total: {item.totalHT.toFixed(2)} €</span>}
+            </td>
           </>
         )}
       </tr>
@@ -110,7 +115,10 @@ export function QuoteItem({ item, onUpdate, isEditing }: QuoteItemProps) {
       return (
         <tr className="bg-white border-b border-gray-200">
           <td className="py-2 px-4">
-            {item.id}
+            <div className="flex items-center">
+              <Hash className="h-4 w-4 mr-1 text-gray-400" />
+              <span>{itemNumber || item.id}</span>
+            </div>
           </td>
           <td className="py-2 px-4" colSpan={6}>
             <div className="flex items-center w-full">
@@ -137,7 +145,10 @@ export function QuoteItem({ item, onUpdate, isEditing }: QuoteItemProps) {
     return (
       <tr className="bg-white border-b border-gray-200">
         <td className="py-2 px-4">
-          {item.id}
+          <div className="flex items-center">
+            <Hash className="h-4 w-4 mr-1 text-gray-400" />
+            <span>{itemNumber || item.id}</span>
+          </div>
         </td>
         <td className="py-2 px-4">
           <Input
@@ -207,9 +218,12 @@ export function QuoteItem({ item, onUpdate, isEditing }: QuoteItemProps) {
   }
 
   return (
-    <tr className={`${getBgColor()} border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} onClick={handleEdit}>
+    <tr data-type={item.type} className={`${getBgColor()} border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} onClick={handleEdit}>
       <td className="py-2 px-4">
-        {item.id}
+        <div className="flex items-center">
+          <Hash className="h-4 w-4 mr-1 text-gray-400" />
+          <span>{itemNumber || item.id}</span>
+        </div>
       </td>
       <td className={`py-2 px-4 ${getTextItemStyles()}`} style={{ paddingLeft: getPaddingLeft() }} colSpan={isTextItem() ? 6 : 1}>
         {isPageBreak() ? '- - - - - - - - - - Saut de page - - - - - - - - - -' : item.designation}
@@ -225,7 +239,10 @@ export function QuoteItem({ item, onUpdate, isEditing }: QuoteItemProps) {
           <td className="py-2 px-4 text-center">{item.unit || '-'}</td>
           <td className="py-2 px-4 text-right">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
           <td className="py-2 px-4 text-right">{item.vat ? `${item.vat} %` : '-'}</td>
-          <td className="py-2 px-4 text-right">{item.totalHT.toFixed(2)} €</td>
+          <td className="py-2 px-4 text-right">
+            {item.totalHT.toFixed(2)} €
+            {item.level <= 2 && <div className="text-sm text-gray-500">Sous-total: {item.totalHT.toFixed(2)} €</div>}
+          </td>
         </>
       )}
     </tr>
