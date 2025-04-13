@@ -316,7 +316,7 @@ export default function Quote() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-orange-50">
       <Header 
         title="Nouveau devis"
         showEditButton={mode === 'preview'}
@@ -334,18 +334,18 @@ export default function Quote() {
         }}
       />
 
-      <div className="flex-grow p-4 bg-white">
+      <div className="flex-grow p-4 bg-gradient-to-br from-orange-50 to-orange-100">
         <div className="flex">
           <div className="flex-1">
-            <div className="bg-white rounded-sm">
+            <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex justify-between mb-6">
                 <div>
                   <div className="flex items-center mb-2">
-                    <h2 className="text-lg font-semibold mr-2">
+                    <h2 className="text-lg font-semibold mr-2 text-orange-700">
                       Devis n°{currentQuote.number}
                     </h2>
                     <button 
-                      className="text-blue-500 hover:text-blue-700"
+                      className="text-orange-500 hover:text-orange-700"
                       onClick={() => setShowQuoteNumberForm(true)}
                     >
                       <PenLine className="h-4 w-4" />
@@ -359,18 +359,18 @@ export default function Quote() {
                       Valable jusqu'au {new Date(currentQuote.validUntil).toLocaleDateString('fr-FR')}
                     </p>
                     <button 
-                      className="text-blue-500 hover:text-blue-700"
+                      className="text-orange-500 hover:text-orange-700"
                       onClick={handleEditDate}
                     >
                       <PenLine className="h-4 w-4" />
                     </button>
                     {showValiditySelector && (
-                      <div className="absolute mt-20 bg-white border border-gray-200 rounded shadow-lg z-10">
+                      <div className="absolute mt-20 bg-white border border-orange-200 rounded shadow-lg z-10">
                         <ul className="py-1">
                           {validityOptions.map((option, index) => (
                             <li 
                               key={index} 
-                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                              className="px-4 py-2 hover:bg-orange-50 cursor-pointer"
                               onClick={() => handleValiditySelect(option)}
                             >
                               {option}
@@ -397,7 +397,7 @@ export default function Quote() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="absolute top-2 right-2 text-blue-500 z-10"
+                    className="absolute top-2 right-2 text-orange-500 z-10"
                     onClick={() => {
                       if (currentQuote.description && !isEditingDescription) {
                         setIsEditingDescription(true);
@@ -429,7 +429,7 @@ export default function Quote() {
                 
                 {currentQuote.description && !isEditingDescription ? (
                   <div 
-                    className="mb-4 cursor-pointer" 
+                    className="mb-4 cursor-pointer p-4 bg-orange-50 rounded-md" 
                     onClick={() => mode === 'edit' && setIsEditingDescription(true)}
                   >
                     <pre className="whitespace-pre-wrap font-sans">
@@ -444,19 +444,21 @@ export default function Quote() {
                           value={description}
                           onChange={(e) => handleDescriptionChange(e.target.value)}
                           placeholder="Description du devis"
-                          className="w-full border-none focus:ring-0 resize-none"
+                          className="w-full border-orange-200 focus:border-orange-500 focus:ring-orange-500 resize-none"
                           autoFocus
                         />
                         <div className="flex justify-end space-x-2">
                           <Button
                             variant="outline"
                             size="sm"
+                            className="border-orange-300 text-orange-700"
                             onClick={() => setIsEditingDescription(false)}
                           >
                             Annuler
                           </Button>
                           <Button
                             size="sm"
+                            className="bg-orange-500 hover:bg-orange-600 text-white"
                             onClick={handleSaveDescription}
                           >
                             Enregistrer
@@ -466,7 +468,7 @@ export default function Quote() {
                     ) : (
                       <Button 
                         variant="ghost"
-                        className="text-blue-500 flex items-center"
+                        className="text-orange-500 flex items-center"
                         onClick={() => setIsEditingDescription(true)}
                       >
                         <Plus className="h-4 w-4 mr-1" />
@@ -480,7 +482,7 @@ export default function Quote() {
               <div className="mb-6">
                 <table className="w-full border-collapse">
                   <thead>
-                    <tr className="bg-devis-blue text-white">
+                    <tr className="bg-orange-primary text-white">
                       <th className="py-2 px-4 text-left w-12">N°</th>
                       <th className="py-2 px-4 text-left">Désignation</th>
                       <th className="py-2 px-4 text-right w-20">Qté</th>
@@ -516,7 +518,7 @@ export default function Quote() {
                 <div className="flex space-x-2">
                   <Button 
                     variant="outline" 
-                    className="border-gray-300"
+                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
                     onClick={() => handleAddSection('Fourniture')}
                   >
                     <Plus className="h-4 w-4 mr-1" />
@@ -524,7 +526,7 @@ export default function Quote() {
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="border-gray-300"
+                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
                     onClick={() => handleAddSection('Main d\'oeuvre')}
                   >
                     <Plus className="h-4 w-4 mr-1" />
@@ -532,7 +534,7 @@ export default function Quote() {
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="border-gray-300"
+                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
                     onClick={() => handleAddSection('Ouvrage')}
                   >
                     <Plus className="h-4 w-4 mr-1" />
@@ -545,21 +547,21 @@ export default function Quote() {
                 <div className="flex space-x-2">
                   <Button 
                     variant="outline" 
-                    className="border-gray-300"
+                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
                     onClick={handleAddTitle}
                   >
                     Titre
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="border-gray-300"
+                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
                     onClick={handleAddSubtitle}
                   >
                     Sous-titre
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="border-gray-300"
+                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
                     onClick={handleAddPageBreak}
                   >
                     Saut de page
@@ -569,8 +571,8 @@ export default function Quote() {
               
               <div className="flex mb-6">
                 <div className="w-1/2">
-                  <h3 className="text-lg font-semibold mb-4">Conditions de paiement</h3>
-                  <pre className="whitespace-pre-wrap font-sans">
+                  <h3 className="text-lg font-semibold mb-4 text-orange-700">Conditions de paiement</h3>
+                  <pre className="whitespace-pre-wrap font-sans bg-orange-50 p-4 rounded-md">
                     {currentQuote.paymentConditions}
                   </pre>
                 </div>
@@ -590,15 +592,15 @@ export default function Quote() {
                         <td className="py-1 text-left">TVA 20 %</td>
                         <td className="py-1 text-right">{currentQuote.totalTVA20.toFixed(2)} €</td>
                       </tr>
-                      <tr className="border-t border-gray-200">
-                        <td className="py-1 text-left font-semibold">Total TTC</td>
-                        <td className="py-1 text-right font-semibold">{currentQuote.totalTTC.toFixed(2)} €</td>
+                      <tr className="border-t border-orange-200">
+                        <td className="py-1 text-left font-semibold text-orange-700">Total TTC</td>
+                        <td className="py-1 text-right font-semibold text-orange-700">{currentQuote.totalTTC.toFixed(2)} €</td>
                       </tr>
                     </tbody>
                   </table>
                   
                   <div className="mt-4 text-right">
-                    <button className="text-blue-500 flex items-center justify-end ml-auto">
+                    <button className="text-orange-500 flex items-center justify-end ml-auto hover:text-orange-700">
                       <Plus className="h-4 w-4 mr-1" />
                       Ajouter une remise
                     </button>
@@ -607,12 +609,12 @@ export default function Quote() {
               </div>
               
               <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-4">Notes de bas de page</h3>
+                <h3 className="text-lg font-semibold mb-4 text-orange-700">Notes de bas de page</h3>
                 <Textarea 
                   value={footerNotes}
                   onChange={(e) => setFooterNotes(e.target.value)}
                   placeholder="Ajoutez des notes de bas de page ici"
-                  className="min-h-[100px] w-full"
+                  className="min-h-[100px] w-full border-orange-200 focus:border-orange-500 focus:ring-orange-500"
                 />
               </div>
             </div>
