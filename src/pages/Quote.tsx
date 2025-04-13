@@ -195,6 +195,10 @@ export default function Quote() {
     toast.success("Description mise à jour");
   };
 
+  const handleToggleEditDescription = () => {
+    setIsEditingDescription(!isEditingDescription);
+  };
+
   if (!currentQuote) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
@@ -288,20 +292,24 @@ export default function Quote() {
                     size="sm"
                     className="absolute top-2 right-2 text-blue-500 z-10"
                     onClick={() => {
-                      if (currentQuote.description) {
-                        updateQuote({
-                          ...currentQuote,
-                          description: ""
-                        });
+                      if (currentQuote.description && !isEditingDescription) {
+                        setIsEditingDescription(true);
+                      } else if (currentQuote.description && isEditingDescription) {
+                        setIsEditingDescription(false);
                       } else {
                         setIsEditingDescription(!isEditingDescription);
                       }
                     }}
                   >
-                    {currentQuote.description ? (
+                    {currentQuote.description && !isEditingDescription ? (
                       <>
-                        <EyeOff className="h-4 w-4 mr-1" />
-                        Masquer la description
+                        <PenLine className="h-4 w-4 mr-1" />
+                        Modifier
+                      </>
+                    ) : currentQuote.description && isEditingDescription ? (
+                      <>
+                        <Eye className="h-4 w-4 mr-1" />
+                        Annuler
                       </>
                     ) : (
                       <>
@@ -312,10 +320,10 @@ export default function Quote() {
                   </Button>
                 )}
                 
-                {currentQuote.description ? (
+                {currentQuote.description && !isEditingDescription ? (
                   <div 
-                    className="mb-4" 
-                    onClick={() => setIsEditingDescription(true)}
+                    className="mb-4 cursor-pointer" 
+                    onClick={() => mode === 'edit' && setIsEditingDescription(true)}
                   >
                     <pre className="whitespace-pre-wrap font-sans">
                       {currentQuote.description}
