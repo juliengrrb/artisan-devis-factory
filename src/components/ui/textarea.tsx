@@ -41,10 +41,8 @@ const EditableTextarea = ({
   onToggleEdit,
   previewClassName,
 }: EditableTextareaProps) => {
-  // Créons un état local pour suivre la valeur pendant l'édition
   const [inputValue, setInputValue] = React.useState(value);
   
-  // Mettre à jour l'état local quand la valeur externe change
   React.useEffect(() => {
     setInputValue(value);
   }, [value]);
@@ -62,6 +60,7 @@ const EditableTextarea = ({
         onChange={handleChange}
         placeholder={placeholder}
         className={className}
+        autoFocus  // Add this to automatically focus the textarea when editing
       />
     );
   }
@@ -84,3 +83,4 @@ const EditableTextarea = ({
 };
 
 export { Textarea, EditableTextarea }
+
