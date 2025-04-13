@@ -89,7 +89,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
         <td className={`py-2 px-4 ${getTextItemStyles()}`} style={{ paddingLeft: getPaddingLeft() }} colSpan={isTextItem() ? 6 : 1}>
           {isPageBreak() ? '- - - - - - - - - - Saut de page - - - - - - - - - -' : item.designation}
           {['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '') && itemNumber && (
-            <div className="text-sm text-black mt-1">
+            <div className="text-sm text-black font-medium mt-1">
               {itemNumber}
             </div>
           )}
