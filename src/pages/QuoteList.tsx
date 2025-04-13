@@ -1,9 +1,11 @@
+
 import { useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { Button } from "@/components/ui/button";
 import { Plus, FileText, ExternalLink, Copy, Trash, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { type Quote } from "@/types"; // Ajout de l'import pour le type Quote
 
 export default function QuoteList() {
   const { quotes, clients, projects, createQuote, deleteQuote, setCurrentQuote } = useAppContext();
