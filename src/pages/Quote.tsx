@@ -314,7 +314,7 @@ export default function Quote() {
                 
                 {currentQuote.description ? (
                   <div 
-                    className="p-4 border border-gray-200 rounded mb-4" 
+                    className="mb-4" 
                     onClick={() => setIsEditingDescription(true)}
                   >
                     <pre className="whitespace-pre-wrap font-sans">
@@ -329,7 +329,7 @@ export default function Quote() {
                           value={description}
                           onChange={(e) => handleDescriptionChange(e.target.value)}
                           placeholder="Description du devis"
-                          className="w-full"
+                          className="w-full border-none focus:ring-0 resize-none"
                           autoFocus
                         />
                         <div className="flex justify-end space-x-2">
