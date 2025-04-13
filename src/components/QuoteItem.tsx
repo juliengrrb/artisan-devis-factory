@@ -58,7 +58,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
       return 'bg-devis-lightblue';
     }
     if (['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')) {
-      return 'bg-devis-blue'; // Gray background for these items
+      return 'bg-devis-lightblue'; // Changed to match the same blue as titles
     }
     if (item.type === 'Saut de page') return 'bg-white';
     if (item.level === 1) return 'bg-devis-header';
