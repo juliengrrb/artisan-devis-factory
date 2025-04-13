@@ -60,7 +60,7 @@ export function QuoteSelectors({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent 
-            className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border p-0 shadow-lg z-50"
+            className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border shadow-lg z-50"
             align="start"
             side="bottom"
             sideOffset={4}
@@ -74,13 +74,15 @@ export function QuoteSelectors({
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
-            <div className="max-h-60 overflow-y-auto">
+            <div className="max-h-60 overflow-y-auto p-0">
               {filteredClients.length > 0 ? (
                 filteredClients.map((client) => (
                   <DropdownMenuItem
                     key={client.id}
-                    onClick={() => onClientSelect(client.id)}
-                    className="cursor-pointer hover:bg-gray-100"
+                    onSelect={() => {
+                      onClientSelect(client.id);
+                    }}
+                    className="cursor-pointer hover:bg-gray-100 px-4 py-2"
                   >
                     {client.firstName} {client.lastName}
                   </DropdownMenuItem>
@@ -91,7 +93,7 @@ export function QuoteSelectors({
                 </div>
               )}
             </div>
-            <div className="border-t">
+            <div className="border-t p-0">
               <Button
                 className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-t-none"
                 onClick={(e) => {
@@ -123,18 +125,20 @@ export function QuoteSelectors({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent 
-            className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border p-0 shadow-lg z-50"
+            className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border shadow-lg z-50"
             align="start"
             side="bottom"
             sideOffset={4}
           >
-            <div className="max-h-60 overflow-y-auto">
+            <div className="max-h-60 overflow-y-auto p-0">
               {clientProjects.length > 0 ? (
                 clientProjects.map((project) => (
                   <DropdownMenuItem
                     key={project.id}
-                    onClick={() => onProjectSelect(project.id)}
-                    className="cursor-pointer hover:bg-gray-100"
+                    onSelect={() => {
+                      onProjectSelect(project.id);
+                    }}
+                    className="cursor-pointer hover:bg-gray-100 px-4 py-2"
                   >
                     {project.name}
                   </DropdownMenuItem>
@@ -145,7 +149,7 @@ export function QuoteSelectors({
                 </div>
               )}
             </div>
-            <div className="border-t">
+            <div className="border-t p-0">
               <Button
                 className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-t-none"
                 onClick={(e) => {
