@@ -59,7 +59,7 @@ export function QuoteSelectors({
               <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-full p-0">
+          <PopoverContent className="w-full p-0 bg-white">
             <div className="p-2 border-b">
               <Input
                 placeholder="Rechercher un client..."
@@ -116,7 +116,7 @@ export function QuoteSelectors({
               <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-full p-0">
+          <PopoverContent className="w-full p-0 bg-white shadow-md">
             <div className="max-h-60 overflow-y-auto">
               {clientProjects.length > 0 ? (
                 <div className="w-full">
