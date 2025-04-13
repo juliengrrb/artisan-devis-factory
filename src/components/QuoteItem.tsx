@@ -48,6 +48,10 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   };
 
   const getBgColor = () => {
+    if (item.type === 'Titre') return 'bg-blue-100';
+    if (item.type === 'Sous-titre') return 'bg-blue-50';
+    if (item.type === 'Texte') return 'bg-blue-50';
+    if (item.type === 'Saut de page') return 'bg-white';
     if (item.level === 1) return 'bg-devis-header text-white';
     if (item.level === 2) return 'bg-devis-midgray';
     return 'bg-white';
@@ -61,11 +65,11 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   // Special styling for text items
   const getTextItemStyles = () => {
     if (item.type === 'Titre') {
-      return 'font-bold text-lg';
+      return 'font-bold text-lg text-black';
     } else if (item.type === 'Sous-titre') {
-      return 'font-semibold text-base';
+      return 'font-semibold text-base text-black';
     } else if (item.type === 'Texte') {
-      return 'text-base';
+      return 'text-base text-black';
     } else if (item.type === 'Saut de page') {
       return 'text-gray-500 italic';
     }

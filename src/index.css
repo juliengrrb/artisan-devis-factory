@@ -121,6 +121,10 @@
   background-color: #e9ecef;
 }
 
+.bg-devis-lightblue {
+  background-color: #D3E4FD;
+}
+
 input:focus, textarea:focus, select:focus {
   outline: none;
   --tw-ring-color: #3498db;
