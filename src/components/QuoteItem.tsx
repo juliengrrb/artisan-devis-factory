@@ -109,6 +109,12 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
         </td>
         <td className={`py-2 px-4 ${getTextItemStyles()}`} style={{ paddingLeft: getPaddingLeft() }} colSpan={isTextItem() ? 6 : 1}>
           {isPageBreak() ? '- - - - - - - - - - Saut de page - - - - - - - - - -' : item.designation}
+          {/* Display item number below the designation for Fourniture, Main d'oeuvre, and Ouvrage */}
+          {['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '') && itemNumber && (
+            <div className="text-sm text-black mt-1">
+              {itemNumber}
+            </div>
+          )}
           {item.details && !isTextItem() && (
             <div className="text-sm text-gray-600 mt-1 whitespace-pre-line">
               {item.details}
@@ -251,6 +257,12 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
       </td>
       <td className={`py-2 px-4 ${getTextItemStyles()}`} style={{ paddingLeft: getPaddingLeft() }} colSpan={isTextItem() ? 6 : 1}>
         {isPageBreak() ? '- - - - - - - - - - Saut de page - - - - - - - - - -' : item.designation}
+        {/* Display item number below the designation for Fourniture, Main d'oeuvre, and Ouvrage */}
+        {['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '') && itemNumber && (
+          <div className="text-sm text-black mt-1">
+            {itemNumber}
+          </div>
+        )}
         {item.details && !isTextItem() && (
           <div className="text-sm text-gray-600 mt-1 whitespace-pre-line">
             {item.details}
