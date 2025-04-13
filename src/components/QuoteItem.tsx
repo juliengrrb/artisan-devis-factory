@@ -50,7 +50,12 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   };
 
   const getBgColor = () => {
-    return item.type === 'Titre' || item.type === 'Sous-titre' ? 'bg-devis-lightblue' : 'bg-white';
+    if (item.type === 'Titre') {
+      return 'bg-blue-100';
+    } else if (item.type === 'Sous-titre') {
+      return 'bg-blue-50';
+    } 
+    return 'bg-white';
   };
 
   const isTextItem = () => {
@@ -75,7 +80,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
       <tr className={`${getBgColor()} border-b border-gray-200 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} data-type={item.type}>
         <td className="py-2 px-4 text-center w-10">
           {itemNumber && (
-            <span className="text-black">{itemNumber}</span>
+            <span className="text-black font-medium">{itemNumber}</span>
           )}
         </td>
         <td className={`py-2 px-4 ${getTextItemStyles()}`} colSpan={isTextItem() ? 6 : 1}>
@@ -140,7 +145,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
     return (
       <tr className="bg-white border-b border-gray-200">
         <td className="py-2 px-4">
-          <div className="flex items-center text-black font-bold">
+          <div className="flex items-center text-black font-medium">
             {itemNumber}
           </div>
         </td>
@@ -215,7 +220,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
     <tr data-type={item.type} className={`${getBgColor()} border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} onClick={handleEdit}>
       <td className="py-2 px-4 text-black text-center w-10">
         {itemNumber && (
-          <span className="text-black">{itemNumber}</span>
+          <span className="text-black font-medium">{itemNumber}</span>
         )}
       </td>
       <td className={`py-2 px-4 ${getTextItemStyles()}`} colSpan={isTextItem() ? 6 : 1}>
