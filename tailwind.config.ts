@@ -63,12 +63,12 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				devis: {
-					blue: '#3498db',
+					blue: '#8E9196',
 					green: '#8bc34a',
-					header: '#3498db',
+					header: '#8E9196',
 					lightgray: '#f8f9fa',
 					midgray: '#e9ecef',
-					lightblue: '#D3E4FD',
+					lightblue: '#F1F0FB',
 				}
 			},
 			borderRadius: {
