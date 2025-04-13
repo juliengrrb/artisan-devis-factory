@@ -138,7 +138,8 @@ const initialQuoteItems: QuoteItem[] = [
     vat: 0,
     totalHT: 1237.22,
     level: 1,
-    position: 1
+    position: 0,
+    type: 'Titre'
   },
   {
     id: '1.1',
@@ -150,7 +151,8 @@ const initialQuoteItems: QuoteItem[] = [
     totalHT: 1237.22,
     parentId: '1',
     level: 2,
-    position: 1
+    position: 1,
+    type: 'Sous-titre'
   },
   {
     id: '1.1.1',
@@ -162,7 +164,8 @@ const initialQuoteItems: QuoteItem[] = [
     totalHT: 1058,
     parentId: '1.1',
     level: 3,
-    position: 1
+    position: 2,
+    type: 'Fourniture'
   },
   {
     id: '1.1.2',
@@ -174,7 +177,8 @@ const initialQuoteItems: QuoteItem[] = [
     totalHT: 99.22,
     parentId: '1.1',
     level: 3,
-    position: 2,
+    position: 3,
+    type: 'Fourniture',
     details: '- BA13 standard sur ossature métallique x 1 (m²)\n- Rail R90 et double montant M88 x 1 (m²)\n- Isolation GR80 x 1 (m²)'
   },
   {
@@ -187,7 +191,8 @@ const initialQuoteItems: QuoteItem[] = [
     totalHT: 80,
     parentId: '1.1',
     level: 3,
-    position: 3
+    position: 4,
+    type: 'Fourniture'
   },
   {
     id: '2',
@@ -196,9 +201,10 @@ const initialQuoteItems: QuoteItem[] = [
     unit: '',
     unitPrice: 0,
     vat: 0,
-    totalHT: 508.50,
+    totalHT: 2182.50,
     level: 1,
-    position: 2
+    position: 5,
+    type: 'Titre'
   },
   {
     id: '2.1',
@@ -210,7 +216,8 @@ const initialQuoteItems: QuoteItem[] = [
     totalHT: 322.50,
     parentId: '2',
     level: 2,
-    position: 1
+    position: 6,
+    type: 'Fourniture'
   },
   {
     id: '2.2',
@@ -222,7 +229,8 @@ const initialQuoteItems: QuoteItem[] = [
     totalHT: 1860,
     parentId: '2',
     level: 2,
-    position: 2
+    position: 7,
+    type: 'Fourniture'
   }
 ];
 
@@ -235,11 +243,11 @@ const initialQuotes: Quote[] = [
     clientId: '1',
     projectId: '1',
     items: initialQuoteItems,
-    paymentConditions: 'Acompte de 10 % soit 116,38 € TTC\nMéthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire',
-    totalHT: 1745.73,
-    totalTVA10: 105.80,
-    totalTVA20: 137.55,
-    totalTTC: 1989.08,
+    paymentConditions: 'Acompte de 30 % soit 1199,36 € TTC\nMéthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire',
+    totalHT: 3419.73,
+    totalTVA10: 105.80, 
+    totalTVA20: 472.35,
+    totalTTC: 3997.88,
     description: 'Rénovation du restaurant rue Rivoli\n(Salle du restaurant et à l\'étage)'
   }
 ];

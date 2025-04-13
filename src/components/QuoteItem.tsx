@@ -1,3 +1,4 @@
+
 import { QuoteItem as QuoteItemType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,7 +51,12 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   };
 
   const getBgColor = () => {
-    return item.type === 'Titre' || item.type === 'Sous-titre' ? 'bg-devis-lightblue' : 'bg-white';
+    if (item.type === 'Titre') {
+      return 'bg-blue-100';
+    } else if (item.type === 'Sous-titre') {
+      return 'bg-blue-50';
+    } 
+    return 'bg-white';
   };
 
   const isTextItem = () => {
