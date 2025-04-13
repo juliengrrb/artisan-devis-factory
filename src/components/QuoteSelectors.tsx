@@ -2,20 +2,14 @@
 import { useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, UserPlus } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ChevronDown } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ClientForm } from "./ClientForm";
+import { ProjectForm } from "./ProjectForm";
 import { Input } from "@/components/ui/input";
 
 interface QuoteSelectorsProps {
@@ -33,6 +27,7 @@ export function QuoteSelectors({
 }: QuoteSelectorsProps) {
   const { clients, projects } = useAppContext();
   const [showClientForm, setShowClientForm] = useState(false);
+  const [showProjectForm, setShowProjectForm] = useState(false);
   const [clientSearch, setClientSearch] = useState("");
 
   const filteredClients = clientSearch 
@@ -46,14 +41,14 @@ export function QuoteSelectors({
     : [];
 
   return (
-    <div className="space-y-4 w-full max-w-sm bg-white p-4 rounded-md shadow-sm">
+    <div className="space-y-4 w-full">
       <div className="space-y-2">
         <Popover>
           <PopoverTrigger asChild>
             <Button 
               variant="outline" 
               role="combobox" 
-              className="w-full justify-between text-gray-500"
+              className="w-full justify-between text-gray-500 bg-white"
             >
               {selectedClientId 
                 ? clients.find(c => c.id === selectedClientId)
@@ -106,27 +101,65 @@ export function QuoteSelectors({
       </div>
 
       <div className="space-y-2">
-        <Select 
-          value={selectedProjectId} 
-          onValueChange={onProjectSelect}
-          disabled={!selectedClientId || clientProjects.length === 0}
-        >
-          <SelectTrigger className="w-full text-gray-500">
-            <SelectValue placeholder="Sélectionner un chantier" />
-          </SelectTrigger>
-          <SelectContent>
-            {clientProjects.map((project) => (
-              <SelectItem key={project.id} value={project.id}>
-                {project.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button 
+              variant="outline" 
+              role="combobox" 
+              className="w-full justify-between text-gray-500 bg-white"
+              disabled={!selectedClientId}
+            >
+              {selectedProjectId 
+                ? projects.find(p => p.id === selectedProjectId)?.name || "Sélectionner un chantier"
+                : "Sélectionner un chantier"
+              }
+              <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0">
+            <div className="max-h-60 overflow-y-auto">
+              {clientProjects.length > 0 ? (
+                <div className="w-full">
+                  {clientProjects.map((project) => (
+                    <div
+                      key={project.id}
+                      className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        onProjectSelect(project.id);
+                        document.body.click(); // Close the popover
+                      }}
+                    >
+                      {project.name}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-sm p-4 text-center text-gray-500">
+                  Aucun résultat trouvé
+                </div>
+              )}
+            </div>
+            <Button
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-t-none"
+              onClick={() => setShowProjectForm(true)}
+              disabled={!selectedClientId}
+            >
+              Nouveau chantier
+            </Button>
+          </PopoverContent>
+        </Popover>
       </div>
 
       {showClientForm && (
         <ClientForm 
           onClose={() => setShowClientForm(false)}
+        />
+      )}
+
+      {showProjectForm && selectedClientId && (
+        <ProjectForm 
+          clientId={selectedClientId}
+          onClose={() => setShowProjectForm(false)} 
         />
       )}
     </div>

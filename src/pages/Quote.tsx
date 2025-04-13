@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { useAppContext } from "@/context/AppContext";
@@ -208,8 +209,8 @@ export default function Quote() {
 
       <div className="flex-grow p-4 bg-white">
         <div className="flex">
-          <div className="flex-1 mr-4">
-            <div className="bg-white shadow rounded-sm p-6">
+          <div className="flex-1">
+            <div className="bg-white rounded-sm">
               <div className="flex justify-between mb-6">
                 <div>
                   <div className="flex items-center mb-2">
@@ -252,6 +253,15 @@ export default function Quote() {
                       </div>
                     )}
                   </div>
+                </div>
+
+                <div className="w-72">
+                  <QuoteSelectors 
+                    onClientSelect={handleClientSelect}
+                    onProjectSelect={handleProjectSelect}
+                    selectedClientId={currentQuote.clientId}
+                    selectedProjectId={currentQuote.projectId}
+                  />
                 </div>
               </div>
               
@@ -443,30 +453,8 @@ export default function Quote() {
               </div>
             </div>
           </div>
-          
-          <div className="w-72">
-            <QuoteSelectors 
-              onClientSelect={handleClientSelect}
-              onProjectSelect={handleProjectSelect}
-              selectedClientId={currentQuote.clientId}
-              selectedProjectId={currentQuote.projectId}
-            />
-          </div>
         </div>
       </div>
-      
-      {showClientForm && (
-        <ClientForm 
-          onClose={() => setShowClientForm(false)} 
-        />
-      )}
-      
-      {showProjectForm && (
-        <ProjectForm 
-          clientId={currentQuote.clientId}
-          onClose={() => setShowProjectForm(false)} 
-        />
-      )}
       
       {showQuoteNumberForm && currentQuote && (
         <QuoteNumberForm 
