@@ -16,12 +16,9 @@ export default function QuoteList() {
     navigate("/devis");
   };
 
-  const handleEditQuote = (id: string) => {
-    const quote = quotes.find(q => q.id === id);
-    if (quote) {
-      setCurrentQuote(quote);
-      navigate(`/devis/${id}`); // Change to correctly navigate to the specific quote
-    }
+  const handleEditQuote = (quote: Quote) => {
+    setCurrentQuote(quote);
+    navigate(`/devis/${quote.id}`);
   };
 
   const handleDuplicateQuote = (id: string) => {
@@ -170,19 +167,8 @@ export default function QuoteList() {
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="text-gray-600"
-                          onClick={() => {
-                            toast.success("Devis ouvert dans un nouvel onglet");
-                          }}
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                          <span className="sr-only">Ouvrir</span>
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
                           className="text-blue-600"
-                          onClick={() => handleEditQuote(quote.id)}
+                          onClick={() => handleEditQuote(quote)}
                         >
                           <Pencil className="h-4 w-4" />
                           <span className="sr-only">Modifier</span>
