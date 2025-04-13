@@ -9,7 +9,7 @@ interface QuoteItemProps {
   item: QuoteItemType;
   onUpdate: (item: QuoteItemType) => void;
   isEditing: boolean;
-  itemNumber?: string; // Add a prop for the hierarchical item number
+  itemNumber?: string; // Hierarchical item number
 }
 
 export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemProps) {
@@ -48,9 +48,9 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   };
 
   const getBgColor = () => {
-    if (item.type === 'Titre') return 'bg-blue-100';
-    if (item.type === 'Sous-titre') return 'bg-blue-50';
-    if (item.type === 'Texte') return 'bg-blue-50';
+    if (item.type === 'Titre') return 'bg-devis-lightblue';
+    if (item.type === 'Sous-titre') return 'bg-devis-lightblue';
+    if (item.type === 'Texte') return 'bg-devis-lightblue';
     if (item.type === 'Saut de page') return 'bg-white';
     if (item.level === 1) return 'bg-devis-header text-white';
     if (item.level === 2) return 'bg-devis-midgray';
@@ -81,12 +81,16 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
     return item.type === 'Saut de page';
   };
 
-  // Display the numeric item number instead of ID for titles and regular items
+  // Display the numeric item number for titles and regular items
   const displayItemNumber = () => {
-    if (isTextItem() && !itemNumber) {
-      return '';
+    if (item.type === 'Titre' && itemNumber) {
+      return itemNumber;
+    } else if (item.type === 'Sous-titre' && itemNumber) {
+      return itemNumber;
+    } else if (!isTextItem() && itemNumber) {
+      return itemNumber;
     }
-    return itemNumber || '';
+    return '';
   };
 
   if (!isEditing) {

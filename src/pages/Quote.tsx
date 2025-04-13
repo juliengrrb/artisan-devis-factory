@@ -63,41 +63,58 @@ export default function Quote() {
 
   const getItemNumber = (item: QuoteItem, index: number, items: QuoteItem[]) => {
     if (item.type === 'Titre' || item.type === 'Sous-titre' || item.type === 'Texte' || item.type === 'Saut de page') {
-      return ''; // No numbering for text items
+      return ''; // Text items don't have numbering but we'll handle it in the component
     }
     
-    let level1Count = 0;
-    let level2Count = 0;
-    let level3Count = 0;
+    let sectionCount = 0;
+    let subsectionCount = 0;
+    let itemCount = 0;
+    
+    let currentSection = null;
+    let currentSubsection = null;
     
     for (let i = 0; i <= index; i++) {
       const currentItem = items[i];
       
-      if (currentItem.type === 'Titre' || currentItem.type === 'Sous-titre' || 
-          currentItem.type === 'Texte' || currentItem.type === 'Saut de page') {
+      if (currentItem.type === 'Texte' || currentItem.type === 'Saut de page') {
         continue;
       }
       
-      if (currentItem.level === 1) {
-        level1Count++;
-        level2Count = 0;
-        level3Count = 0;
+      if (currentItem.type === 'Titre') {
+        sectionCount++;
+        subsectionCount = 0;
+        itemCount = 0;
+        currentSection = currentItem;
+        currentSubsection = null;
+      } else if (currentItem.type === 'Sous-titre') {
+        subsectionCount++;
+        itemCount = 0;
+        currentSubsection = currentItem;
+      } else if (currentItem.level === 1) {
+        sectionCount++;
+        subsectionCount = 0;
+        itemCount = 0;
+        currentSection = currentItem;
+        currentSubsection = null;
       } else if (currentItem.level === 2) {
-        level2Count++;
-        level3Count = 0;
+        subsectionCount++;
+        itemCount = 0;
+        currentSubsection = currentItem;
       } else if (currentItem.level === 3) {
-        level3Count++;
+        itemCount++;
       }
-      
-      if (i === index) break;
     }
     
-    if (item.level === 1) {
-      return `${level1Count}`;
+    if (item.type === 'Titre') {
+      return `${sectionCount}`;
+    } else if (item.type === 'Sous-titre') {
+      return `${sectionCount}.${subsectionCount}`;
+    } else if (item.level === 1) {
+      return `${sectionCount}`;
     } else if (item.level === 2) {
-      return `${level1Count}.${level2Count}`;
+      return `${sectionCount}.${subsectionCount}`;
     } else if (item.level === 3) {
-      return `${level1Count}.${level2Count}.${level3Count}`;
+      return `${sectionCount}.${subsectionCount}.${itemCount}`;
     }
     
     return '';
