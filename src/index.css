@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -98,4 +99,33 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.bg-devis-blue {
+  background-color: #3498db;
+}
+
+.bg-devis-green {
+  background-color: #8bc34a;
+}
+
+.bg-devis-header {
+  background-color: #3498db;
+}
+
+.bg-devis-lightgray {
+  background-color: #f8f9fa;
+}
+
+.bg-devis-midgray {
+  background-color: #e9ecef;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  --tw-ring-color: #3498db;
+}
+
+button:focus {
+  outline: none;
 }
