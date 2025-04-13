@@ -1,3 +1,4 @@
+
 import { QuoteItem as QuoteItemType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -80,7 +81,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
         return 'text-base text-black';
       }
     } else if (['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')) {
-      return 'text-black font-medium'; // Black text for Fourniture, Main d'oeuvre, Ouvrage
+      return 'text-black font-medium'; // Explicitly set to black text
     } else if (item.type === 'Saut de page') {
       return 'text-gray-500';
     }
