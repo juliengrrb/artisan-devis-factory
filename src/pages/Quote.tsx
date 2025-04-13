@@ -517,7 +517,7 @@ export default function Quote() {
                   </thead>
                   <tbody>
                     {currentQuote.items.length === 0 ? (
-                      <tr>
+                      <tr className="bg-white">
                         <td colSpan={7} className="py-4 text-center text-gray-500">
                           Cliquez sur un des boutons ci-dessous pour ajouter un élément à votre document
                         </td>

@@ -1,3 +1,4 @@
+
 import { QuoteItem as QuoteItemType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,6 +54,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
     return `${item.level * 20}px`;
   };
 
+  // Always return white background for all rows
   const getBgColor = () => {
     return 'bg-white';
   };
@@ -90,7 +92,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
 
   const displayItemNumber = () => {
     if (['Titre', 'Sous-titre', 'Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '') && itemNumber) {
-      return <span className="text-black">{itemNumber}</span>;
+      return <span className="text-black font-bold">{itemNumber}</span>;
     }
     return '';
   };
@@ -136,7 +138,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
       return (
         <tr className="bg-white border-b border-gray-200">
           <td className="py-2 px-4">
-            <div className="flex items-center">
+            <div className="flex items-center text-black font-bold">
               {displayItemNumber()}
             </div>
           </td>
@@ -167,7 +169,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
     return (
       <tr className="bg-white border-b border-gray-200">
         <td className="py-2 px-4">
-          <div className="flex items-center">
+          <div className="flex items-center text-black font-bold">
             {displayItemNumber()}
           </div>
         </td>
@@ -239,7 +241,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   }
 
   return (
-    <tr data-type={item.type} className={`${getBgColor()} border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} onClick={handleEdit}>
+    <tr data-type={item.type} className={`bg-white border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} onClick={handleEdit}>
       <td className="py-2 px-4 text-black">
         {displayItemNumber() && (
           <div className="flex items-center">
