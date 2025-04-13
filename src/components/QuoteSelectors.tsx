@@ -59,7 +59,12 @@ export function QuoteSelectors({
               <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border p-0">
+          <DropdownMenuContent 
+            className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border p-0 shadow-lg z-50"
+            align="start"
+            side="bottom"
+            sideOffset={4}
+          >
             <div className="p-2 border-b">
               <Input
                 placeholder="Rechercher un client..."
@@ -71,30 +76,33 @@ export function QuoteSelectors({
             </div>
             <div className="max-h-60 overflow-y-auto">
               {filteredClients.length > 0 ? (
-                <div className="w-full">
-                  {filteredClients.map((client) => (
-                    <DropdownMenuItem
-                      key={client.id}
-                      onClick={() => onClientSelect(client.id)}
-                    >
-                      {client.firstName} {client.lastName}
-                    </DropdownMenuItem>
-                  ))}
-                </div>
+                filteredClients.map((client) => (
+                  <DropdownMenuItem
+                    key={client.id}
+                    onClick={() => onClientSelect(client.id)}
+                    className="cursor-pointer hover:bg-gray-100"
+                  >
+                    {client.firstName} {client.lastName}
+                  </DropdownMenuItem>
+                ))
               ) : (
                 <div className="text-sm p-4 text-center text-gray-500">
                   Aucun client trouvé
                 </div>
               )}
             </div>
-            <Button
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-t-none"
-              onClick={() => {
-                setShowClientForm(true);
-              }}
-            >
-              Nouveau client
-            </Button>
+            <div className="border-t">
+              <Button
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-t-none"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowClientForm(true);
+                }}
+              >
+                Nouveau client
+              </Button>
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -114,34 +122,42 @@ export function QuoteSelectors({
               <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border p-0">
+          <DropdownMenuContent 
+            className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border p-0 shadow-lg z-50"
+            align="start"
+            side="bottom"
+            sideOffset={4}
+          >
             <div className="max-h-60 overflow-y-auto">
               {clientProjects.length > 0 ? (
-                <div className="w-full">
-                  {clientProjects.map((project) => (
-                    <DropdownMenuItem
-                      key={project.id}
-                      onClick={() => onProjectSelect(project.id)}
-                    >
-                      {project.name}
-                    </DropdownMenuItem>
-                  ))}
-                </div>
+                clientProjects.map((project) => (
+                  <DropdownMenuItem
+                    key={project.id}
+                    onClick={() => onProjectSelect(project.id)}
+                    className="cursor-pointer hover:bg-gray-100"
+                  >
+                    {project.name}
+                  </DropdownMenuItem>
+                ))
               ) : (
                 <div className="text-sm p-4 text-center text-gray-500">
                   Aucun résultat trouvé
                 </div>
               )}
             </div>
-            <Button
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-t-none"
-              onClick={() => {
-                setShowProjectForm(true);
-              }}
-              disabled={!selectedClientId}
-            >
-              Nouveau chantier
-            </Button>
+            <div className="border-t">
+              <Button
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-t-none"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowProjectForm(true);
+                }}
+                disabled={!selectedClientId}
+              >
+                Nouveau chantier
+              </Button>
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
