@@ -50,11 +50,12 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   };
 
   const getPaddingLeft = () => {
-    return `${item.level * 20}px`;
+    // No need for padding left as we're now showing item numbers in a separate column
+    return '0px';
   };
 
   const getBgColor = () => {
-    return 'bg-white';
+    return item.type === 'Titre' || item.type === 'Sous-titre' ? 'bg-devis-lightblue' : 'bg-white';
   };
 
   const isTextItem = () => {
@@ -62,6 +63,9 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   };
 
   const getTextItemStyles = () => {
+    if (item.type === 'Titre' || item.type === 'Sous-titre') {
+      return 'text-black font-bold';
+    }
     return 'text-black';
   };
 
@@ -69,30 +73,16 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
     return item.type === 'Saut de page';
   };
 
-  const displayItemNumber = () => {
-    if (['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '') && itemNumber) {
-      return null; // Remove the item number display
-    }
-    return '';
-  };
-
   if (!isEditing) {
     return (
       <tr className={`${getBgColor()} border-b border-gray-200 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} data-type={item.type}>
-        <td className="py-2 px-4 text-black">
-          {displayItemNumber() && (
-            <div className="flex items-center">
-              {displayItemNumber()}
-            </div>
+        <td className="py-2 px-4 text-black text-center w-10">
+          {itemNumber && (
+            <span className="text-black">{itemNumber}</span>
           )}
         </td>
-        <td className={`py-2 px-4 ${getTextItemStyles()}`} style={{ paddingLeft: getPaddingLeft() }} colSpan={isTextItem() ? 6 : 1}>
+        <td className={`py-2 px-4 ${getTextItemStyles()}`} colSpan={isTextItem() ? 6 : 1}>
           {isPageBreak() ? '- - - - - - - - - - Saut de page - - - - - - - - - -' : item.designation}
-          {['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '') && itemNumber && (
-            <div className="text-sm text-black mt-1">
-              {itemNumber}
-            </div>
-          )}
           {item.details && !isTextItem() && (
             <div className="text-sm text-gray-600 mt-1 whitespace-pre-line">
               {item.details}
@@ -107,7 +97,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
             <td className="py-2 px-4 text-right text-black">{item.vat ? `${item.vat} %` : '-'}</td>
             <td className="py-2 px-4 text-right text-black">
               {item.totalHT.toFixed(2)} €
-              {item.level <= 2 && (
+              {(item.type === 'Titre' || item.type === 'Sous-titre') && (
                 <div className="text-sm text-gray-500">Sous-total : {item.totalHT.toFixed(2)} €</div>
               )}
             </td>
@@ -123,7 +113,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
         <tr className="bg-white border-b border-gray-200">
           <td className="py-2 px-4">
             <div className="flex items-center text-black font-bold">
-              {displayItemNumber()}
+              {itemNumber}
             </div>
           </td>
           <td className="py-2 px-4" colSpan={6}>
@@ -154,7 +144,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
       <tr className="bg-white border-b border-gray-200">
         <td className="py-2 px-4">
           <div className="flex items-center text-black font-bold">
-            {displayItemNumber()}
+            {itemNumber}
           </div>
         </td>
         <td className="py-2 px-4">
@@ -225,21 +215,14 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   }
 
   return (
-    <tr data-type={item.type} className={`bg-white border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} onClick={handleEdit}>
-      <td className="py-2 px-4 text-black">
-        {displayItemNumber() && (
-          <div className="flex items-center">
-            {displayItemNumber()}
-          </div>
+    <tr data-type={item.type} className={`${getBgColor()} border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} onClick={handleEdit}>
+      <td className="py-2 px-4 text-black text-center w-10">
+        {itemNumber && (
+          <span className="text-black">{itemNumber}</span>
         )}
       </td>
-      <td className={`py-2 px-4 ${getTextItemStyles()}`} style={{ paddingLeft: getPaddingLeft() }} colSpan={isTextItem() ? 6 : 1}>
+      <td className={`py-2 px-4 ${getTextItemStyles()}`} colSpan={isTextItem() ? 6 : 1}>
         {isPageBreak() ? '- - - - - - - - - - Saut de page - - - - - - - - - -' : item.designation}
-        {['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '') && itemNumber && (
-          <div className="text-sm text-black mt-1">
-            {itemNumber}
-          </div>
-        )}
         {item.details && !isTextItem() && (
           <div className="text-sm text-gray-600 mt-1 whitespace-pre-line">
             {item.details}
@@ -254,7 +237,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
           <td className="py-2 px-4 text-right text-black">{item.vat ? `${item.vat} %` : '-'}</td>
           <td className="py-2 px-4 text-right text-black">
             {item.totalHT.toFixed(2)} €
-            {item.level <= 2 && (
+            {(item.type === 'Titre' || item.type === 'Sous-titre') && (
               <div className="text-sm text-gray-500">Sous-total : {item.totalHT.toFixed(2)} €</div>
             )}
           </td>
