@@ -8,8 +8,8 @@ import { QuoteNumberForm } from "@/components/QuoteNumberForm";
 import { QuoteItem as QuoteItemComponent } from "@/components/QuoteItem";
 import { QuoteSelectors } from "@/components/QuoteSelectors";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { PenLine, Plus, FileText } from "lucide-react";
+import { Textarea, EditableTextarea } from "@/components/ui/textarea";
+import { PenLine, Plus, FileText, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -40,6 +40,7 @@ export default function Quote() {
   ]);
   const [description, setDescription] = useState("");
   const [footerNotes, setFooterNotes] = useState("");
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
 
   useEffect(() => {
     if (!currentQuote) {
@@ -179,6 +180,29 @@ export default function Quote() {
     updateQuote(updatedQuote);
   };
 
+  const handleDescriptionChange = (newDescription: string) => {
+    setDescription(newDescription);
+    
+    if (currentQuote) {
+      updateQuote({
+        ...currentQuote,
+        description: newDescription
+      });
+    }
+  };
+
+  const handleSaveDescription = () => {
+    if (!currentQuote) return;
+    
+    updateQuote({
+      ...currentQuote,
+      description
+    });
+    
+    setIsEditingDescription(false);
+    toast.success("Description mise à jour");
+  };
+
   if (!currentQuote) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
@@ -265,47 +289,80 @@ export default function Quote() {
                 </div>
               </div>
               
-              {(description || currentQuote.description) && (
-                <div className="mb-6 relative">
-                  <button 
-                    className="absolute top-2 right-2 text-blue-500"
-                    onClick={handleToggleDescription}
+              <div className="mb-6 relative">
+                {mode === 'edit' && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute top-2 right-2 text-blue-500 z-10"
+                    onClick={() => {
+                      if (description) {
+                        handleToggleDescription();
+                      } else {
+                        setIsEditingDescription(!isEditingDescription);
+                      }
+                    }}
                   >
-                    {currentQuote.description ? "Masquer la description" : "Ajouter une description"}
-                  </button>
-                  
-                  {currentQuote.description && (
-                    <div className="p-4 border border-gray-200 rounded mb-4">
-                      <pre className="whitespace-pre-wrap font-sans">
-                        {currentQuote.description}
-                      </pre>
-                    </div>
-                  )}
-                  
-                  {mode === 'edit' && !currentQuote.description && (
-                    <div className="flex items-start">
-                      <Textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Description du devis"
-                        className="flex-grow mr-2"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-              
-              {(!description && !currentQuote.description && mode === 'edit') && (
-                <div className="mb-6">
-                  <button 
-                    className="text-blue-500 flex items-center"
-                    onClick={() => setDescription("Rénovation du restaurant rue Rivoli\n(Salle du restaurant et à l'étage)")}
-                  >
-                    <Plus className="h-4 w-4 mr-1" />
-                    Ajouter une description
-                  </button>
-                </div>
-              )}
+                    {currentQuote.description ? (
+                      <>
+                        <EyeOff className="h-4 w-4 mr-1" />
+                        Masquer la description
+                      </>
+                    ) : (
+                      <>
+                        <Eye className="h-4 w-4 mr-1" />
+                        {isEditingDescription ? "Annuler" : "Ajouter une description"}
+                      </>
+                    )}
+                  </Button>
+                )}
+                
+                {currentQuote.description ? (
+                  <div className="p-4 border border-gray-200 rounded mb-4" onClick={() => setIsEditingDescription(true)}>
+                    <pre className="whitespace-pre-wrap font-sans">
+                      {currentQuote.description}
+                    </pre>
+                  </div>
+                ) : mode === 'edit' && (
+                  <div className="mb-4">
+                    {isEditingDescription ? (
+                      <div className="space-y-2">
+                        <EditableTextarea
+                          value={description}
+                          onChange={handleDescriptionChange}
+                          placeholder="Description du devis"
+                          className="w-full"
+                          isEditing={true}
+                        />
+                        <div className="flex justify-end space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsEditingDescription(false)}
+                          >
+                            Annuler
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={handleSaveDescription}
+                          >
+                            Enregistrer
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <Button 
+                        variant="ghost"
+                        className="text-blue-500 flex items-center"
+                        onClick={() => setIsEditingDescription(true)}
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Ajouter une description
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
               
               <div className="mb-6">
                 <table className="w-full border-collapse">

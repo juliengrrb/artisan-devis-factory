@@ -1,3 +1,4 @@
+
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
@@ -21,4 +22,51 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 )
 Textarea.displayName = "Textarea"
 
-export { Textarea }
+export interface EditableTextareaProps {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  className?: string;
+  isEditing: boolean;
+  onToggleEdit?: () => void;
+  previewClassName?: string;
+}
+
+const EditableTextarea = ({
+  value,
+  onChange,
+  placeholder,
+  className,
+  isEditing,
+  onToggleEdit,
+  previewClassName,
+}: EditableTextareaProps) => {
+  if (isEditing) {
+    return (
+      <Textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={className}
+      />
+    );
+  }
+  
+  return (
+    <div 
+      className={cn(
+        "min-h-[80px] rounded-md border border-gray-200 p-3 cursor-pointer hover:bg-gray-50", 
+        previewClassName
+      )}
+      onClick={onToggleEdit}
+    >
+      {value ? (
+        <pre className="whitespace-pre-wrap font-sans">{value}</pre>
+      ) : (
+        <p className="text-gray-400">{placeholder}</p>
+      )}
+    </div>
+  );
+};
+
+export { Textarea, EditableTextarea }
