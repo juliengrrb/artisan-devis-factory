@@ -62,8 +62,8 @@ export default function Quote() {
   }, [currentQuote]);
 
   const getItemNumber = (item: QuoteItem, index: number, items: QuoteItem[]) => {
-    if (item.type === 'Titre' || item.type === 'Sous-titre' || item.type === 'Texte' || item.type === 'Saut de page') {
-      return ''; // Text items don't have numbering but we'll handle it in the component
+    if (item.type === 'Texte' || item.type === 'Saut de page') {
+      return ''; // Text and page break items don't have numbering
     }
     
     let sectionCount = 0;
@@ -117,7 +117,7 @@ export default function Quote() {
       return `${sectionCount}.${subsectionCount}.${itemCount}`;
     }
     
-    return '';
+    return '1'; // Default to '1' if no specific rule applies
   };
 
   const handleSaveQuote = () => {
@@ -194,7 +194,7 @@ export default function Quote() {
     
     const newItem = {
       id: `text-${Date.now()}`,
-      designation: "Titre",
+      designation: "", // Empty designation so user can type directly
       quantity: 0,
       unit: '',
       unitPrice: 0,
@@ -219,7 +219,7 @@ export default function Quote() {
     
     const newItem = {
       id: `text-${Date.now()}`,
-      designation: "Sous-titre",
+      designation: "", // Empty designation so user can type directly
       quantity: 0,
       unit: '',
       unitPrice: 0,
@@ -244,7 +244,7 @@ export default function Quote() {
     
     const newItem = {
       id: `text-${Date.now()}`,
-      designation: "Texte à ajouter ici",
+      designation: "", // Empty designation so user can type directly
       quantity: 0,
       unit: '',
       unitPrice: 0,

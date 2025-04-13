@@ -17,6 +17,15 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   const [editedItem, setEditedItem] = useState<QuoteItemType>(item);
 
   const handleEdit = () => {
+    // If this is a text item (Title, Subtitle, Text), clear the content when entering edit mode
+    if (['Titre', 'Sous-titre', 'Texte'].includes(item.type || '')) {
+      setEditedItem({
+        ...item,
+        designation: '' // Clear the designation when editing text items
+      });
+    } else {
+      setEditedItem(item);
+    }
     setIsEditable(true);
   };
 
@@ -145,6 +154,8 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
                 value={editedItem.designation}
                 onChange={handleChange}
                 className="w-full"
+                placeholder={`Saisissez votre ${item.type?.toLowerCase() || 'texte'} ici...`}
+                autoFocus
               />
               <Button 
                 size="sm" 
