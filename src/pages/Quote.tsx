@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { useAppContext } from "@/context/AppContext";
@@ -129,20 +130,105 @@ export default function Quote() {
     setShowValiditySelector(true);
   };
 
+  // Update these methods to add items to the table instead of the description
   const handleAddTitle = () => {
-    setDescription(prev => prev + "\nTitre\n");
+    if (!currentQuote) return;
+    
+    const newItem = {
+      id: `text-${Date.now()}`,
+      designation: "Titre",
+      quantity: 0,
+      unit: '',
+      unitPrice: 0,
+      vat: 0,
+      totalHT: 0,
+      type: 'Titre',
+      level: 1,
+      position: currentQuote.items.length
+    };
+    
+    const updatedQuote = {
+      ...currentQuote,
+      items: [...currentQuote.items, newItem]
+    };
+    
+    updateQuote(updatedQuote);
+    toast.success("Titre ajouté");
   };
 
   const handleAddSubtitle = () => {
-    setDescription(prev => prev + "\nSous-titre\n");
+    if (!currentQuote) return;
+    
+    const newItem = {
+      id: `text-${Date.now()}`,
+      designation: "Sous-titre",
+      quantity: 0,
+      unit: '',
+      unitPrice: 0,
+      vat: 0,
+      totalHT: 0,
+      type: 'Sous-titre',
+      level: 1,
+      position: currentQuote.items.length
+    };
+    
+    const updatedQuote = {
+      ...currentQuote,
+      items: [...currentQuote.items, newItem]
+    };
+    
+    updateQuote(updatedQuote);
+    toast.success("Sous-titre ajouté");
   };
 
   const handleAddText = () => {
-    setDescription(prev => prev + "\nTexte à ajouter ici\n");
+    if (!currentQuote) return;
+    
+    const newItem = {
+      id: `text-${Date.now()}`,
+      designation: "Texte à ajouter ici",
+      quantity: 0,
+      unit: '',
+      unitPrice: 0,
+      vat: 0,
+      totalHT: 0,
+      type: 'Texte',
+      level: 1,
+      position: currentQuote.items.length
+    };
+    
+    const updatedQuote = {
+      ...currentQuote,
+      items: [...currentQuote.items, newItem]
+    };
+    
+    updateQuote(updatedQuote);
+    toast.success("Texte ajouté");
   };
 
   const handleAddPageBreak = () => {
-    setDescription(prev => prev + "\n[Saut de page]\n");
+    if (!currentQuote) return;
+    
+    const newItem = {
+      id: `page-break-${Date.now()}`,
+      designation: "Saut de page",
+      quantity: 0,
+      unit: '',
+      unitPrice: 0,
+      vat: 0,
+      totalHT: 0,
+      type: 'Saut de page',
+      level: 1,
+      position: currentQuote.items.length
+    };
+    
+    const updatedQuote = {
+      ...currentQuote,
+      items: [...currentQuote.items, newItem]
+    };
+    
+    updateQuote(updatedQuote);
+    toast.success("Saut de page ajouté");
   };
 
   const handleAddSection = (type: 'Fourniture' | 'Main d\'oeuvre' | 'Ouvrage') => {

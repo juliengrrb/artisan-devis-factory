@@ -52,32 +52,88 @@ export function QuoteItem({ item, onUpdate, isEditing }: QuoteItemProps) {
     return 'bg-white';
   };
 
+  // For text-based items like Titre, Sous-titre, etc.
+  const isTextItem = () => {
+    return ['Titre', 'Sous-titre', 'Texte', 'Saut de page'].includes(item.type || '');
+  };
+  
+  // Special styling for text items
+  const getTextItemStyles = () => {
+    if (item.type === 'Titre') {
+      return 'font-bold text-lg';
+    } else if (item.type === 'Sous-titre') {
+      return 'font-semibold text-base';
+    } else if (item.type === 'Texte') {
+      return 'text-base';
+    } else if (item.type === 'Saut de page') {
+      return 'text-gray-500 italic';
+    }
+    return '';
+  };
+
+  // For page breaks, show a separator
+  const isPageBreak = () => {
+    return item.type === 'Saut de page';
+  };
+
   if (!isEditing) {
     return (
-      <tr className={`${getBgColor()} border-b border-gray-200`}>
+      <tr className={`${getBgColor()} border-b border-gray-200 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`}>
         <td className="py-2 px-4">
           <div className="flex items-center">
             <span className="mr-2">{item.id}</span>
           </div>
         </td>
-        <td className="py-2 px-4" style={{ paddingLeft: getPaddingLeft() }}>
-          {item.designation}
-          {item.details && (
+        <td className={`py-2 px-4 ${getTextItemStyles()}`} style={{ paddingLeft: getPaddingLeft() }} colSpan={isTextItem() ? 6 : 1}>
+          {isPageBreak() ? '- - - - - - - - - - Saut de page - - - - - - - - - -' : item.designation}
+          {item.details && !isTextItem() && (
             <div className="text-sm text-gray-600 mt-1 whitespace-pre-line">
               {item.details}
             </div>
           )}
         </td>
-        <td className="py-2 px-4 text-right">{item.quantity || '-'}</td>
-        <td className="py-2 px-4 text-center">{item.unit || '-'}</td>
-        <td className="py-2 px-4 text-right">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
-        <td className="py-2 px-4 text-right">{item.vat ? `${item.vat} %` : '-'}</td>
-        <td className="py-2 px-4 text-right">{item.totalHT.toFixed(2)} €</td>
+        {!isTextItem() && (
+          <>
+            <td className="py-2 px-4 text-right">{item.quantity || '-'}</td>
+            <td className="py-2 px-4 text-center">{item.unit || '-'}</td>
+            <td className="py-2 px-4 text-right">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
+            <td className="py-2 px-4 text-right">{item.vat ? `${item.vat} %` : '-'}</td>
+            <td className="py-2 px-4 text-right">{item.totalHT.toFixed(2)} €</td>
+          </>
+        )}
       </tr>
     );
   }
 
   if (isEditable) {
+    if (isTextItem()) {
+      return (
+        <tr className="bg-white border-b border-gray-200">
+          <td className="py-2 px-4">
+            {item.id}
+          </td>
+          <td className="py-2 px-4" colSpan={6}>
+            <div className="flex items-center w-full">
+              <Input
+                name="designation"
+                value={editedItem.designation}
+                onChange={handleChange}
+                className="w-full"
+              />
+              <Button 
+                size="sm" 
+                variant="ghost" 
+                className="ml-2 text-green-600" 
+                onClick={handleSave}
+              >
+                <Check className="h-4 w-4" />
+              </Button>
+            </div>
+          </td>
+        </tr>
+      );
+    }
+    
     return (
       <tr className="bg-white border-b border-gray-200">
         <td className="py-2 px-4">
@@ -151,23 +207,27 @@ export function QuoteItem({ item, onUpdate, isEditing }: QuoteItemProps) {
   }
 
   return (
-    <tr className={`${getBgColor()} border-b border-gray-200 cursor-pointer hover:bg-gray-50`} onClick={handleEdit}>
+    <tr className={`${getBgColor()} border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} onClick={handleEdit}>
       <td className="py-2 px-4">
         {item.id}
       </td>
-      <td className="py-2 px-4" style={{ paddingLeft: getPaddingLeft() }}>
-        {item.designation}
-        {item.details && (
+      <td className={`py-2 px-4 ${getTextItemStyles()}`} style={{ paddingLeft: getPaddingLeft() }} colSpan={isTextItem() ? 6 : 1}>
+        {isPageBreak() ? '- - - - - - - - - - Saut de page - - - - - - - - - -' : item.designation}
+        {item.details && !isTextItem() && (
           <div className="text-sm text-gray-600 mt-1 whitespace-pre-line">
             {item.details}
           </div>
         )}
       </td>
-      <td className="py-2 px-4 text-right">{item.quantity || '-'}</td>
-      <td className="py-2 px-4 text-center">{item.unit || '-'}</td>
-      <td className="py-2 px-4 text-right">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
-      <td className="py-2 px-4 text-right">{item.vat ? `${item.vat} %` : '-'}</td>
-      <td className="py-2 px-4 text-right">{item.totalHT.toFixed(2)} €</td>
+      {!isTextItem() && (
+        <>
+          <td className="py-2 px-4 text-right">{item.quantity || '-'}</td>
+          <td className="py-2 px-4 text-center">{item.unit || '-'}</td>
+          <td className="py-2 px-4 text-right">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
+          <td className="py-2 px-4 text-right">{item.vat ? `${item.vat} %` : '-'}</td>
+          <td className="py-2 px-4 text-right">{item.totalHT.toFixed(2)} €</td>
+        </>
+      )}
     </tr>
   );
 }
