@@ -22,7 +22,7 @@ const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead 
     ref={ref} 
-    className={cn("bg-btp-600 text-white [&_tr]:border-none", className)} 
+    className={cn("bg-stone-800 text-white [&_tr]:border-none", className)} 
     {...props} 
   />
 ))
@@ -62,7 +62,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors data-[state=selected]:bg-muted data-[type=Titre]:font-bold data-[type=Titre]:bg-stone-100 data-[type=Sous-titre]:font-medium data-[type=Sous-titre]:bg-stone-100 data-[type=Texte]:text-black data-[type=Texte]:bg-white data-[type=Saut\\ de\\ page]:text-gray-500 data-[type=Saut\\ de\\ page]:border-b-dashed data-[type=Saut\\ de\\ page]:border-b-2 data-[type=Fourniture]:bg-white data-[type=Fourniture]:text-black data-[type=Main\\ d\\'oeuvre]:bg-white data-[type=Main\\ d\\'oeuvre]:text-black data-[type=Ouvrage]:bg-white data-[type=Ouvrage]:text-black",
+      "border-b transition-colors data-[state=selected]:bg-muted data-[type=Titre]:font-bold data-[type=Titre]:bg-stone-200 data-[type=Sous-titre]:font-medium data-[type=Sous-titre]:bg-stone-200 data-[type=Texte]:text-black data-[type=Texte]:bg-white data-[type=Saut\\ de\\ page]:text-gray-500 data-[type=Saut\\ de\\ page]:border-b-dashed data-[type=Saut\\ de\\ page]:border-b-2 data-[type=Fourniture]:bg-white data-[type=Fourniture]:text-black data-[type=Main\\ d\\'oeuvre]:bg-white data-[type=Main\\ d\\'oeuvre]:text-black data-[type=Ouvrage]:bg-white data-[type=Ouvrage]:text-black",
       className
     )}
     {...props}
@@ -77,7 +77,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
+      "h-12 px-4 text-left align-middle font-medium text-white [&:has([role=checkbox])]:pr-0",
       className
     )}
     {...props}
