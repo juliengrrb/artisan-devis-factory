@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -36,20 +35,19 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --orange-primary: 24 95% 53%;
+    --orange-primary-foreground: 0 0% 100%;
+    --orange-secondary: 30 100% 97%;
+    --orange-secondary-foreground: 24 95% 53%;
+    --orange-accent: 35 100% 90%;
   }
 
   .dark {
@@ -88,6 +86,12 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --orange-primary: 24 95% 53%;
+    --orange-primary-foreground: 0 0% 100%;
+    --orange-secondary: 20 20% 15%;
+    --orange-secondary-foreground: 24 95% 53%;
+    --orange-accent: 30 25% 25%;
   }
 }
 
@@ -111,6 +115,28 @@
 
 .bg-devis-lightblue {
   background-color: #dbeafe; /* Light blue */
+}
+
+.bg-orange-primary {
+  background-color: hsl(var(--orange-primary));
+  color: hsl(var(--orange-primary-foreground));
+}
+
+.bg-orange-secondary {
+  background-color: hsl(var(--orange-secondary));
+  color: hsl(var(--orange-secondary-foreground));
+}
+
+.bg-orange-accent {
+  background-color: hsl(var(--orange-accent));
+}
+
+.text-orange-primary {
+  color: hsl(var(--orange-primary));
+}
+
+.border-orange-primary {
+  border-color: hsl(var(--orange-primary));
 }
 
 input:focus, textarea:focus, select:focus {
