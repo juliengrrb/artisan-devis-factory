@@ -58,10 +58,10 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
       return 'bg-devis-lightblue';
     }
     if (['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')) {
-      return 'bg-devis-lightblue'; // Very light blue background for these items
+      return 'bg-devis-blue'; // Gray background for these items
     }
     if (item.type === 'Saut de page') return 'bg-white';
-    if (item.level === 1) return 'bg-devis-header text-white';
+    if (item.level === 1) return 'bg-devis-header';
     if (item.level === 2) return 'bg-devis-midgray';
     return 'bg-white';
   };
@@ -107,7 +107,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   if (!isEditing) {
     return (
       <tr className={`${getBgColor()} border-b border-gray-200 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} data-type={item.type}>
-        <td className="py-2 px-4">
+        <td className="py-2 px-4 text-black">
           {displayItemNumber() && (
             <div className="flex items-center">
               <span>{displayItemNumber()}</span>
@@ -124,11 +124,11 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
         </td>
         {!isTextItem() && (
           <>
-            <td className="py-2 px-4 text-right">{item.quantity || '-'}</td>
-            <td className="py-2 px-4 text-center">{item.unit || '-'}</td>
-            <td className="py-2 px-4 text-right">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
-            <td className="py-2 px-4 text-right">{item.vat ? `${item.vat} %` : '-'}</td>
-            <td className="py-2 px-4 text-right">
+            <td className="py-2 px-4 text-right text-black">{item.quantity || '-'}</td>
+            <td className="py-2 px-4 text-center text-black">{item.unit || '-'}</td>
+            <td className="py-2 px-4 text-right text-black">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
+            <td className="py-2 px-4 text-right text-black">{item.vat ? `${item.vat} %` : '-'}</td>
+            <td className="py-2 px-4 text-right text-black">
               {item.totalHT.toFixed(2)} €
               {item.level <= 2 && (
                 <div className="text-sm text-gray-500">Sous-total : {item.totalHT.toFixed(2)} €</div>
@@ -249,7 +249,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
 
   return (
     <tr data-type={item.type} className={`${getBgColor()} border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} onClick={handleEdit}>
-      <td className="py-2 px-4">
+      <td className="py-2 px-4 text-black">
         {displayItemNumber() && (
           <div className="flex items-center">
             <span>{displayItemNumber()}</span>
@@ -266,11 +266,11 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
       </td>
       {!isTextItem() && (
         <>
-          <td className="py-2 px-4 text-right">{item.quantity || '-'}</td>
-          <td className="py-2 px-4 text-center">{item.unit || '-'}</td>
-          <td className="py-2 px-4 text-right">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
-          <td className="py-2 px-4 text-right">{item.vat ? `${item.vat} %` : '-'}</td>
-          <td className="py-2 px-4 text-right">
+          <td className="py-2 px-4 text-right text-black">{item.quantity || '-'}</td>
+          <td className="py-2 px-4 text-center text-black">{item.unit || '-'}</td>
+          <td className="py-2 px-4 text-right text-black">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
+          <td className="py-2 px-4 text-right text-black">{item.vat ? `${item.vat} %` : '-'}</td>
+          <td className="py-2 px-4 text-right text-black">
             {item.totalHT.toFixed(2)} €
             {item.level <= 2 && (
               <div className="text-sm text-gray-500">Sous-total : {item.totalHT.toFixed(2)} €</div>
