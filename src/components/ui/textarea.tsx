@@ -41,15 +41,24 @@ const EditableTextarea = ({
   onToggleEdit,
   previewClassName,
 }: EditableTextareaProps) => {
+  // Créons un état local pour suivre la valeur pendant l'édition
+  const [inputValue, setInputValue] = React.useState(value);
+  
+  // Mettre à jour l'état local quand la valeur externe change
+  React.useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+  
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    // Appelons directement la fonction onChange avec la valeur complète
-    onChange(e.target.value);
+    const newValue = e.target.value;
+    setInputValue(newValue);
+    onChange(newValue);
   };
 
   if (isEditing) {
     return (
       <Textarea
-        value={value}
+        value={inputValue}
         onChange={handleChange}
         placeholder={placeholder}
         className={className}
