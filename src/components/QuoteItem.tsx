@@ -90,7 +90,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
 
   const displayItemNumber = () => {
     if (['Titre', 'Sous-titre', 'Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '') && itemNumber) {
-      return itemNumber;
+      return <span className="text-black">{itemNumber}</span>;
     }
     return '';
   };
@@ -101,7 +101,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
         <td className="py-2 px-4 text-black">
           {displayItemNumber() && (
             <div className="flex items-center">
-              <span>{displayItemNumber()}</span>
+              {displayItemNumber()}
             </div>
           )}
         </td>
@@ -137,7 +137,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
         <tr className="bg-white border-b border-gray-200">
           <td className="py-2 px-4">
             <div className="flex items-center">
-              <span>{displayItemNumber()}</span>
+              {displayItemNumber()}
             </div>
           </td>
           <td className="py-2 px-4" colSpan={6}>
@@ -168,7 +168,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
       <tr className="bg-white border-b border-gray-200">
         <td className="py-2 px-4">
           <div className="flex items-center">
-            <span>{displayItemNumber()}</span>
+            {displayItemNumber()}
           </div>
         </td>
         <td className="py-2 px-4">
@@ -243,7 +243,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
       <td className="py-2 px-4 text-black">
         {displayItemNumber() && (
           <div className="flex items-center">
-            <span>{displayItemNumber()}</span>
+            {displayItemNumber()}
           </div>
         )}
       </td>
