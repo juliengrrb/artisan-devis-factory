@@ -1,4 +1,3 @@
-
 import { QuoteItem as QuoteItemType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,13 +54,10 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   };
 
   const getBgColor = () => {
-    if (item.type === 'Titre') return 'bg-devis-lightblue';
-    if (item.type === 'Sous-titre') return 'bg-devis-lightblue';
-    if (item.type === 'Texte') return 'bg-devis-lightblue';
-    if (item.type === 'Saut de page') return 'bg-white';
-    if (item.type === 'Fourniture' || item.type === 'Main d\'oeuvre' || item.type === 'Ouvrage') {
-      return 'bg-devis-blue text-white';
+    if (['Titre', 'Sous-titre', 'Texte', 'Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')) {
+      return 'bg-devis-lightblue';
     }
+    if (item.type === 'Saut de page') return 'bg-white';
     if (item.level === 1) return 'bg-devis-header text-white';
     if (item.level === 2) return 'bg-devis-midgray';
     return 'bg-white';
@@ -72,16 +68,18 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   };
 
   const getTextItemStyles = () => {
-    if (item.type === 'Titre') {
-      return 'font-bold text-lg text-black';
-    } else if (item.type === 'Sous-titre') {
-      return 'font-semibold text-base text-black';
-    } else if (item.type === 'Texte') {
-      return 'text-base text-black';
+    if (['Titre', 'Sous-titre', 'Texte', 'Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')) {
+      if (item.type === 'Titre') {
+        return 'font-bold text-lg text-black';
+      } else if (item.type === 'Sous-titre') {
+        return 'font-semibold text-base text-black';
+      } else if (item.type === 'Texte') {
+        return 'text-base text-black';
+      } else {
+        return 'text-black font-medium'; // For Fourniture, Main d'oeuvre, Ouvrage
+      }
     } else if (item.type === 'Saut de page') {
       return 'text-gray-500';
-    } else if (item.type === 'Fourniture' || item.type === 'Main d\'oeuvre' || item.type === 'Ouvrage') {
-      return 'text-white font-medium';
     }
     return '';
   };
@@ -91,11 +89,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   };
 
   const displayItemNumber = () => {
-    if (item.type === 'Titre' && itemNumber) {
-      return itemNumber;
-    } else if (item.type === 'Sous-titre' && itemNumber) {
-      return itemNumber;
-    } else if (item.type && ['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type) && itemNumber) {
+    if (['Titre', 'Sous-titre', 'Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '') && itemNumber) {
       return itemNumber;
     }
     return '';

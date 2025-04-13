@@ -66,12 +66,11 @@ export default function Quote() {
       return ''; // Text and page break items don't have numbering
     }
     
-    let sectionCount = 0;
-    let subsectionCount = 0;
-    let itemCount = 0;
+    let sectionCounter = 0;
+    let subsectionCounter = 0;
+    let itemCounter = 0;
     
-    let currentSection = null;
-    let currentSubsection = null;
+    let currentPath: number[] = [];
     
     for (let i = 0; i <= index; i++) {
       const currentItem = items[i];
@@ -81,29 +80,25 @@ export default function Quote() {
       }
       
       if (currentItem.type === 'Titre') {
-        sectionCount++;
-        subsectionCount = 0;
-        itemCount = 0;
-        currentSection = currentItem;
-        currentSubsection = null;
+        sectionCounter++;
+        currentPath = [sectionCounter];
+        subsectionCounter = 0;
+        itemCounter = 0;
       } else if (currentItem.type === 'Sous-titre') {
-        subsectionCount++;
-        itemCount = 0;
-        currentSubsection = currentItem;
-      } else if (currentItem.type === 'Fourniture' || currentItem.type === 'Main d\'oeuvre' || currentItem.type === 'Ouvrage') {
-        itemCount++;
+        subsectionCounter++;
+        currentPath = [sectionCounter, subsectionCounter];
+        itemCounter = 0;
+      } else if (['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(currentItem.type || '')) {
+        itemCounter++;
+        if (currentPath.length === 1) {
+          currentPath = [sectionCounter, itemCounter];
+        } else if (currentPath.length === 2) {
+          currentPath = [sectionCounter, subsectionCounter, itemCounter];
+        }
       }
     }
     
-    if (item.type === 'Titre') {
-      return `${sectionCount}`;
-    } else if (item.type === 'Sous-titre') {
-      return `${sectionCount}.${subsectionCount}`;
-    } else if (item.type === 'Fourniture' || item.type === 'Main d\'oeuvre' || item.type === 'Ouvrage') {
-      return `${sectionCount}.${subsectionCount}.${itemCount}`;
-    }
-    
-    return '';
+    return currentPath.join('.');
   };
 
   const handleSaveQuote = () => {
