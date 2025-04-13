@@ -22,7 +22,7 @@ const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead 
     ref={ref} 
-    className={cn("bg-devis-blue text-white [&_tr]:border-none", className)} 
+    className={cn("bg-blue-600 text-white [&_tr]:border-none", className)} 
     {...props} 
   />
 ))
@@ -62,7 +62,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted data-[type=Titre]:font-bold data-[type=Titre]:bg-devis-lightblue data-[type=Titre]:text-black data-[type=Sous-titre]:font-medium data-[type=Sous-titre]:bg-devis-lightblue data-[type=Sous-titre]:text-black data-[type=Texte]:text-black data-[type=Texte]:bg-devis-lightblue data-[type=Saut\\ de\\ page]:text-gray-500 data-[type=Saut\\ de\\ page]:border-b-dashed data-[type=Saut\\ de\\ page]:border-b-2 data-[type=Fourniture]:bg-devis-blue data-[type=Fourniture]:text-black data-[type=Main\\ d\\'oeuvre]:bg-devis-blue data-[type=Main\\ d\\'oeuvre]:text-black data-[type=Ouvrage]:bg-devis-blue data-[type=Ouvrage]:text-black",
+      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted data-[type=Titre]:font-bold data-[type=Titre]:bg-blue-100 data-[type=Titre]:text-black data-[type=Sous-titre]:font-medium data-[type=Sous-titre]:bg-blue-100 data-[type=Sous-titre]:text-black data-[type=Texte]:text-black data-[type=Texte]:bg-blue-100 data-[type=Saut\\ de\\ page]:text-gray-500 data-[type=Saut\\ de\\ page]:border-b-dashed data-[type=Saut\\ de\\ page]:border-b-2 data-[type=Fourniture]:bg-blue-100 data-[type=Fourniture]:text-black data-[type=Main\\ d\\'oeuvre]:bg-blue-100 data-[type=Main\\ d\\'oeuvre]:text-black data-[type=Ouvrage]:bg-blue-100 data-[type=Ouvrage]:text-black",
       className
     )}
     {...props}

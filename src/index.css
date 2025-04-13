@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -101,20 +102,20 @@
 }
 
 .bg-devis-blue {
-  background-color: #8E9196; /* Gris neutre */
+  background-color: #2563eb; /* Dark blue */
 }
 
 .bg-devis-header {
-  background-color: #8E9196; /* Gris neutre */
+  background-color: #2563eb; /* Dark blue */
 }
 
 .bg-devis-lightblue {
-  background-color: #F1F0FB; /* Gris doux */
+  background-color: #dbeafe; /* Light blue */
 }
 
 input:focus, textarea:focus, select:focus {
   outline: none;
-  --tw-ring-color: #8E9196; /* Remplacé par un gris neutre */
+  --tw-ring-color: #2563eb; /* Dark blue */
 }
 
 button:focus {
