@@ -4,10 +4,11 @@ import { useAppContext } from "@/context/AppContext";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ClientForm } from "./ClientForm";
 import { ProjectForm } from "./ProjectForm";
 import { Input } from "@/components/ui/input";
@@ -43,11 +44,10 @@ export function QuoteSelectors({
   return (
     <div className="space-y-4 w-full">
       <div className="space-y-2">
-        <Popover>
-          <PopoverTrigger asChild>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button 
               variant="outline" 
-              role="combobox" 
               className="w-full justify-between text-gray-500 bg-white"
             >
               {selectedClientId 
@@ -58,30 +58,27 @@ export function QuoteSelectors({
               }
               <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-0 bg-white">
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border p-0">
             <div className="p-2 border-b">
               <Input
                 placeholder="Rechercher un client..."
                 value={clientSearch}
                 onChange={(e) => setClientSearch(e.target.value)}
                 className="w-full"
+                onClick={(e) => e.stopPropagation()}
               />
             </div>
             <div className="max-h-60 overflow-y-auto">
               {filteredClients.length > 0 ? (
                 <div className="w-full">
                   {filteredClients.map((client) => (
-                    <div
+                    <DropdownMenuItem
                       key={client.id}
-                      className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
-                      onClick={() => {
-                        onClientSelect(client.id);
-                        document.body.click(); // Close the popover
-                      }}
+                      onClick={() => onClientSelect(client.id)}
                     >
                       {client.firstName} {client.lastName}
-                    </div>
+                    </DropdownMenuItem>
                   ))}
                 </div>
               ) : (
@@ -92,20 +89,21 @@ export function QuoteSelectors({
             </div>
             <Button
               className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-t-none"
-              onClick={() => setShowClientForm(true)}
+              onClick={() => {
+                setShowClientForm(true);
+              }}
             >
               Nouveau client
             </Button>
-          </PopoverContent>
-        </Popover>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="space-y-2">
-        <Popover>
-          <PopoverTrigger asChild>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild disabled={!selectedClientId}>
             <Button 
               variant="outline" 
-              role="combobox" 
               className="w-full justify-between text-gray-500 bg-white"
               disabled={!selectedClientId}
             >
@@ -115,22 +113,18 @@ export function QuoteSelectors({
               }
               <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-0 bg-white shadow-md">
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] bg-white border p-0">
             <div className="max-h-60 overflow-y-auto">
               {clientProjects.length > 0 ? (
                 <div className="w-full">
                   {clientProjects.map((project) => (
-                    <div
+                    <DropdownMenuItem
                       key={project.id}
-                      className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
-                      onClick={() => {
-                        onProjectSelect(project.id);
-                        document.body.click(); // Close the popover
-                      }}
+                      onClick={() => onProjectSelect(project.id)}
                     >
                       {project.name}
-                    </div>
+                    </DropdownMenuItem>
                   ))}
                 </div>
               ) : (
@@ -141,13 +135,15 @@ export function QuoteSelectors({
             </div>
             <Button
               className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-t-none"
-              onClick={() => setShowProjectForm(true)}
+              onClick={() => {
+                setShowProjectForm(true);
+              }}
               disabled={!selectedClientId}
             >
               Nouveau chantier
             </Button>
-          </PopoverContent>
-        </Popover>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {showClientForm && (
