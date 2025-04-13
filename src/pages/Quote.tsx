@@ -501,7 +501,7 @@ export default function Quote() {
               <div className="mb-6">
                 <table className="w-full border-collapse">
                   <thead>
-                    <tr className="bg-white border-b border-gray-700 text-gray-800">
+                    <tr className="bg-devis-blue text-white">
                       <th className="py-2 px-4 text-left w-12">N°</th>
                       <th className="py-2 px-4 text-left">Désignation</th>
                       <th className="py-2 px-4 text-right w-20">Qté</th>
