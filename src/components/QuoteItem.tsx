@@ -54,12 +54,11 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   };
 
   const getBgColor = () => {
-    // Light blue background for all special types (Titre, Sous-titre, Texte)
     if (['Titre', 'Sous-titre', 'Texte'].includes(item.type || '')) {
       return 'bg-devis-lightblue';
     }
     if (['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')) {
-      return 'bg-devis-lightblue'; // Changed to light blue background
+      return 'bg-devis-lightblue'; // Very light blue background for these items
     }
     if (item.type === 'Saut de page') return 'bg-white';
     if (item.level === 1) return 'bg-devis-header text-white';
