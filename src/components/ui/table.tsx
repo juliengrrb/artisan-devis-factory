@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
@@ -62,7 +61,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors data-[state=selected]:bg-muted data-[type=Titre]:font-bold data-[type=Titre]:bg-blue-100 data-[type=Sous-titre]:font-medium data-[type=Sous-titre]:bg-blue-50 data-[type=Texte]:text-black data-[type=Texte]:bg-white data-[type=Saut\\ de\\ page]:text-gray-500 data-[type=Saut\\ de\\ page]:border-b-dashed data-[type=Saut\\ de\\ page]:border-b-2 data-[type=Fourniture]:bg-white data-[type=Fourniture]:text-black data-[type=Main\\ d\\'oeuvre]:bg-white data-[type=Main\\ d\\'oeuvre]:text-black data-[type=Ouvrage]:bg-white data-[type=Ouvrage]:text-black",
+      "border-b transition-colors data-[state=selected]:bg-muted data-[type=Titre]:font-bold data-[type=Titre]:bg-stone-200 data-[type=Sous-titre]:font-medium data-[type=Sous-titre]:bg-stone-200 data-[type=Texte]:text-black data-[type=Texte]:bg-white data-[type=Saut\\ de\\ page]:text-gray-500 data-[type=Saut\\ de\\ page]:border-b-dashed data-[type=Saut\\ de\\ page]:border-b-2 data-[type=Fourniture]:bg-white data-[type=Fourniture]:text-black data-[type=Main\\ d\\'oeuvre]:bg-white data-[type=Main\\ d\\'oeuvre]:text-black data-[type=Ouvrage]:bg-white data-[type=Ouvrage]:text-black",
       className
     )}
     {...props}
