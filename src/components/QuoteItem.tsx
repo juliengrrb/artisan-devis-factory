@@ -1,4 +1,3 @@
-
 import { QuoteItem as QuoteItemType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +16,6 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   const [editedItem, setEditedItem] = useState<QuoteItemType>(item);
 
   const handleEdit = () => {
-    // If this is a text item (Title, Subtitle, Text), clear the content when entering edit mode
     if (['Titre', 'Sous-titre', 'Texte'].includes(item.type || '')) {
       setEditedItem({
         ...item,
@@ -44,7 +42,6 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
         : value
     };
     
-    // Recalculate totalHT
     if (name === 'quantity' || name === 'unitPrice') {
       updatedItem.totalHT = parseFloat(updatedItem.quantity.toString()) * parseFloat(updatedItem.unitPrice.toString());
     }
@@ -66,12 +63,10 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
     return 'bg-white';
   };
 
-  // For text-based items like Titre, Sous-titre, etc.
   const isTextItem = () => {
     return ['Titre', 'Sous-titre', 'Texte', 'Saut de page'].includes(item.type || '');
   };
-  
-  // Special styling for text items
+
   const getTextItemStyles = () => {
     if (item.type === 'Titre') {
       return 'font-bold text-lg text-black';
@@ -79,18 +74,21 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
       return 'font-semibold text-base text-black';
     } else if (item.type === 'Texte') {
       return 'text-base text-black';
-    } else if (item.type === 'Saut de page') {
-      return 'text-gray-500 italic';
+    } else if (
+      item.type === 'Saut de page' || 
+      item.type === 'Fourniture' || 
+      item.type === 'Main d\'oeuvre' || 
+      item.type === 'Ouvrage'
+    ) {
+      return 'text-black';
     }
     return '';
   };
 
-  // For page breaks, show a separator
   const isPageBreak = () => {
     return item.type === 'Saut de page';
   };
 
-  // Display the numeric item number for titles and regular items
   const displayItemNumber = () => {
     if (item.type === 'Titre' && itemNumber) {
       return itemNumber;

@@ -90,17 +90,7 @@ export default function Quote() {
         subsectionCount++;
         itemCount = 0;
         currentSubsection = currentItem;
-      } else if (currentItem.level === 1) {
-        sectionCount++;
-        subsectionCount = 0;
-        itemCount = 0;
-        currentSection = currentItem;
-        currentSubsection = null;
-      } else if (currentItem.level === 2) {
-        subsectionCount++;
-        itemCount = 0;
-        currentSubsection = currentItem;
-      } else if (currentItem.level === 3) {
+      } else if (currentItem.type === 'Fourniture' || currentItem.type === 'Main d\'oeuvre' || currentItem.type === 'Ouvrage') {
         itemCount++;
       }
     }
@@ -109,11 +99,7 @@ export default function Quote() {
       return `${sectionCount}`;
     } else if (item.type === 'Sous-titre') {
       return `${sectionCount}.${subsectionCount}`;
-    } else if (item.level === 1) {
-      return `${sectionCount}`;
-    } else if (item.level === 2) {
-      return `${sectionCount}.${subsectionCount}`;
-    } else if (item.level === 3) {
+    } else if (item.type === 'Fourniture' || item.type === 'Main d\'oeuvre' || item.type === 'Ouvrage') {
       return `${sectionCount}.${subsectionCount}.${itemCount}`;
     }
     
