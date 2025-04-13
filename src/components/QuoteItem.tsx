@@ -95,7 +95,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
       return itemNumber;
     } else if (item.type === 'Sous-titre' && itemNumber) {
       return itemNumber;
-    } else if ((item.type === 'Fourniture' || item.type === 'Main d\'oeuvre' || item.type === 'Ouvrage') && itemNumber) {
+    } else if (item.type && ['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type) && itemNumber) {
       return itemNumber;
     }
     return '';
