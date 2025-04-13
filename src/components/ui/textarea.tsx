@@ -41,11 +41,16 @@ const EditableTextarea = ({
   onToggleEdit,
   previewClassName,
 }: EditableTextareaProps) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // Appelons directement la fonction onChange avec la valeur complète
+    onChange(e.target.value);
+  };
+
   if (isEditing) {
     return (
       <Textarea
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={handleChange}
         placeholder={placeholder}
         className={className}
       />
