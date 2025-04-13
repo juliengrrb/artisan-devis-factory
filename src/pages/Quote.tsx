@@ -226,31 +226,6 @@ export default function Quote() {
     toast.success("Sous-titre ajouté");
   };
 
-  const handleAddText = () => {
-    if (!currentQuote) return;
-    
-    const newItem = {
-      id: `text-${Date.now()}`,
-      designation: "", // Empty designation so user can type directly
-      quantity: 0,
-      unit: '',
-      unitPrice: 0,
-      vat: 0,
-      totalHT: 0,
-      type: 'Texte' as const,
-      level: 1,
-      position: currentQuote.items.length
-    };
-    
-    const updatedQuote = {
-      ...currentQuote,
-      items: [...currentQuote.items, newItem]
-    };
-    
-    updateQuote(updatedQuote);
-    toast.success("Texte ajouté");
-  };
-
   const handleAddPageBreak = () => {
     if (!currentQuote) return;
     
@@ -581,13 +556,6 @@ export default function Quote() {
                     onClick={handleAddSubtitle}
                   >
                     Sous-titre
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="border-gray-300"
-                    onClick={handleAddText}
-                  >
-                    Texte
                   </Button>
                   <Button 
                     variant="outline" 
