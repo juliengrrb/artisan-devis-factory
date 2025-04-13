@@ -35,7 +35,7 @@ export interface QuoteItem {
   level: number;
   position: number;
   details?: string;
-  type?: 'Titre' | 'Sous-titre' | 'Texte' | 'Saut de page';
+  type?: 'Titre' | 'Sous-titre' | 'Texte' | 'Saut de page' | 'Fourniture' | 'Main d\'oeuvre' | 'Ouvrage';
 }
 
 export interface Quote {
