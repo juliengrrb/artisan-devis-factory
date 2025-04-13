@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FileText, Users, Briefcase, Settings, Menu, X } from "lucide-react";
+import { FileText, Users, Briefcase, Settings, Menu, X, HardHat } from "lucide-react";
 
 export function Navbar() {
   const location = useLocation();
@@ -37,8 +37,9 @@ export function Navbar() {
   return (
     <>
       {/* Desktop Navbar */}
-      <div className="hidden md:flex flex-col h-screen bg-gradient-to-b from-orange-800 to-orange-600 w-64 fixed">
-        <div className="px-6 py-4">
+      <div className="hidden md:flex flex-col h-screen bg-gradient-to-b from-btp-700 to-btp-900 w-64 fixed">
+        <div className="px-6 py-4 flex items-center">
+          <HardHat className="h-8 w-8 text-white mr-3" />
           <h1 className="text-white text-2xl font-bold">Artisan Devis</h1>
         </div>
         
@@ -50,8 +51,8 @@ export function Navbar() {
                   to={item.path}
                   className={`flex items-center px-6 py-3 ${
                     item.active 
-                      ? "bg-orange-500 text-white" 
-                      : "text-orange-100 hover:bg-orange-700 hover:text-white"
+                      ? "bg-btp-600 text-white" 
+                      : "text-stone-100 hover:bg-btp-800 hover:text-white"
                   }`}
                 >
                   {item.icon}
@@ -62,23 +63,26 @@ export function Navbar() {
           </ul>
         </nav>
         
-        <div className="px-6 py-4 border-t border-orange-700">
+        <div className="px-6 py-4 border-t border-btp-800">
           <div className="flex items-center">
-            <div className="h-8 w-8 rounded-full bg-orange-300 flex items-center justify-center text-orange-800 font-semibold">
+            <div className="h-8 w-8 rounded-full bg-stone-300 flex items-center justify-center text-btp-800 font-semibold">
               A
             </div>
             <div className="ml-3">
               <p className="text-white">Artisan Pro</p>
-              <p className="text-orange-200 text-sm">artisan@example.com</p>
+              <p className="text-stone-300 text-sm">artisan@example.com</p>
             </div>
           </div>
         </div>
       </div>
       
       {/* Mobile Navbar */}
-      <div className="md:hidden bg-orange-600 fixed top-0 left-0 right-0 z-10">
+      <div className="md:hidden bg-btp-700 fixed top-0 left-0 right-0 z-10">
         <div className="flex justify-between items-center px-4 py-3">
-          <h1 className="text-white text-xl font-bold">Artisan Devis</h1>
+          <div className="flex items-center">
+            <HardHat className="h-6 w-6 text-white mr-2" />
+            <h1 className="text-white text-xl font-bold">Artisan Devis</h1>
+          </div>
           <button 
             className="text-white"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -96,8 +100,8 @@ export function Navbar() {
                     to={item.path}
                     className={`flex items-center px-4 py-2 rounded-md ${
                       item.active 
-                        ? "bg-orange-500 text-white" 
-                        : "text-orange-100 hover:bg-orange-700 hover:text-white"
+                        ? "bg-btp-600 text-white" 
+                        : "text-stone-100 hover:bg-btp-800 hover:text-white"
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >

@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,16 +14,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 22 85% 50%;
+    --primary-foreground: 21 100% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 25 10% 30%;
+    --secondary-foreground: 21 10% 95%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
+    --accent: 21 75% 60%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -30,24 +31,24 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 22 85% 50%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 22 85% 35%;
+    --sidebar-foreground: 21 10% 95%;
+    --sidebar-primary: 22 70% 97%;
+    --sidebar-primary-foreground: 22 85% 35%;
+    --sidebar-accent: 22 70% 50%;
+    --sidebar-accent-foreground: 21 100% 98%;
+    --sidebar-border: 22 60% 45%;
+    --sidebar-ring: 22 85% 60%;
 
-    --orange-primary: 24 95% 53%;
-    --orange-primary-foreground: 0 0% 100%;
-    --orange-secondary: 30 100% 97%;
-    --orange-secondary-foreground: 24 95% 53%;
-    --orange-accent: 35 100% 90%;
+    --btp-primary: 22 85% 50%;
+    --btp-primary-foreground: 21 100% 98%;
+    --btp-secondary: 25 10% 30%;
+    --btp-secondary-foreground: 21 10% 95%;
+    --btp-accent: 21 75% 60%;
   }
 
   .dark {
@@ -60,16 +61,16 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 21 75% 55%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 25 8% 20%;
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 21 60% 40%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -78,20 +79,21 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
 
-    --orange-primary: 24 95% 53%;
-    --orange-primary-foreground: 0 0% 100%;
-    --orange-secondary: 20 20% 15%;
-    --orange-secondary-foreground: 24 95% 53%;
-    --orange-accent: 30 25% 25%;
+    --sidebar-background: 22 60% 25%;
+    --sidebar-foreground: 21 10% 95%;
+    --sidebar-primary: 22 40% 33%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 22 40% 35%;
+    --sidebar-accent-foreground: 21 10% 95%;
+    --sidebar-border: 22 35% 30%;
+    --sidebar-ring: 22 45% 40%;
+
+    --btp-primary: 21 75% 55%;
+    --btp-primary-foreground: 222.2 47.4% 11.2%;
+    --btp-secondary: 25 8% 20%;
+    --btp-secondary-foreground: 210 40% 98%;
+    --btp-accent: 21 60% 40%;
   }
 }
 
@@ -117,31 +119,55 @@
   background-color: #dbeafe; /* Light blue */
 }
 
-.bg-orange-primary {
-  background-color: hsl(var(--orange-primary));
-  color: hsl(var(--orange-primary-foreground));
+.bg-btp-gradient {
+  background: linear-gradient(to right, #e05a21, #f2d1be);
 }
 
-.bg-orange-secondary {
-  background-color: hsl(var(--orange-secondary));
-  color: hsl(var(--orange-secondary-foreground));
+.bg-btp-primary {
+  background-color: #e05a21;
+  color: #fff;
 }
 
-.bg-orange-accent {
-  background-color: hsl(var(--orange-accent));
+.bg-btp-light {
+  background-color: #fcf5f1;
 }
 
-.text-orange-primary {
-  color: hsl(var(--orange-primary));
+.bg-btp-medium {
+  background-color: #f2d1be;
 }
 
-.border-orange-primary {
-  border-color: hsl(var(--orange-primary));
+.bg-btp-dark {
+  background-color: #4e4541;
+  color: #fff;
+}
+
+.text-btp-primary {
+  color: #e05a21;
+}
+
+.text-btp-dark {
+  color: #4e4541;
+}
+
+.border-btp-primary {
+  border-color: #e05a21;
+}
+
+.border-btp-dark {
+  border-color: #4e4541;
+}
+
+.hover\:bg-btp-primary-dark:hover {
+  background-color: #b33a11;
+}
+
+.hover\:bg-btp-dark-light:hover {
+  background-color: #75665e;
 }
 
 input:focus, textarea:focus, select:focus {
   outline: none;
-  --tw-ring-color: #2563eb; /* Dark blue */
+  --tw-ring-color: #e05a21; /* BTP primary */
 }
 
 button:focus {
