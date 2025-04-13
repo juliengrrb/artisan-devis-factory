@@ -7,8 +7,8 @@ export function Layout() {
     <div className="flex h-screen bg-gradient-to-br from-stone-200 to-white">
       <Navbar />
       
-      <div className="flex-1 md:ml-64 min-h-screen">
-        <div className="md:pt-0 pt-12">
+      <div className="flex-1 md:ml-64 min-h-screen flex flex-col">
+        <div className="flex-grow">
           <Outlet />
         </div>
       </div>
