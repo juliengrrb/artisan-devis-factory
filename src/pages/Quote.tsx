@@ -70,8 +70,6 @@ export default function Quote() {
     let subsectionCounter = 0;
     let itemCounter = 0;
     
-    let currentPath: number[] = [];
-    
     for (let i = 0; i <= index; i++) {
       const currentItem = items[i];
       
@@ -81,24 +79,32 @@ export default function Quote() {
       
       if (currentItem.type === 'Titre') {
         sectionCounter++;
-        currentPath = [sectionCounter];
         subsectionCounter = 0;
         itemCounter = 0;
       } else if (currentItem.type === 'Sous-titre') {
         subsectionCounter++;
-        currentPath = [sectionCounter, subsectionCounter];
         itemCounter = 0;
       } else if (['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(currentItem.type || '')) {
         itemCounter++;
-        if (currentPath.length === 1) {
-          currentPath = [sectionCounter, itemCounter];
-        } else if (currentPath.length === 2) {
-          currentPath = [sectionCounter, subsectionCounter, itemCounter];
-        }
+      }
+      
+      if (i === index) {
+        break;
       }
     }
     
-    return currentPath.join('.');
+    if (item.type === 'Titre') {
+      return `${sectionCounter}`;
+    } else if (item.type === 'Sous-titre') {
+      return `${sectionCounter}.${subsectionCounter}`;
+    } else if (['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')) {
+      if (subsectionCounter > 0) {
+        return `${sectionCounter}.${subsectionCounter}.${itemCounter}`;
+      }
+      return `${sectionCounter}.${itemCounter}`;
+    }
+    
+    return '';
   };
 
   const handleSaveQuote = () => {

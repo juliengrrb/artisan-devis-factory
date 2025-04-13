@@ -1,3 +1,4 @@
+
 import { QuoteItem as QuoteItemType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,8 +55,12 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   };
 
   const getBgColor = () => {
-    if (['Titre', 'Sous-titre', 'Texte', 'Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')) {
+    // Light blue background for all special types (Titre, Sous-titre, Texte, Fourniture, Main d'oeuvre, Ouvrage)
+    if (['Titre', 'Sous-titre', 'Texte'].includes(item.type || '')) {
       return 'bg-devis-lightblue';
+    }
+    if (['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')) {
+      return 'bg-devis-blue'; // Use the blue from the example image
     }
     if (item.type === 'Saut de page') return 'bg-white';
     if (item.level === 1) return 'bg-devis-header text-white';
@@ -68,16 +73,16 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   };
 
   const getTextItemStyles = () => {
-    if (['Titre', 'Sous-titre', 'Texte', 'Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')) {
+    if (['Titre', 'Sous-titre', 'Texte'].includes(item.type || '')) {
       if (item.type === 'Titre') {
         return 'font-bold text-lg text-black';
       } else if (item.type === 'Sous-titre') {
         return 'font-semibold text-base text-black';
       } else if (item.type === 'Texte') {
         return 'text-base text-black';
-      } else {
-        return 'text-black font-medium'; // For Fourniture, Main d'oeuvre, Ouvrage
       }
+    } else if (['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')) {
+      return 'text-white font-medium'; // White text for these items to contrast with blue background
     } else if (item.type === 'Saut de page') {
       return 'text-gray-500';
     }
