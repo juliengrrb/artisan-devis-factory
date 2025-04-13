@@ -42,7 +42,7 @@ export function QuoteSelectors({
     : clients;
 
   const clientProjects = selectedClientId 
-    ? projects.filter(project => project.clientId === selectedClientId)
+    ? projects.filter(project => project.client === selectedClientId)
     : [];
 
   return (
@@ -122,17 +122,6 @@ export function QuoteSelectors({
             ))}
           </SelectContent>
         </Select>
-      </div>
-
-      <div className="pt-4 border-t mt-4">
-        <div className="flex justify-between text-sm">
-          <span>Total net HT</span>
-          <span className="font-medium">0,00 €</span>
-        </div>
-        <div className="flex justify-between text-sm mt-1">
-          <span>Total TTC</span>
-          <span className="font-medium">0,00 €</span>
-        </div>
       </div>
 
       {showClientForm && (
