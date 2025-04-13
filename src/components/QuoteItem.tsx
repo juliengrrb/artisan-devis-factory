@@ -2,7 +2,7 @@ import { QuoteItem as QuoteItemType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Check, Hash } from "lucide-react";
+import { Check } from "lucide-react";
 
 interface QuoteItemProps {
   item: QuoteItemType;
@@ -49,11 +49,6 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
     setEditedItem(updatedItem);
   };
 
-  const getPaddingLeft = () => {
-    // No need for padding left as we're now showing item numbers in a separate column
-    return '0px';
-  };
-
   const getBgColor = () => {
     return item.type === 'Titre' || item.type === 'Sous-titre' ? 'bg-devis-lightblue' : 'bg-white';
   };
@@ -63,8 +58,10 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   };
 
   const getTextItemStyles = () => {
-    if (item.type === 'Titre' || item.type === 'Sous-titre') {
+    if (item.type === 'Titre') {
       return 'text-black font-bold';
+    } else if (item.type === 'Sous-titre') {
+      return 'text-black font-medium';
     }
     return 'text-black';
   };
@@ -76,7 +73,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   if (!isEditing) {
     return (
       <tr className={`${getBgColor()} border-b border-gray-200 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} data-type={item.type}>
-        <td className="py-2 px-4 text-black text-center w-10">
+        <td className="py-2 px-4 text-center w-10">
           {itemNumber && (
             <span className="text-black">{itemNumber}</span>
           )}
