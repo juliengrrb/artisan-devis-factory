@@ -1,3 +1,4 @@
+
 import { QuoteItem as QuoteItemType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,6 +59,9 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
     if (item.type === 'Sous-titre') return 'bg-devis-lightblue';
     if (item.type === 'Texte') return 'bg-devis-lightblue';
     if (item.type === 'Saut de page') return 'bg-white';
+    if (item.type === 'Fourniture' || item.type === 'Main d\'oeuvre' || item.type === 'Ouvrage') {
+      return 'bg-devis-blue text-white';
+    }
     if (item.level === 1) return 'bg-devis-header text-white';
     if (item.level === 2) return 'bg-devis-midgray';
     return 'bg-white';
@@ -74,13 +78,10 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
       return 'font-semibold text-base text-black';
     } else if (item.type === 'Texte') {
       return 'text-base text-black';
-    } else if (
-      item.type === 'Saut de page' || 
-      item.type === 'Fourniture' || 
-      item.type === 'Main d\'oeuvre' || 
-      item.type === 'Ouvrage'
-    ) {
-      return 'text-black';
+    } else if (item.type === 'Saut de page') {
+      return 'text-gray-500';
+    } else if (item.type === 'Fourniture' || item.type === 'Main d\'oeuvre' || item.type === 'Ouvrage') {
+      return 'text-white font-medium';
     }
     return '';
   };
@@ -94,7 +95,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
       return itemNumber;
     } else if (item.type === 'Sous-titre' && itemNumber) {
       return itemNumber;
-    } else if (!isTextItem() && itemNumber) {
+    } else if ((item.type === 'Fourniture' || item.type === 'Main d\'oeuvre' || item.type === 'Ouvrage') && itemNumber) {
       return itemNumber;
     }
     return '';

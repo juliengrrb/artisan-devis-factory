@@ -103,7 +103,7 @@ export default function Quote() {
       return `${sectionCount}.${subsectionCount}.${itemCount}`;
     }
     
-    return '1'; // Default to '1' if no specific rule applies
+    return '';
   };
 
   const handleSaveQuote = () => {
