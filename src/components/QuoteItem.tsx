@@ -1,4 +1,3 @@
-
 import { QuoteItem as QuoteItemType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,7 +53,6 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
     return `${item.level * 20}px`;
   };
 
-  // Always return white background for all rows
   const getBgColor = () => {
     return 'bg-white';
   };
@@ -64,26 +62,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   };
 
   const getTextItemStyles = () => {
-    if (['Titre', 'Sous-titre', 'Texte'].includes(item.type || '')) {
-      if (item.type === 'Titre') {
-        return 'font-bold text-lg text-black';
-      } else if (item.type === 'Sous-titre') {
-        return 'font-semibold text-base text-black';
-      } else if (item.type === 'Texte') {
-        return 'text-base text-black';
-      }
-    } else if (['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')) {
-      if (item.type === 'Fourniture') {
-        return 'font-semibold text-base text-black';
-      } else if (item.type === 'Main d\'oeuvre') {
-        return 'font-medium text-base text-black';
-      } else if (item.type === 'Ouvrage') {
-        return 'font-normal text-base text-black';
-      }
-    } else if (item.type === 'Saut de page') {
-      return 'text-gray-500';
-    }
-    return '';
+    return 'text-black';
   };
 
   const isPageBreak = () => {
@@ -109,7 +88,6 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
         </td>
         <td className={`py-2 px-4 ${getTextItemStyles()}`} style={{ paddingLeft: getPaddingLeft() }} colSpan={isTextItem() ? 6 : 1}>
           {isPageBreak() ? '- - - - - - - - - - Saut de page - - - - - - - - - -' : item.designation}
-          {/* Display item number below the designation for Fourniture, Main d'oeuvre, and Ouvrage */}
           {['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '') && itemNumber && (
             <div className="text-sm text-black mt-1">
               {itemNumber}
@@ -257,7 +235,6 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
       </td>
       <td className={`py-2 px-4 ${getTextItemStyles()}`} style={{ paddingLeft: getPaddingLeft() }} colSpan={isTextItem() ? 6 : 1}>
         {isPageBreak() ? '- - - - - - - - - - Saut de page - - - - - - - - - -' : item.designation}
-        {/* Display item number below the designation for Fourniture, Main d'oeuvre, and Ouvrage */}
         {['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '') && itemNumber && (
           <div className="text-sm text-black mt-1">
             {itemNumber}
