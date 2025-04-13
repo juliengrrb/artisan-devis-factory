@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
@@ -62,7 +61,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted data-[type=Titre]:font-bold data-[type=Titre]:bg-devis-lightblue data-[type=Titre]:text-black data-[type=Sous-titre]:font-medium data-[type=Sous-titre]:bg-devis-lightblue data-[type=Sous-titre]:text-black data-[type=Texte]:text-black data-[type=Texte]:bg-devis-lightblue data-[type=Saut\\ de\\ page]:text-gray-500 data-[type=Saut\\ de\\ page]:border-b-dashed data-[type=Saut\\ de\\ page]:border-b-2 data-[type=Fourniture]:bg-devis-lightblue data-[type=Fourniture]:text-black data-[type=Main\\ d\\'oeuvre]:bg-devis-lightblue data-[type=Main\\ d\\'oeuvre]:text-black data-[type=Ouvrage]:bg-devis-lightblue data-[type=Ouvrage]:text-black",
+      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted data-[type=Titre]:font-bold data-[type=Titre]:bg-devis-lightblue data-[type=Titre]:text-black data-[type=Sous-titre]:font-medium data-[type=Sous-titre]:bg-devis-lightblue data-[type=Sous-titre]:text-black data-[type=Texte]:text-black data-[type=Texte]:bg-devis-lightblue data-[type=Saut\\ de\\ page]:text-gray-500 data-[type=Saut\\ de\\ page]:border-b-dashed data-[type=Saut\\ de\\ page]:border-b-2 data-[type=Fourniture]:bg-devis-blue data-[type=Fourniture]:text-white data-[type=Main\\ d\\'oeuvre]:bg-devis-blue data-[type=Main\\ d\\'oeuvre]:text-white data-[type=Ouvrage]:bg-devis-blue data-[type=Ouvrage]:text-white",
       className
     )}
     {...props}
