@@ -1,4 +1,3 @@
-
 import { QuoteItem as QuoteItemType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,12 +54,12 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   };
 
   const getBgColor = () => {
-    // Light blue background for all special types (Titre, Sous-titre, Texte, Fourniture, Main d'oeuvre, Ouvrage)
+    // Light blue background for all special types (Titre, Sous-titre, Texte)
     if (['Titre', 'Sous-titre', 'Texte'].includes(item.type || '')) {
       return 'bg-devis-lightblue';
     }
     if (['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')) {
-      return 'bg-devis-blue'; // Use the blue from the example image
+      return 'bg-devis-lightblue'; // Changed to light blue background
     }
     if (item.type === 'Saut de page') return 'bg-white';
     if (item.level === 1) return 'bg-devis-header text-white';
@@ -82,7 +81,7 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
         return 'text-base text-black';
       }
     } else if (['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')) {
-      return 'text-white font-medium'; // White text for these items to contrast with blue background
+      return 'text-black font-medium'; // Black text for Fourniture, Main d'oeuvre, Ouvrage
     } else if (item.type === 'Saut de page') {
       return 'text-gray-500';
     }
