@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { useAppContext } from "@/context/AppContext";
@@ -182,13 +181,6 @@ export default function Quote() {
 
   const handleDescriptionChange = (newDescription: string) => {
     setDescription(newDescription);
-    
-    if (currentQuote) {
-      updateQuote({
-        ...currentQuote,
-        description: newDescription
-      });
-    }
   };
 
   const handleSaveDescription = () => {
@@ -296,8 +288,11 @@ export default function Quote() {
                     size="sm"
                     className="absolute top-2 right-2 text-blue-500 z-10"
                     onClick={() => {
-                      if (description) {
-                        handleToggleDescription();
+                      if (currentQuote.description) {
+                        updateQuote({
+                          ...currentQuote,
+                          description: ""
+                        });
                       } else {
                         setIsEditingDescription(!isEditingDescription);
                       }
@@ -318,7 +313,10 @@ export default function Quote() {
                 )}
                 
                 {currentQuote.description ? (
-                  <div className="p-4 border border-gray-200 rounded mb-4" onClick={() => setIsEditingDescription(true)}>
+                  <div 
+                    className="p-4 border border-gray-200 rounded mb-4" 
+                    onClick={() => setIsEditingDescription(true)}
+                  >
                     <pre className="whitespace-pre-wrap font-sans">
                       {currentQuote.description}
                     </pre>
@@ -327,12 +325,12 @@ export default function Quote() {
                   <div className="mb-4">
                     {isEditingDescription ? (
                       <div className="space-y-2">
-                        <EditableTextarea
+                        <Textarea
                           value={description}
-                          onChange={handleDescriptionChange}
+                          onChange={(e) => handleDescriptionChange(e.target.value)}
                           placeholder="Description du devis"
                           className="w-full"
-                          isEditing={true}
+                          autoFocus
                         />
                         <div className="flex justify-end space-x-2">
                           <Button

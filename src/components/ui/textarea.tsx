@@ -41,26 +41,18 @@ const EditableTextarea = ({
   onToggleEdit,
   previewClassName,
 }: EditableTextareaProps) => {
-  const [inputValue, setInputValue] = React.useState(value);
-  
-  React.useEffect(() => {
-    setInputValue(value);
-  }, [value]);
-  
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    setInputValue(newValue);
-    onChange(newValue);
+    onChange(e.target.value);
   };
 
   if (isEditing) {
     return (
       <Textarea
-        value={inputValue}
+        value={value}
         onChange={handleChange}
         placeholder={placeholder}
         className={className}
-        autoFocus  // Add this to automatically focus the textarea when editing
+        autoFocus
       />
     );
   }
@@ -83,4 +75,3 @@ const EditableTextarea = ({
 };
 
 export { Textarea, EditableTextarea }
-
