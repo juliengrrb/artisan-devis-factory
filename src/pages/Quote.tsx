@@ -133,6 +133,7 @@ export default function Quote() {
 
   const handleAddSection = (type: 'Fourniture' | 'Main d\'oeuvre' | 'Ouvrage') => {
     const newItem = {
+      id: Date.now().toString(), // Add unique ID to fix the TypeScript error
       designation: type,
       quantity: 0,
       unit: '',

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,7 +28,6 @@ const App = () => (
               <Route path="devis/:id" element={<Quote />} />
               <Route path="clients" element={<ClientList />} />
               <Route path="chantiers" element={<ProjectList />} />
-              {/* On pourrait ajouter une page de paramètres ici */}
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>

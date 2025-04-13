@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,7 @@ export default function QuoteList() {
     const quote = quotes.find(q => q.id === id);
     if (quote) {
       setCurrentQuote(quote);
-      navigate("/devis");
+      navigate(`/devis/${id}`); // Change to correctly navigate to the specific quote
     }
   };
 
