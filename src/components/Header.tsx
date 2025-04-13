@@ -41,14 +41,14 @@ export function Header({
   };
 
   return (
-    <div className="flex items-center bg-white border-b border-gray-200 p-2 w-full">
-      <h1 className="text-xl font-medium text-gray-700 mr-4">{title}</h1>
+    <div className="flex items-center bg-orange-secondary border-b border-orange-primary p-2 w-full">
+      <h1 className="text-xl font-medium text-orange-primary mr-4">{title}</h1>
       
       {showEditButton && (
         <Button 
           variant="outline" 
           size="sm"
-          className="flex items-center text-blue-600 bg-white border-blue-400 mr-2"
+          className="flex items-center text-orange-primary bg-white border-orange-primary mr-2"
           onClick={onEdit}
         >
           <PenLine className="h-4 w-4 mr-1" />
@@ -60,7 +60,7 @@ export function Header({
         <Button 
           variant="outline" 
           size="sm"
-          className="flex items-center text-blue-600 bg-white border-blue-400"
+          className="flex items-center text-orange-primary bg-white border-orange-primary"
           onClick={onPreview}
         >
           <Eye className="h-4 w-4 mr-1" />
@@ -75,18 +75,18 @@ export function Header({
           <Button 
             variant="outline" 
             size="sm"
-            className="flex items-center text-gray-700 bg-white border-gray-300"
+            className="flex items-center text-orange-primary bg-white border-orange-primary"
             onClick={() => setIsOptionsOpen(!isOptionsOpen)}
           >
             Options <ChevronDown className="h-4 w-4 ml-1" />
           </Button>
           
           {isOptionsOpen && (
-            <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded shadow-lg z-10">
+            <div className="absolute right-0 mt-1 w-40 bg-orange-secondary border border-orange-primary rounded shadow-lg z-10">
               <ul className="py-1">
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Configuration</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Format numéro</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Personnaliser</li>
+                <li className="px-4 py-2 hover:bg-orange-accent cursor-pointer">Configuration</li>
+                <li className="px-4 py-2 hover:bg-orange-accent cursor-pointer">Format numéro</li>
+                <li className="px-4 py-2 hover:bg-orange-accent cursor-pointer">Personnaliser</li>
               </ul>
             </div>
           )}
@@ -98,7 +98,7 @@ export function Header({
           <Button 
             variant="outline" 
             size="sm"
-            className="bg-white border-gray-300 text-gray-700"
+            className="bg-white border-orange-primary text-orange-primary"
             onClick={onCancel}
           >
             Annuler
@@ -108,7 +108,7 @@ export function Header({
         {showSaveButton && (
           <Button 
             size="sm"
-            className="bg-devis-blue text-white hover:bg-blue-600"
+            className="bg-orange-primary text-white hover:bg-orange-600"
             onClick={onSave}
           >
             Enregistrer
@@ -119,7 +119,7 @@ export function Header({
           <div className="relative">
             <Button 
               size="sm"
-              className="bg-devis-green text-white hover:bg-green-600 flex items-center"
+              className="bg-orange-primary text-white hover:bg-orange-600 flex items-center"
               onClick={onFinalize}
             >
               Finaliser et envoyer <ChevronDown className="h-4 w-4 ml-1" />
@@ -131,7 +131,7 @@ export function Header({
       <Button 
         variant="ghost" 
         size="sm" 
-        className="ml-2 text-gray-500 hover:bg-gray-100"
+        className="ml-2 text-orange-primary hover:bg-orange-accent"
         onClick={handleCreateQuote}
       >
         <X className="h-5 w-5" />
