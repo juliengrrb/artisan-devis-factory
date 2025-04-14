@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/Header";
 import { useAppContext } from "@/context/AppContext";
@@ -360,7 +359,6 @@ export default function Quote() {
     }
   };
 
-  // Calculate totals each time the quote items change
   const calculateTotals = () => {
     if (!currentQuote) return { totalHT: 0, totalTVA10: 0, totalTVA20: 0, totalTTC: 0 };
     
@@ -470,12 +468,12 @@ export default function Quote() {
                     <div className="mt-2">
                       {!currentQuote.description && !isEditingDescription ? (
                         <Button 
-                          variant="ghost"
-                          className="text-devis-orange flex items-center btn-devis p-0 hover:bg-transparent"
+                          variant="orange"
+                          className="add-description-btn p-0 flex items-center"
                           onClick={() => setIsEditingDescription(true)}
                         >
-                          <Plus className="h-4 w-4 text-devis-orange mr-1" />
-                          <span className="text-devis-orange">Ajouter une description</span>
+                          <Plus className="h-4 w-4 mr-1" />
+                          <span>Ajouter une description</span>
                         </Button>
                       ) : null}
                     </div>
@@ -554,7 +552,7 @@ export default function Quote() {
                       <th className="py-2 px-4 text-right w-20">Qté</th>
                       <th className="py-2 px-4 text-center w-20">Unité</th>
                       <th className="py-2 px-4 text-right w-28">Prix U. HT</th>
-                      <th className="py-2 px-4 text-right w-20">TVA</th>
+                      <th className="py-2 px-4 text-center w-20">TVA</th>
                       <th className="py-2 px-4 text-right w-32">Total HT</th>
                     </tr>
                   </thead>

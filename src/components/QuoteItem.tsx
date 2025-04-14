@@ -57,15 +57,18 @@ export function QuoteItem({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
+    // Don't default to 0 for quantity and unitPrice
     const updatedItem = {
       ...editedItem,
       [name]: name === 'quantity' || name === 'unitPrice' || name === 'vat' 
-        ? parseFloat(value) 
+        ? value === '' ? '' : parseFloat(value) 
         : value
     };
     
     if (name === 'quantity' || name === 'unitPrice') {
-      updatedItem.totalHT = parseFloat(updatedItem.quantity.toString()) * parseFloat(updatedItem.unitPrice.toString());
+      const quantity = parseFloat(updatedItem.quantity || '0');
+      const unitPrice = parseFloat(updatedItem.unitPrice || '0');
+      updatedItem.totalHT = quantity * unitPrice;
     }
     
     setEditedItem(updatedItem);
@@ -154,7 +157,7 @@ export function QuoteItem({
             <td className="py-1 px-4 text-right text-devis">{item.quantity || '-'}</td>
             <td className="py-1 px-4 text-center text-devis">{item.unit || '-'}</td>
             <td className="py-1 px-4 text-right text-devis">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
-            <td className="py-1 px-4 text-right text-devis">{item.vat ? `${item.vat} %` : '-'}</td>
+            <td className="py-1 px-4 text-center text-devis">{item.vat ? `${item.vat} %` : '-'}</td>
             <td className="py-1 px-4 text-right text-devis">
               {item.totalHT.toFixed(2)} €
               {(item.type === 'Titre' || item.type === 'Sous-titre') && (
@@ -221,10 +224,11 @@ export function QuoteItem({
           <Input
             name="quantity"
             type="number"
-            value={editedItem.quantity}
+            value={editedItem.quantity === 0 ? '' : editedItem.quantity}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             className="input-quantity form-control-devis"
+            placeholder="0"
           />
         </td>
         <td className="py-1 px-4">
@@ -245,10 +249,11 @@ export function QuoteItem({
             name="unitPrice"
             type="number"
             step="0.01"
-            value={editedItem.unitPrice}
+            value={editedItem.unitPrice === 0 ? '' : editedItem.unitPrice}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             className="input-price form-control-devis"
+            placeholder="0"
           />
         </td>
         <td className="py-1 px-4">
@@ -264,7 +269,7 @@ export function QuoteItem({
           </select>
         </td>
         <td className="py-1 px-4 text-right">
-          {(editedItem.quantity * editedItem.unitPrice).toFixed(2)} €
+          {(parseFloat(editedItem.quantity?.toString() || '0') * parseFloat(editedItem.unitPrice?.toString() || '0')).toFixed(2)} €
           <Button 
             size="sm" 
             variant="ghost" 
@@ -289,15 +294,17 @@ export function QuoteItem({
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <td className="py-1 px-2 text-devis text-center w-6">
-        {isDraggable() && (
-          <span className="drag-handle flex justify-center text-devis-light">
-            <GripVertical className="h-4 w-4" />
-          </span>
-        )}
-        {itemNumber && (
-          <span className="text-devis font-medium">{itemNumber}</span>
-        )}
+      <td className="py-1 px-2 text-devis w-10 align-middle">
+        <div className="flex items-center">
+          {isDraggable() && (
+            <span className="drag-handle flex justify-center text-gray-500 mr-1">
+              <GripVertical className="h-4 w-4" />
+            </span>
+          )}
+          {itemNumber && (
+            <span className="text-devis font-medium">{itemNumber}</span>
+          )}
+        </div>
       </td>
       <td className={`py-1 px-4 ${getTextItemStyles()}`} colSpan={isTextItem() ? 6 : 1}>
         {isPageBreak() ? '- - - - - - - - - - Saut de page - - - - - - - - - -' : item.designation}
@@ -312,7 +319,7 @@ export function QuoteItem({
           <td className="py-1 px-4 text-right text-devis">{item.quantity || '-'}</td>
           <td className="py-1 px-4 text-center text-devis">{item.unit || '-'}</td>
           <td className="py-1 px-4 text-right text-devis">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
-          <td className="py-1 px-4 text-right text-devis">{item.vat ? `${item.vat} %` : '-'}</td>
+          <td className="py-1 px-4 text-center text-devis">{item.vat ? `${item.vat} %` : '-'}</td>
           <td className="py-1 px-4 text-right text-devis">
             {item.totalHT.toFixed(2)} €
             {(item.type === 'Titre' || item.type === 'Sous-titre') && (
