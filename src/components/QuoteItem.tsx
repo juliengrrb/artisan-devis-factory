@@ -66,8 +66,8 @@ export function QuoteItem({
     };
     
     if (name === 'quantity' || name === 'unitPrice') {
-      const quantity = parseFloat(updatedItem.quantity || '0');
-      const unitPrice = parseFloat(updatedItem.unitPrice || '0');
+      const quantity = parseFloat(updatedItem.quantity?.toString() || '0');
+      const unitPrice = parseFloat(updatedItem.unitPrice?.toString() || '0');
       updatedItem.totalHT = quantity * unitPrice;
     }
     
@@ -224,7 +224,7 @@ export function QuoteItem({
           <Input
             name="quantity"
             type="number"
-            value={editedItem.quantity === 0 ? '' : editedItem.quantity}
+            value={editedItem.quantity === 0 ? '' : editedItem.quantity.toString()}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             className="input-quantity form-control-devis"
@@ -249,7 +249,7 @@ export function QuoteItem({
             name="unitPrice"
             type="number"
             step="0.01"
-            value={editedItem.unitPrice === 0 ? '' : editedItem.unitPrice}
+            value={editedItem.unitPrice === 0 ? '' : editedItem.unitPrice.toString()}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             className="input-price form-control-devis"

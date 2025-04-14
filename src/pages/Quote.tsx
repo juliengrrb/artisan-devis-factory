@@ -42,6 +42,7 @@ export default function Quote() {
   const [footerNotes, setFooterNotes] = useState("");
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
+  const [totals, setTotals] = useState({ totalHT: 0, totalTVA10: 0, totalTVA20: 0, totalTTC: 0 });
 
   useEffect(() => {
     if (!currentQuote) {
@@ -50,6 +51,9 @@ export default function Quote() {
     } else {
       setDescription(currentQuote.description || "");
       setFooterNotes(currentQuote.footer || "");
+      
+      const calculatedTotals = calculateTotals();
+      setTotals(calculatedTotals);
     }
   }, []);
 
@@ -59,6 +63,11 @@ export default function Quote() {
     }
     if (currentQuote?.footer !== undefined) {
       setFooterNotes(currentQuote.footer);
+    }
+    
+    if (currentQuote?.items) {
+      const calculatedTotals = calculateTotals();
+      setTotals(calculatedTotals);
     }
   }, [currentQuote]);
 
@@ -121,12 +130,10 @@ export default function Quote() {
     
     if (draggedItemIndex === -1 || targetItemIndex === -1) return;
 
-    // Reorder the items
     const draggedItem = items[draggedItemIndex];
     items.splice(draggedItemIndex, 1);
     items.splice(targetItemIndex, 0, draggedItem);
 
-    // Update positions
     const updatedItems = items.map((item, index) => ({
       ...item,
       position: index
@@ -148,7 +155,8 @@ export default function Quote() {
     const updatedQuote = {
       ...currentQuote,
       description,
-      footer: footerNotes
+      footer: footerNotes,
+      ...totals
     };
     
     updateQuote(updatedQuote);
@@ -310,6 +318,29 @@ export default function Quote() {
     toast.success(`${type} ajouté`);
   };
 
+  const handleUpdateQuoteItem = (updatedItem: QuoteItem) => {
+    if (!currentQuote) return;
+    
+    const updatedItems = currentQuote.items.map(item => 
+      item.id === updatedItem.id ? updatedItem : item
+    );
+    
+    const updatedQuote = {
+      ...currentQuote,
+      items: updatedItems
+    };
+    
+    updateQuote(updatedQuote);
+    
+    const newTotals = calculateTotals(updatedItems);
+    setTotals(newTotals);
+    
+    updateQuote({
+      ...updatedQuote,
+      ...newTotals
+    });
+  };
+
   const handleToggleDescription = () => {
     if (!currentQuote) return;
     
@@ -344,7 +375,6 @@ export default function Quote() {
   const handleFooterNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setFooterNotes(e.target.value);
 
-    // Auto-save footer notes on change
     if (currentQuote) {
       updateQuote({
         ...currentQuote,
@@ -359,18 +389,18 @@ export default function Quote() {
     }
   };
 
-  const calculateTotals = () => {
-    if (!currentQuote) return { totalHT: 0, totalTVA10: 0, totalTVA20: 0, totalTTC: 0 };
+  const calculateTotals = (items?: QuoteItem[]) => {
+    if (!currentQuote && !items) return { totalHT: 0, totalTVA10: 0, totalTVA20: 0, totalTTC: 0 };
+    
+    const itemsToCalculate = items || (currentQuote ? currentQuote.items : []);
     
     let totalHT = 0;
     let totalTVA10 = 0;
     let totalTVA20 = 0;
     
-    currentQuote.items.forEach(item => {
+    itemsToCalculate.forEach(item => {
       if (
-        ['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '') ||
-        item.type === 'Titre' ||
-        item.type === 'Sous-titre'
+        ['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')
       ) {
         totalHT += item.totalHT;
         
@@ -386,8 +416,6 @@ export default function Quote() {
     
     return { totalHT, totalTVA10, totalTVA20, totalTTC };
   };
-
-  const { totalHT, totalTVA10, totalTVA20, totalTTC } = calculateTotals();
 
   if (!currentQuote) {
     return (
@@ -568,7 +596,7 @@ export default function Quote() {
                         <QuoteItemComponent 
                           key={item.id} 
                           item={item} 
-                          onUpdate={updateQuoteItem}
+                          onUpdate={handleUpdateQuoteItem}
                           isEditing={mode === 'edit'}
                           itemNumber={getItemNumber(item, index, currentQuote.items)}
                           onDragStart={handleDragStart}
@@ -650,19 +678,19 @@ export default function Quote() {
                     <tbody>
                       <tr>
                         <td className="py-1 text-left text-sm">Total net HT</td>
-                        <td className="py-1 text-right font-medium text-sm">{totalHT.toFixed(2)} €</td>
+                        <td className="py-1 text-right font-medium text-sm">{totals.totalHT.toFixed(2)} €</td>
                       </tr>
                       <tr>
                         <td className="py-1 text-left text-sm">TVA 10 %</td>
-                        <td className="py-1 text-right text-sm">{totalTVA10.toFixed(2)} €</td>
+                        <td className="py-1 text-right text-sm">{totals.totalTVA10.toFixed(2)} €</td>
                       </tr>
                       <tr>
                         <td className="py-1 text-left text-sm">TVA 20 %</td>
-                        <td className="py-1 text-right text-sm">{totalTVA20.toFixed(2)} €</td>
+                        <td className="py-1 text-right text-sm">{totals.totalTVA20.toFixed(2)} €</td>
                       </tr>
                       <tr className="border-t border-gray-200">
                         <td className="py-1 text-left font-medium text-devis text-sm">Total TTC</td>
-                        <td className="py-1 text-right font-medium text-devis text-sm">{totalTTC.toFixed(2)} €</td>
+                        <td className="py-1 text-right font-medium text-devis text-sm">{totals.totalTTC.toFixed(2)} €</td>
                       </tr>
                     </tbody>
                   </table>
