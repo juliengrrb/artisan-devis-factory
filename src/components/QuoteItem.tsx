@@ -44,8 +44,24 @@ export function QuoteItem({
   };
 
   const handleSave = () => {
-    onUpdate(editedItem);
+    // Ensure we have valid numbers before updating
+    const updatedItem = {
+      ...editedItem,
+      quantity: editedItem.quantity === '' ? 0 : Number(editedItem.quantity),
+      unitPrice: editedItem.unitPrice === '' ? 0 : Number(editedItem.unitPrice),
+      totalHT: calculateTotalHT(
+        editedItem.quantity === '' ? 0 : Number(editedItem.quantity), 
+        editedItem.unitPrice === '' ? 0 : Number(editedItem.unitPrice)
+      ),
+      vat: editedItem.vat === '' ? 0 : Number(editedItem.vat)
+    };
+    
+    onUpdate(updatedItem);
     setIsEditable(false);
+  };
+
+  const calculateTotalHT = (quantity: number, unitPrice: number): number => {
+    return quantity * unitPrice;
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -57,17 +73,17 @@ export function QuoteItem({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
-    // Don't default to 0 for quantity and unitPrice
+    // Update the edited item
     const updatedItem = {
       ...editedItem,
-      [name]: name === 'quantity' || name === 'unitPrice' || name === 'vat' 
-        ? value === '' ? '' : parseFloat(value) 
-        : value
+      [name]: value
     };
     
+    // Calculate total if quantity or unitPrice changed
     if (name === 'quantity' || name === 'unitPrice') {
-      const quantity = parseFloat(updatedItem.quantity?.toString() || '0');
-      const unitPrice = parseFloat(updatedItem.unitPrice?.toString() || '0');
+      const quantity = name === 'quantity' ? (value === '' ? 0 : parseFloat(value)) : (editedItem.quantity === '' ? 0 : parseFloat(editedItem.quantity?.toString() || '0'));
+      const unitPrice = name === 'unitPrice' ? (value === '' ? 0 : parseFloat(value)) : (editedItem.unitPrice === '' ? 0 : parseFloat(editedItem.unitPrice?.toString() || '0'));
+      
       updatedItem.totalHT = quantity * unitPrice;
     }
     
@@ -156,12 +172,12 @@ export function QuoteItem({
           <>
             <td className="py-1 px-4 text-right text-devis">{item.quantity || '-'}</td>
             <td className="py-1 px-4 text-center text-devis">{item.unit || '-'}</td>
-            <td className="py-1 px-4 text-right text-devis">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
+            <td className="py-1 px-4 text-right text-devis">{item.unitPrice ? `${Number(item.unitPrice).toFixed(2)} €` : '-'}</td>
             <td className="py-1 px-4 text-center text-devis">{item.vat ? `${item.vat} %` : '-'}</td>
             <td className="py-1 px-4 text-right text-devis">
-              {item.totalHT.toFixed(2)} €
+              {Number(item.totalHT).toFixed(2)} €
               {(item.type === 'Titre' || item.type === 'Sous-titre') && (
-                <div className="text-sm text-devis-light">Sous-total : {item.totalHT.toFixed(2)} €</div>
+                <div className="text-sm text-devis-light">Sous-total : {Number(item.totalHT).toFixed(2)} €</div>
               )}
             </td>
           </>
@@ -224,7 +240,7 @@ export function QuoteItem({
           <Input
             name="quantity"
             type="number"
-            value={editedItem.quantity === 0 ? '' : editedItem.quantity.toString()}
+            value={editedItem.quantity?.toString() || ''}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             className="input-quantity form-control-devis"
@@ -249,7 +265,7 @@ export function QuoteItem({
             name="unitPrice"
             type="number"
             step="0.01"
-            value={editedItem.unitPrice === 0 ? '' : editedItem.unitPrice.toString()}
+            value={editedItem.unitPrice?.toString() || ''}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             className="input-price form-control-devis"
@@ -318,12 +334,12 @@ export function QuoteItem({
         <>
           <td className="py-1 px-4 text-right text-devis">{item.quantity || '-'}</td>
           <td className="py-1 px-4 text-center text-devis">{item.unit || '-'}</td>
-          <td className="py-1 px-4 text-right text-devis">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
+          <td className="py-1 px-4 text-right text-devis">{item.unitPrice ? `${Number(item.unitPrice).toFixed(2)} €` : '-'}</td>
           <td className="py-1 px-4 text-center text-devis">{item.vat ? `${item.vat} %` : '-'}</td>
           <td className="py-1 px-4 text-right text-devis">
-            {item.totalHT.toFixed(2)} €
+            {Number(item.totalHT).toFixed(2)} €
             {(item.type === 'Titre' || item.type === 'Sous-titre') && (
-              <div className="text-sm text-devis-light">Sous-total : {item.totalHT.toFixed(2)} €</div>
+              <div className="text-sm text-devis-light">Sous-total : {Number(item.totalHT).toFixed(2)} €</div>
             )}
           </td>
         </>

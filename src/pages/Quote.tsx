@@ -52,7 +52,7 @@ export default function Quote() {
       setDescription(currentQuote.description || "");
       setFooterNotes(currentQuote.footer || "");
       
-      const calculatedTotals = calculateTotals();
+      const calculatedTotals = calculateTotals(currentQuote.items);
       setTotals(calculatedTotals);
     }
   }, []);
@@ -66,7 +66,7 @@ export default function Quote() {
     }
     
     if (currentQuote?.items) {
-      const calculatedTotals = calculateTotals();
+      const calculatedTotals = calculateTotals(currentQuote.items);
       setTotals(calculatedTotals);
     }
   }, [currentQuote]);
@@ -152,11 +152,13 @@ export default function Quote() {
   const handleSaveQuote = () => {
     if (!currentQuote) return;
     
+    const calculatedTotals = calculateTotals(currentQuote.items);
+    
     const updatedQuote = {
       ...currentQuote,
       description,
       footer: footerNotes,
-      ...totals
+      ...calculatedTotals
     };
     
     updateQuote(updatedQuote);
@@ -305,6 +307,7 @@ export default function Quote() {
       unitPrice: 0,
       vat: 0,
       totalHT: 0,
+      type,
       level: 1,
       position: currentQuote.items.length || 0
     };
@@ -315,6 +318,15 @@ export default function Quote() {
     };
     
     updateQuote(updatedQuote);
+    
+    const newTotals = calculateTotals(updatedQuote.items);
+    setTotals(newTotals);
+    
+    updateQuote({
+      ...updatedQuote,
+      ...newTotals
+    });
+    
     toast.success(`${type} ajouté`);
   };
 
@@ -325,20 +337,17 @@ export default function Quote() {
       item.id === updatedItem.id ? updatedItem : item
     );
     
+    const newTotals = calculateTotals(updatedItems);
+    
     const updatedQuote = {
       ...currentQuote,
-      items: updatedItems
+      items: updatedItems,
+      ...newTotals
     };
     
     updateQuote(updatedQuote);
     
-    const newTotals = calculateTotals(updatedItems);
     setTotals(newTotals);
-    
-    updateQuote({
-      ...updatedQuote,
-      ...newTotals
-    });
   };
 
   const handleToggleDescription = () => {
@@ -390,31 +399,44 @@ export default function Quote() {
   };
 
   const calculateTotals = (items?: QuoteItem[]) => {
-    if (!currentQuote && !items) return { totalHT: 0, totalTVA10: 0, totalTVA20: 0, totalTTC: 0 };
-    
-    const itemsToCalculate = items || (currentQuote ? currentQuote.items : []);
+    if (!items || items.length === 0) {
+      return { totalHT: 0, totalTVA10: 0, totalTVA20: 0, totalTTC: 0 };
+    }
     
     let totalHT = 0;
     let totalTVA10 = 0;
     let totalTVA20 = 0;
     
-    itemsToCalculate.forEach(item => {
+    items.forEach(item => {
       if (
         ['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '')
       ) {
-        totalHT += item.totalHT;
+        const itemTotal = typeof item.totalHT === 'string' 
+          ? parseFloat(item.totalHT) 
+          : (item.totalHT || 0);
+          
+        totalHT += itemTotal;
         
-        if (item.vat === 10) {
-          totalTVA10 += item.totalHT * 0.1;
-        } else if (item.vat === 20) {
-          totalTVA20 += item.totalHT * 0.2;
+        const vatRate = typeof item.vat === 'string' 
+          ? parseFloat(item.vat) 
+          : (item.vat || 0);
+        
+        if (vatRate === 10) {
+          totalTVA10 += itemTotal * 0.1;
+        } else if (vatRate === 20) {
+          totalTVA20 += itemTotal * 0.2;
         }
       }
     });
     
     const totalTTC = totalHT + totalTVA10 + totalTVA20;
     
-    return { totalHT, totalTVA10, totalTVA20, totalTTC };
+    return { 
+      totalHT: Number(totalHT.toFixed(2)), 
+      totalTVA10: Number(totalTVA10.toFixed(2)), 
+      totalTVA20: Number(totalTVA20.toFixed(2)), 
+      totalTTC: Number(totalTTC.toFixed(2)) 
+    };
   };
 
   if (!currentQuote) {
