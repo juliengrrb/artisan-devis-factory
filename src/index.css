@@ -142,6 +142,10 @@
   color: #888888; /* Light gray for tertiary text */
 }
 
+.text-devis-orange {
+  color: #F97316; /* Orange for add description button */
+}
+
 .border-devis {
   border-color: #dae5f0; /* Light blue border */
 }
@@ -181,4 +185,59 @@ button:focus {
   border-radius: 4px;
   font-size: 14px;
   border: 1px solid #d1d5db;
+}
+
+.drag-handle {
+  cursor: move;
+  display: flex;
+  justify-content: center;
+  color: #888888;
+}
+
+.drag-handle:hover {
+  color: #666666;
+}
+
+.title-row {
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.subtitle-row {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.item-row {
+  font-weight: 400;
+  font-size: 14px;
+}
+
+/* Input alignments */
+.input-quantity {
+  text-align: right;
+  width: 80px;
+}
+
+.input-unit {
+  text-align: center;
+  width: 70px;
+}
+
+.input-price {
+  text-align: right;
+  width: 100px;
+}
+
+.input-vat {
+  text-align: center;
+  width: 80px;
+}
+
+.cell-right {
+  text-align: right;
+}
+
+.cell-center {
+  text-align: center;
 }

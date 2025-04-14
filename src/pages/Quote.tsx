@@ -360,6 +360,37 @@ export default function Quote() {
     }
   };
 
+  // Calculate totals each time the quote items change
+  const calculateTotals = () => {
+    if (!currentQuote) return { totalHT: 0, totalTVA10: 0, totalTVA20: 0, totalTTC: 0 };
+    
+    let totalHT = 0;
+    let totalTVA10 = 0;
+    let totalTVA20 = 0;
+    
+    currentQuote.items.forEach(item => {
+      if (
+        ['Fourniture', 'Main d\'oeuvre', 'Ouvrage'].includes(item.type || '') ||
+        item.type === 'Titre' ||
+        item.type === 'Sous-titre'
+      ) {
+        totalHT += item.totalHT;
+        
+        if (item.vat === 10) {
+          totalTVA10 += item.totalHT * 0.1;
+        } else if (item.vat === 20) {
+          totalTVA20 += item.totalHT * 0.2;
+        }
+      }
+    });
+    
+    const totalTTC = totalHT + totalTVA10 + totalTVA20;
+    
+    return { totalHT, totalTVA10, totalTVA20, totalTTC };
+  };
+
+  const { totalHT, totalTVA10, totalTVA20, totalTTC } = calculateTotals();
+
   if (!currentQuote) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
@@ -434,6 +465,21 @@ export default function Quote() {
                       </div>
                     )}
                   </div>
+                  
+                  {mode === 'edit' && (
+                    <div className="mt-2">
+                      {!currentQuote.description && !isEditingDescription ? (
+                        <Button 
+                          variant="ghost"
+                          className="text-devis-orange flex items-center btn-devis p-0 hover:bg-transparent"
+                          onClick={() => setIsEditingDescription(true)}
+                        >
+                          <Plus className="h-4 w-4 text-devis-orange mr-1" />
+                          <span className="text-devis-orange">Ajouter une description</span>
+                        </Button>
+                      ) : null}
+                    </div>
+                  )}
                 </div>
 
                 <div className="w-72">
@@ -447,91 +493,56 @@ export default function Quote() {
               </div>
               
               <div className="mb-4 relative">
-                {mode === 'edit' && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute top-2 right-2 text-blue-500 z-10 btn-devis"
-                    onClick={() => {
-                      if (currentQuote.description && !isEditingDescription) {
-                        setIsEditingDescription(true);
-                      } else if (currentQuote.description && isEditingDescription) {
-                        setIsEditingDescription(false);
-                      } else {
-                        setIsEditingDescription(!isEditingDescription);
-                      }
-                    }}
-                  >
-                    {currentQuote.description && !isEditingDescription ? (
-                      <>
-                        <PenLine className="h-4 w-4 mr-1" />
-                        Modifier
-                      </>
-                    ) : currentQuote.description && isEditingDescription ? (
-                      <>
-                        <Eye className="h-4 w-4 mr-1" />
-                        Annuler
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="h-4 w-4 mr-1" />
-                        {isEditingDescription ? "Annuler" : "Ajouter une description"}
-                      </>
-                    )}
-                  </Button>
-                )}
-                
                 {currentQuote.description && !isEditingDescription ? (
-                  <div 
-                    className="mb-4 cursor-pointer p-4 bg-gray-50 rounded" 
-                    onClick={() => mode === 'edit' && setIsEditingDescription(true)}
-                  >
-                    <pre className="whitespace-pre-wrap font-sans text-devis text-sm">
-                      {currentQuote.description}
-                    </pre>
-                  </div>
-                ) : mode === 'edit' && (
-                  <div className="mb-4">
-                    {isEditingDescription ? (
-                      <div className="space-y-2">
-                        <Textarea
-                          value={description}
-                          onChange={(e) => handleDescriptionChange(e.target.value)}
-                          onKeyDown={handleKeyDown}
-                          placeholder="Description du devis"
-                          className="w-full border-gray-200 focus:border-blue-500 focus:ring-blue-500 resize-none text-sm form-control-devis"
-                          autoFocus
-                        />
-                        <div className="flex justify-end space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="border-gray-300 text-devis btn-devis"
-                            onClick={() => setIsEditingDescription(false)}
-                          >
-                            Annuler
-                          </Button>
-                          <Button
-                            size="sm"
-                            className="bg-devis-blue hover:bg-blue-600 text-white btn-devis"
-                            onClick={handleSaveDescription}
-                          >
-                            Enregistrer
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <Button 
+                  <div className="mb-4 relative">
+                    {mode === 'edit' && (
+                      <Button
                         variant="ghost"
-                        className="text-blue-500 flex items-center btn-devis"
+                        size="sm"
+                        className="absolute top-2 right-2 text-blue-500 z-10 btn-devis"
                         onClick={() => setIsEditingDescription(true)}
                       >
-                        <Plus className="h-4 w-4 mr-1" />
-                        Ajouter une description
+                        <PenLine className="h-4 w-4 mr-1" />
+                        Modifier
                       </Button>
                     )}
+                    <div className="p-4 bg-gray-50 rounded">
+                      <pre className="whitespace-pre-wrap font-sans text-devis text-sm">
+                        {currentQuote.description}
+                      </pre>
+                    </div>
                   </div>
-                )}
+                ) : mode === 'edit' && isEditingDescription ? (
+                  <div className="mb-4">
+                    <div className="space-y-2">
+                      <Textarea
+                        value={description}
+                        onChange={(e) => handleDescriptionChange(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder="Description du devis"
+                        className="w-full border-gray-200 focus:border-blue-500 focus:ring-blue-500 resize-none text-sm form-control-devis"
+                        autoFocus
+                      />
+                      <div className="flex justify-end space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-gray-300 text-devis btn-devis"
+                          onClick={() => setIsEditingDescription(false)}
+                        >
+                          Annuler
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="bg-devis-blue hover:bg-blue-600 text-white btn-devis"
+                          onClick={handleSaveDescription}
+                        >
+                          Enregistrer
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
               </div>
               
               <div className="mb-4">
@@ -641,19 +652,19 @@ export default function Quote() {
                     <tbody>
                       <tr>
                         <td className="py-1 text-left text-sm">Total net HT</td>
-                        <td className="py-1 text-right font-medium text-sm">{currentQuote.totalHT.toFixed(2)} €</td>
+                        <td className="py-1 text-right font-medium text-sm">{totalHT.toFixed(2)} €</td>
                       </tr>
                       <tr>
                         <td className="py-1 text-left text-sm">TVA 10 %</td>
-                        <td className="py-1 text-right text-sm">{currentQuote.totalTVA10.toFixed(2)} €</td>
+                        <td className="py-1 text-right text-sm">{totalTVA10.toFixed(2)} €</td>
                       </tr>
                       <tr>
                         <td className="py-1 text-left text-sm">TVA 20 %</td>
-                        <td className="py-1 text-right text-sm">{currentQuote.totalTVA20.toFixed(2)} €</td>
+                        <td className="py-1 text-right text-sm">{totalTVA20.toFixed(2)} €</td>
                       </tr>
                       <tr className="border-t border-gray-200">
                         <td className="py-1 text-left font-medium text-devis text-sm">Total TTC</td>
-                        <td className="py-1 text-right font-medium text-devis text-sm">{currentQuote.totalTTC.toFixed(2)} €</td>
+                        <td className="py-1 text-right font-medium text-devis text-sm">{totalTTC.toFixed(2)} €</td>
                       </tr>
                     </tbody>
                   </table>

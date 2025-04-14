@@ -86,19 +86,23 @@ export function QuoteItem({
 
   const getTextItemStyles = () => {
     if (item.type === 'Titre') {
-      return 'text-devis font-medium';
+      return 'text-devis font-medium title-row';
     } else if (item.type === 'Sous-titre') {
-      return 'text-devis font-medium';
+      return 'text-devis font-medium subtitle-row';
     }
-    return 'text-devis';
+    return 'text-devis item-row';
   };
 
   const isPageBreak = () => {
     return item.type === 'Saut de page';
   };
 
+  const isDraggable = () => {
+    return !isPageBreak() && !isEditable;
+  };
+
   const handleDragStart = (e: React.DragEvent) => {
-    if (onDragStart && !isPageBreak() && !isTextItem()) {
+    if (onDragStart && isDraggable()) {
       e.dataTransfer.effectAllowed = 'move';
       setTimeout(() => {
         if (rowRef.current) {
@@ -111,13 +115,13 @@ export function QuoteItem({
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    if (onDragOver && !isPageBreak() && !isTextItem()) {
+    if (onDragOver && !isPageBreak()) {
       onDragOver(item.id);
     }
   };
 
   const handleDragEnd = () => {
-    if (onDragEnd && !isPageBreak() && !isTextItem()) {
+    if (onDragEnd && isDraggable()) {
       if (rowRef.current) {
         rowRef.current.classList.remove('opacity-50');
       }
@@ -220,7 +224,7 @@ export function QuoteItem({
             value={editedItem.quantity}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            className="w-20 form-control-devis"
+            className="input-quantity form-control-devis"
           />
         </td>
         <td className="py-1 px-4">
@@ -228,7 +232,7 @@ export function QuoteItem({
             name="unit"
             value={editedItem.unit}
             onChange={handleChange}
-            className="border border-gray-300 rounded text-sm p-1 form-control-devis"
+            className="input-unit form-control-devis border border-gray-300 rounded text-sm p-1"
           >
             <option value="m²">m²</option>
             <option value="u">u</option>
@@ -244,7 +248,7 @@ export function QuoteItem({
             value={editedItem.unitPrice}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            className="w-24 form-control-devis"
+            className="input-price form-control-devis"
           />
         </td>
         <td className="py-1 px-4">
@@ -252,7 +256,7 @@ export function QuoteItem({
             name="vat"
             value={editedItem.vat}
             onChange={handleChange}
-            className="border border-gray-300 rounded text-sm p-1 form-control-devis"
+            className="input-vat form-control-devis border border-gray-300 rounded text-sm p-1"
           >
             <option value="0">0 %</option>
             <option value="10">10 %</option>
@@ -280,14 +284,14 @@ export function QuoteItem({
       data-type={item.type} 
       className={`${getBgColor()} border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${isDragged ? 'opacity-50' : ''} ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} 
       onClick={handleEdit}
-      draggable={!isPageBreak() && !isTextItem()}
+      draggable={isDraggable()}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
       <td className="py-1 px-2 text-devis text-center w-6">
-        {!isPageBreak() && !isTextItem() && (
-          <span className="cursor-move flex justify-center text-devis-light">
+        {isDraggable() && (
+          <span className="drag-handle flex justify-center text-devis-light">
             <GripVertical className="h-4 w-4" />
           </span>
         )}
