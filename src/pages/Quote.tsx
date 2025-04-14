@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/Header";
 import { useAppContext } from "@/context/AppContext";
 import { ClientForm } from "@/components/ClientForm";
@@ -41,6 +42,7 @@ export default function Quote() {
   const [description, setDescription] = useState("");
   const [footerNotes, setFooterNotes] = useState("");
   const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!currentQuote) {
@@ -105,6 +107,40 @@ export default function Quote() {
     }
     
     return '';
+  };
+
+  const handleDragStart = (id: string) => {
+    setDraggedItemId(id);
+  };
+
+  const handleDragOver = useCallback((targetId: string) => {
+    if (!currentQuote || !draggedItemId || draggedItemId === targetId) return;
+
+    const items = [...currentQuote.items];
+    const draggedItemIndex = items.findIndex(item => item.id === draggedItemId);
+    const targetItemIndex = items.findIndex(item => item.id === targetId);
+    
+    if (draggedItemIndex === -1 || targetItemIndex === -1) return;
+
+    // Reorder the items
+    const draggedItem = items[draggedItemIndex];
+    items.splice(draggedItemIndex, 1);
+    items.splice(targetItemIndex, 0, draggedItem);
+
+    // Update positions
+    const updatedItems = items.map((item, index) => ({
+      ...item,
+      position: index
+    }));
+
+    updateQuote({
+      ...currentQuote,
+      items: updatedItems
+    });
+  }, [currentQuote, draggedItemId, updateQuote]);
+
+  const handleDragEnd = () => {
+    setDraggedItemId(null);
   };
 
   const handleSaveQuote = () => {
@@ -306,6 +342,24 @@ export default function Quote() {
     setIsEditingDescription(!isEditingDescription);
   };
 
+  const handleFooterNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFooterNotes(e.target.value);
+
+    // Auto-save footer notes on change
+    if (currentQuote) {
+      updateQuote({
+        ...currentQuote,
+        footer: e.target.value
+      });
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && isEditingDescription) {
+      handleSaveDescription();
+    }
+  };
+
   if (!currentQuote) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
@@ -316,7 +370,7 @@ export default function Quote() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-orange-50">
+    <div className="flex flex-col min-h-screen bg-white">
       <Header 
         title="Nouveau devis"
         showEditButton={mode === 'preview'}
@@ -334,43 +388,43 @@ export default function Quote() {
         }}
       />
 
-      <div className="flex-grow p-4 bg-gradient-to-br from-orange-50 to-orange-100">
+      <div className="flex-grow p-4 bg-white">
         <div className="flex">
           <div className="flex-1">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="flex justify-between mb-6">
+            <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+              <div className="flex justify-between mb-4">
                 <div>
                   <div className="flex items-center mb-2">
-                    <h2 className="text-lg font-semibold mr-2 text-orange-700">
+                    <h2 className="text-lg font-medium mr-2 text-devis">
                       Devis n°{currentQuote.number}
                     </h2>
                     <button 
-                      className="text-orange-500 hover:text-orange-700"
+                      className="text-blue-500 hover:text-blue-700"
                       onClick={() => setShowQuoteNumberForm(true)}
                     >
                       <PenLine className="h-4 w-4" />
                     </button>
                   </div>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-devis-light">
                     En date du {new Date(currentQuote.date).toLocaleDateString('fr-FR')}
                   </p>
                   <div className="flex items-center">
-                    <p className="text-sm text-gray-600 mr-2">
+                    <p className="text-sm text-devis-light mr-2">
                       Valable jusqu'au {new Date(currentQuote.validUntil).toLocaleDateString('fr-FR')}
                     </p>
                     <button 
-                      className="text-orange-500 hover:text-orange-700"
+                      className="text-blue-500 hover:text-blue-700"
                       onClick={handleEditDate}
                     >
                       <PenLine className="h-4 w-4" />
                     </button>
                     {showValiditySelector && (
-                      <div className="absolute mt-20 bg-white border border-orange-200 rounded shadow-lg z-10">
+                      <div className="absolute mt-20 bg-white border border-gray-200 rounded shadow-lg z-10 popup-devis">
                         <ul className="py-1">
                           {validityOptions.map((option, index) => (
                             <li 
                               key={index} 
-                              className="px-4 py-2 hover:bg-orange-50 cursor-pointer"
+                              className="px-4 py-1 hover:bg-gray-50 cursor-pointer text-sm"
                               onClick={() => handleValiditySelect(option)}
                             >
                               {option}
@@ -392,12 +446,12 @@ export default function Quote() {
                 </div>
               </div>
               
-              <div className="mb-6 relative">
+              <div className="mb-4 relative">
                 {mode === 'edit' && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="absolute top-2 right-2 text-orange-500 z-10"
+                    className="absolute top-2 right-2 text-blue-500 z-10 btn-devis"
                     onClick={() => {
                       if (currentQuote.description && !isEditingDescription) {
                         setIsEditingDescription(true);
@@ -420,7 +474,7 @@ export default function Quote() {
                       </>
                     ) : (
                       <>
-                        <Eye className="h-4 w-4 mr-1" />
+                        <Plus className="h-4 w-4 mr-1" />
                         {isEditingDescription ? "Annuler" : "Ajouter une description"}
                       </>
                     )}
@@ -429,10 +483,10 @@ export default function Quote() {
                 
                 {currentQuote.description && !isEditingDescription ? (
                   <div 
-                    className="mb-4 cursor-pointer p-4 bg-orange-50 rounded-md" 
+                    className="mb-4 cursor-pointer p-4 bg-gray-50 rounded" 
                     onClick={() => mode === 'edit' && setIsEditingDescription(true)}
                   >
-                    <pre className="whitespace-pre-wrap font-sans">
+                    <pre className="whitespace-pre-wrap font-sans text-devis text-sm">
                       {currentQuote.description}
                     </pre>
                   </div>
@@ -443,22 +497,23 @@ export default function Quote() {
                         <Textarea
                           value={description}
                           onChange={(e) => handleDescriptionChange(e.target.value)}
+                          onKeyDown={handleKeyDown}
                           placeholder="Description du devis"
-                          className="w-full border-orange-200 focus:border-orange-500 focus:ring-orange-500 resize-none"
+                          className="w-full border-gray-200 focus:border-blue-500 focus:ring-blue-500 resize-none text-sm form-control-devis"
                           autoFocus
                         />
                         <div className="flex justify-end space-x-2">
                           <Button
                             variant="outline"
                             size="sm"
-                            className="border-orange-300 text-orange-700"
+                            className="border-gray-300 text-devis btn-devis"
                             onClick={() => setIsEditingDescription(false)}
                           >
                             Annuler
                           </Button>
                           <Button
                             size="sm"
-                            className="bg-orange-500 hover:bg-orange-600 text-white"
+                            className="bg-devis-blue hover:bg-blue-600 text-white btn-devis"
                             onClick={handleSaveDescription}
                           >
                             Enregistrer
@@ -468,7 +523,7 @@ export default function Quote() {
                     ) : (
                       <Button 
                         variant="ghost"
-                        className="text-orange-500 flex items-center"
+                        className="text-blue-500 flex items-center btn-devis"
                         onClick={() => setIsEditingDescription(true)}
                       >
                         <Plus className="h-4 w-4 mr-1" />
@@ -479,10 +534,10 @@ export default function Quote() {
                 )}
               </div>
               
-              <div className="mb-6">
+              <div className="mb-4">
                 <table className="w-full border-collapse">
                   <thead>
-                    <tr className="bg-orange-primary text-white">
+                    <tr className="bg-devis-blue text-white">
                       <th className="py-2 px-4 text-left w-12">N°</th>
                       <th className="py-2 px-4 text-left">Désignation</th>
                       <th className="py-2 px-4 text-right w-20">Qté</th>
@@ -495,7 +550,7 @@ export default function Quote() {
                   <tbody>
                     {currentQuote.items.length === 0 ? (
                       <tr className="bg-white">
-                        <td colSpan={7} className="py-4 text-center text-gray-500">
+                        <td colSpan={7} className="py-4 text-center text-devis-light">
                           Cliquez sur un des boutons ci-dessous pour ajouter un élément à votre document
                         </td>
                       </tr>
@@ -507,6 +562,10 @@ export default function Quote() {
                           onUpdate={updateQuoteItem}
                           isEditing={mode === 'edit'}
                           itemNumber={getItemNumber(item, index, currentQuote.items)}
+                          onDragStart={handleDragStart}
+                          onDragOver={handleDragOver}
+                          onDragEnd={handleDragEnd}
+                          draggedItemId={draggedItemId}
                         />
                       ))
                     )}
@@ -514,11 +573,11 @@ export default function Quote() {
                 </table>
               </div>
               
-              <div className="flex mb-6">
+              <div className="flex mb-4">
                 <div className="flex space-x-2">
                   <Button 
                     variant="outline" 
-                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                    className="border-gray-300 text-devis-light hover:bg-gray-50 btn-devis"
                     onClick={() => handleAddSection('Fourniture')}
                   >
                     <Plus className="h-4 w-4 mr-1" />
@@ -526,7 +585,7 @@ export default function Quote() {
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                    className="border-gray-300 text-devis-light hover:bg-gray-50 btn-devis"
                     onClick={() => handleAddSection('Main d\'oeuvre')}
                   >
                     <Plus className="h-4 w-4 mr-1" />
@@ -534,7 +593,7 @@ export default function Quote() {
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                    className="border-gray-300 text-devis-light hover:bg-gray-50 btn-devis"
                     onClick={() => handleAddSection('Ouvrage')}
                   >
                     <Plus className="h-4 w-4 mr-1" />
@@ -547,21 +606,21 @@ export default function Quote() {
                 <div className="flex space-x-2">
                   <Button 
                     variant="outline" 
-                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                    className="border-gray-300 text-devis-light hover:bg-gray-50 btn-devis"
                     onClick={handleAddTitle}
                   >
                     Titre
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                    className="border-gray-300 text-devis-light hover:bg-gray-50 btn-devis"
                     onClick={handleAddSubtitle}
                   >
                     Sous-titre
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                    className="border-gray-300 text-devis-light hover:bg-gray-50 btn-devis"
                     onClick={handleAddPageBreak}
                   >
                     Saut de page
@@ -569,10 +628,10 @@ export default function Quote() {
                 </div>
               </div>
               
-              <div className="flex mb-6">
+              <div className="flex mb-4">
                 <div className="w-1/2">
-                  <h3 className="text-lg font-semibold mb-4 text-orange-700">Conditions de paiement</h3>
-                  <pre className="whitespace-pre-wrap font-sans bg-orange-50 p-4 rounded-md">
+                  <h3 className="text-md font-medium mb-3 text-devis">Conditions de paiement</h3>
+                  <pre className="whitespace-pre-wrap font-sans bg-gray-50 p-3 rounded text-sm text-devis">
                     {currentQuote.paymentConditions}
                   </pre>
                 </div>
@@ -581,26 +640,26 @@ export default function Quote() {
                   <table className="w-full">
                     <tbody>
                       <tr>
-                        <td className="py-1 text-left">Total net HT</td>
-                        <td className="py-1 text-right font-medium">{currentQuote.totalHT.toFixed(2)} €</td>
+                        <td className="py-1 text-left text-sm">Total net HT</td>
+                        <td className="py-1 text-right font-medium text-sm">{currentQuote.totalHT.toFixed(2)} €</td>
                       </tr>
                       <tr>
-                        <td className="py-1 text-left">TVA 10 %</td>
-                        <td className="py-1 text-right">{currentQuote.totalTVA10.toFixed(2)} €</td>
+                        <td className="py-1 text-left text-sm">TVA 10 %</td>
+                        <td className="py-1 text-right text-sm">{currentQuote.totalTVA10.toFixed(2)} €</td>
                       </tr>
                       <tr>
-                        <td className="py-1 text-left">TVA 20 %</td>
-                        <td className="py-1 text-right">{currentQuote.totalTVA20.toFixed(2)} €</td>
+                        <td className="py-1 text-left text-sm">TVA 20 %</td>
+                        <td className="py-1 text-right text-sm">{currentQuote.totalTVA20.toFixed(2)} €</td>
                       </tr>
-                      <tr className="border-t border-orange-200">
-                        <td className="py-1 text-left font-semibold text-orange-700">Total TTC</td>
-                        <td className="py-1 text-right font-semibold text-orange-700">{currentQuote.totalTTC.toFixed(2)} €</td>
+                      <tr className="border-t border-gray-200">
+                        <td className="py-1 text-left font-medium text-devis text-sm">Total TTC</td>
+                        <td className="py-1 text-right font-medium text-devis text-sm">{currentQuote.totalTTC.toFixed(2)} €</td>
                       </tr>
                     </tbody>
                   </table>
                   
-                  <div className="mt-4 text-right">
-                    <button className="text-orange-500 flex items-center justify-end ml-auto hover:text-orange-700">
+                  <div className="mt-3 text-right">
+                    <button className="text-blue-500 flex items-center justify-end ml-auto hover:text-blue-700 text-sm">
                       <Plus className="h-4 w-4 mr-1" />
                       Ajouter une remise
                     </button>
@@ -608,13 +667,13 @@ export default function Quote() {
                 </div>
               </div>
               
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-4 text-orange-700">Notes de bas de page</h3>
+              <div className="mb-4">
+                <h3 className="text-md font-medium mb-3 text-devis">Notes de bas de page</h3>
                 <Textarea 
                   value={footerNotes}
-                  onChange={(e) => setFooterNotes(e.target.value)}
+                  onChange={handleFooterNotesChange}
                   placeholder="Ajoutez des notes de bas de page ici"
-                  className="min-h-[100px] w-full border-orange-200 focus:border-orange-500 focus:ring-orange-500"
+                  className="min-h-[80px] w-full border-gray-200 focus:border-blue-500 focus:ring-blue-500 text-sm form-control-devis"
                 />
               </div>
             </div>

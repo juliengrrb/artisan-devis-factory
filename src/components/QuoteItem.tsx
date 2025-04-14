@@ -1,19 +1,35 @@
+
 import { QuoteItem as QuoteItemType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { Check } from "lucide-react";
+import { useState, useRef } from "react";
+import { Check, GripVertical } from "lucide-react";
 
 interface QuoteItemProps {
   item: QuoteItemType;
   onUpdate: (item: QuoteItemType) => void;
   isEditing: boolean;
   itemNumber?: string; // Hierarchical item number
+  onDragStart?: (id: string) => void;
+  onDragOver?: (id: string) => void;
+  onDragEnd?: () => void;
+  draggedItemId?: string | null;
 }
 
-export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemProps) {
+export function QuoteItem({ 
+  item, 
+  onUpdate, 
+  isEditing, 
+  itemNumber,
+  onDragStart,
+  onDragOver,
+  onDragEnd,
+  draggedItemId 
+}: QuoteItemProps) {
   const [isEditable, setIsEditable] = useState(false);
   const [editedItem, setEditedItem] = useState<QuoteItemType>(item);
+  const rowRef = useRef<HTMLTableRowElement>(null);
+  const isDragged = draggedItemId === item.id;
 
   const handleEdit = () => {
     if (['Titre', 'Sous-titre', 'Texte'].includes(item.type || '')) {
@@ -30,6 +46,12 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   const handleSave = () => {
     onUpdate(editedItem);
     setIsEditable(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSave();
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -51,9 +73,9 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
 
   const getBgColor = () => {
     if (item.type === 'Titre') {
-      return 'bg-blue-100';
+      return 'bg-item-title';
     } else if (item.type === 'Sous-titre') {
-      return 'bg-blue-50';
+      return 'bg-item-subtitle';
     } 
     return 'bg-white';
   };
@@ -64,43 +86,75 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
 
   const getTextItemStyles = () => {
     if (item.type === 'Titre') {
-      return 'text-black font-bold';
+      return 'text-devis font-medium';
     } else if (item.type === 'Sous-titre') {
-      return 'text-black font-medium';
+      return 'text-devis font-medium';
     }
-    return 'text-black';
+    return 'text-devis';
   };
 
   const isPageBreak = () => {
     return item.type === 'Saut de page';
   };
 
+  const handleDragStart = (e: React.DragEvent) => {
+    if (onDragStart && !isPageBreak() && !isTextItem()) {
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(() => {
+        if (rowRef.current) {
+          rowRef.current.classList.add('opacity-50');
+        }
+      }, 0);
+      onDragStart(item.id);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (onDragOver && !isPageBreak() && !isTextItem()) {
+      onDragOver(item.id);
+    }
+  };
+
+  const handleDragEnd = () => {
+    if (onDragEnd && !isPageBreak() && !isTextItem()) {
+      if (rowRef.current) {
+        rowRef.current.classList.remove('opacity-50');
+      }
+      onDragEnd();
+    }
+  };
+
   if (!isEditing) {
     return (
-      <tr className={`${getBgColor()} border-b border-gray-200 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} data-type={item.type}>
-        <td className="py-2 px-4 text-center w-10">
+      <tr 
+        ref={rowRef}
+        className={`${getBgColor()} border-b border-gray-200 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} 
+        data-type={item.type}
+      >
+        <td className="py-1 px-2 text-center w-10">
           {itemNumber && (
-            <span className="text-black font-medium">{itemNumber}</span>
+            <span className="text-devis font-medium">{itemNumber}</span>
           )}
         </td>
-        <td className={`py-2 px-4 ${getTextItemStyles()}`} colSpan={isTextItem() ? 6 : 1}>
+        <td className={`py-1 px-4 ${getTextItemStyles()}`} colSpan={isTextItem() ? 6 : 1}>
           {isPageBreak() ? '- - - - - - - - - - Saut de page - - - - - - - - - -' : item.designation}
           {item.details && !isTextItem() && (
-            <div className="text-sm text-gray-600 mt-1 whitespace-pre-line">
+            <div className="text-sm text-devis-lighter mt-1 whitespace-pre-line">
               {item.details}
             </div>
           )}
         </td>
         {!isTextItem() && (
           <>
-            <td className="py-2 px-4 text-right text-black">{item.quantity || '-'}</td>
-            <td className="py-2 px-4 text-center text-black">{item.unit || '-'}</td>
-            <td className="py-2 px-4 text-right text-black">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
-            <td className="py-2 px-4 text-right text-black">{item.vat ? `${item.vat} %` : '-'}</td>
-            <td className="py-2 px-4 text-right text-black">
+            <td className="py-1 px-4 text-right text-devis">{item.quantity || '-'}</td>
+            <td className="py-1 px-4 text-center text-devis">{item.unit || '-'}</td>
+            <td className="py-1 px-4 text-right text-devis">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
+            <td className="py-1 px-4 text-right text-devis">{item.vat ? `${item.vat} %` : '-'}</td>
+            <td className="py-1 px-4 text-right text-devis">
               {item.totalHT.toFixed(2)} €
               {(item.type === 'Titre' || item.type === 'Sous-titre') && (
-                <div className="text-sm text-gray-500">Sous-total : {item.totalHT.toFixed(2)} €</div>
+                <div className="text-sm text-devis-light">Sous-total : {item.totalHT.toFixed(2)} €</div>
               )}
             </td>
           </>
@@ -113,25 +167,26 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
     if (isTextItem()) {
       return (
         <tr className="bg-white border-b border-gray-200">
-          <td className="py-2 px-4">
-            <div className="flex items-center text-black font-bold">
+          <td className="py-1 px-2">
+            <div className="flex items-center text-devis font-medium">
               {itemNumber}
             </div>
           </td>
-          <td className="py-2 px-4" colSpan={6}>
+          <td className="py-1 px-4" colSpan={6}>
             <div className="flex items-center w-full">
               <Input
                 name="designation"
                 value={editedItem.designation}
                 onChange={handleChange}
-                className="w-full"
+                onKeyDown={handleKeyDown}
+                className="w-full form-control-devis"
                 placeholder={`Saisissez votre ${item.type?.toLowerCase() || 'texte'} ici...`}
                 autoFocus
               />
               <Button 
                 size="sm" 
                 variant="ghost" 
-                className="ml-2 text-green-600" 
+                className="ml-2 text-blue-600 p-1" 
                 onClick={handleSave}
               >
                 <Check className="h-4 w-4" />
@@ -144,34 +199,36 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
     
     return (
       <tr className="bg-white border-b border-gray-200">
-        <td className="py-2 px-4">
-          <div className="flex items-center text-black font-medium">
+        <td className="py-1 px-2">
+          <div className="flex items-center text-devis font-medium">
             {itemNumber}
           </div>
         </td>
-        <td className="py-2 px-4">
+        <td className="py-1 px-4">
           <Input
             name="designation"
             value={editedItem.designation}
             onChange={handleChange}
-            className="w-full"
+            onKeyDown={handleKeyDown}
+            className="w-full form-control-devis"
           />
         </td>
-        <td className="py-2 px-4">
+        <td className="py-1 px-4">
           <Input
             name="quantity"
             type="number"
             value={editedItem.quantity}
             onChange={handleChange}
-            className="w-20"
+            onKeyDown={handleKeyDown}
+            className="w-20 form-control-devis"
           />
         </td>
-        <td className="py-2 px-4">
+        <td className="py-1 px-4">
           <select
             name="unit"
             value={editedItem.unit}
             onChange={handleChange}
-            className="border border-gray-300 rounded p-1"
+            className="border border-gray-300 rounded text-sm p-1 form-control-devis"
           >
             <option value="m²">m²</option>
             <option value="u">u</option>
@@ -179,34 +236,35 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
             <option value="kg">kg</option>
           </select>
         </td>
-        <td className="py-2 px-4">
+        <td className="py-1 px-4">
           <Input
             name="unitPrice"
             type="number"
             step="0.01"
             value={editedItem.unitPrice}
             onChange={handleChange}
-            className="w-24"
+            onKeyDown={handleKeyDown}
+            className="w-24 form-control-devis"
           />
         </td>
-        <td className="py-2 px-4">
+        <td className="py-1 px-4">
           <select
             name="vat"
             value={editedItem.vat}
             onChange={handleChange}
-            className="border border-gray-300 rounded p-1"
+            className="border border-gray-300 rounded text-sm p-1 form-control-devis"
           >
             <option value="0">0 %</option>
             <option value="10">10 %</option>
             <option value="20">20 %</option>
           </select>
         </td>
-        <td className="py-2 px-4 text-right">
+        <td className="py-1 px-4 text-right">
           {(editedItem.quantity * editedItem.unitPrice).toFixed(2)} €
           <Button 
             size="sm" 
             variant="ghost" 
-            className="ml-2 text-green-600" 
+            className="ml-2 text-blue-600 p-1" 
             onClick={handleSave}
           >
             <Check className="h-4 w-4" />
@@ -217,30 +275,44 @@ export function QuoteItem({ item, onUpdate, isEditing, itemNumber }: QuoteItemPr
   }
 
   return (
-    <tr data-type={item.type} className={`${getBgColor()} border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} onClick={handleEdit}>
-      <td className="py-2 px-4 text-black text-center w-10">
+    <tr 
+      ref={rowRef}
+      data-type={item.type} 
+      className={`${getBgColor()} border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${isDragged ? 'opacity-50' : ''} ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : ''}`} 
+      onClick={handleEdit}
+      draggable={!isPageBreak() && !isTextItem()}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}
+    >
+      <td className="py-1 px-2 text-devis text-center w-6">
+        {!isPageBreak() && !isTextItem() && (
+          <span className="cursor-move flex justify-center text-devis-light">
+            <GripVertical className="h-4 w-4" />
+          </span>
+        )}
         {itemNumber && (
-          <span className="text-black font-medium">{itemNumber}</span>
+          <span className="text-devis font-medium">{itemNumber}</span>
         )}
       </td>
-      <td className={`py-2 px-4 ${getTextItemStyles()}`} colSpan={isTextItem() ? 6 : 1}>
+      <td className={`py-1 px-4 ${getTextItemStyles()}`} colSpan={isTextItem() ? 6 : 1}>
         {isPageBreak() ? '- - - - - - - - - - Saut de page - - - - - - - - - -' : item.designation}
         {item.details && !isTextItem() && (
-          <div className="text-sm text-gray-600 mt-1 whitespace-pre-line">
+          <div className="text-sm text-devis-lighter mt-1 whitespace-pre-line">
             {item.details}
           </div>
         )}
       </td>
       {!isTextItem() && (
         <>
-          <td className="py-2 px-4 text-right text-black">{item.quantity || '-'}</td>
-          <td className="py-2 px-4 text-center text-black">{item.unit || '-'}</td>
-          <td className="py-2 px-4 text-right text-black">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
-          <td className="py-2 px-4 text-right text-black">{item.vat ? `${item.vat} %` : '-'}</td>
-          <td className="py-2 px-4 text-right text-black">
+          <td className="py-1 px-4 text-right text-devis">{item.quantity || '-'}</td>
+          <td className="py-1 px-4 text-center text-devis">{item.unit || '-'}</td>
+          <td className="py-1 px-4 text-right text-devis">{item.unitPrice ? `${item.unitPrice.toFixed(2)} €` : '-'}</td>
+          <td className="py-1 px-4 text-right text-devis">{item.vat ? `${item.vat} %` : '-'}</td>
+          <td className="py-1 px-4 text-right text-devis">
             {item.totalHT.toFixed(2)} €
             {(item.type === 'Titre' || item.type === 'Sous-titre') && (
-              <div className="text-sm text-gray-500">Sous-total : {item.totalHT.toFixed(2)} €</div>
+              <div className="text-sm text-devis-light">Sous-total : {item.totalHT.toFixed(2)} €</div>
             )}
           </td>
         </>

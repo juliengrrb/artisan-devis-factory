@@ -22,7 +22,7 @@ const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead 
     ref={ref} 
-    className={cn("bg-stone-800 text-white [&_tr]:border-none", className)} 
+    className={cn("bg-devis-blue text-white [&_tr]:border-none", className)} 
     {...props} 
   />
 ))
@@ -62,7 +62,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors data-[state=selected]:bg-muted data-[type=Titre]:font-bold data-[type=Titre]:bg-blue-100 data-[type=Sous-titre]:font-medium data-[type=Sous-titre]:bg-blue-50 data-[type=Texte]:text-black data-[type=Texte]:bg-white data-[type=Saut\\ de\\ page]:text-gray-500 data-[type=Saut\\ de\\ page]:border-b-dashed data-[type=Saut\\ de\\ page]:border-b-2 data-[type=Fourniture]:bg-white data-[type=Fourniture]:text-black data-[type=Main\\ d\\'oeuvre]:bg-white data-[type=Main\\ d\\'oeuvre]:text-black data-[type=Ouvrage]:bg-white data-[type=Ouvrage]:text-black",
+      "border-b transition-colors hover:bg-muted/20 data-[state=selected]:bg-muted data-[type=Titre]:font-medium data-[type=Titre]:bg-item-title data-[type=Sous-titre]:font-medium data-[type=Sous-titre]:bg-item-subtitle data-[type=Texte]:text-devis data-[type=Texte]:bg-white data-[type=Saut\\ de\\ page]:text-devis-lighter data-[type=Saut\\ de\\ page]:border-b-dashed data-[type=Saut\\ de\\ page]:border-b-2 data-[type=Fourniture]:bg-white data-[type=Fourniture]:text-devis data-[type=Main\\ d\\'oeuvre]:bg-white data-[type=Main\\ d\\'oeuvre]:text-devis data-[type=Ouvrage]:bg-white data-[type=Ouvrage]:text-devis",
       className
     )}
     {...props}
@@ -77,7 +77,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-12 px-4 text-left align-middle font-medium text-white [&:has([role=checkbox])]:pr-0",
+      "h-10 px-4 text-left align-middle font-medium text-white [&:has([role=checkbox])]:pr-0",
       className
     )}
     {...props}
@@ -91,7 +91,7 @@ const TableCell = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <td
     ref={ref}
-    className={cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", className)}
+    className={cn("p-2 px-4 align-middle [&:has([role=checkbox])]:pr-0", className)}
     {...props}
   />
 ))
