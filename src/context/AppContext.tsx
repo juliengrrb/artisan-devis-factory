@@ -295,7 +295,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const year = date.getFullYear().toString();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     
-    // Trouver le dernier numéro de devis
     const lastQuoteNumber = quotes.length > 0 
       ? parseInt(quotes[quotes.length - 1].number.split('/')[2]) 
       : 0;
@@ -312,7 +311,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       date: new Date().toISOString().split('T')[0],
       validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       items: [],
-      paymentConditions: 'Acompte de 10 % soit 0,00 € TTC\nMéthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire',
+      paymentConditions: '',
       totalHT: 0,
       totalTVA10: 0,
       totalTVA20: 0,
@@ -390,7 +389,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     updateQuote(updatedQuote);
   };
 
-  // Calculer les totaux à chaque changement dans les items
   useEffect(() => {
     if (currentQuote) {
       let totalHT = 0;
