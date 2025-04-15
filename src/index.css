@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -265,7 +266,7 @@ td:first-child {
 
 /* Add description button styling */
 .add-description-btn {
-  color: #F97316;
+  color: #3498db;
   display: flex;
   align-items: center;
   padding: 0;
@@ -275,7 +276,7 @@ td:first-child {
 }
 
 .add-description-btn:hover {
-  color: #ea580c;
+  color: #2980b9;
   background: transparent;
 }
 
@@ -297,18 +298,19 @@ input::placeholder {
   border: 1px solid #f1f1f1;
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  padding: 12px;
+  padding: 16px;
 }
 
-.totals-block tr td {
+.totals-table tr td {
   padding: 6px 0;
+  line-height: 1.5;
 }
 
-.totals-block tr td:first-child {
-  color: #555;
+.totals-table tr td:first-child {
+  color: #333;
 }
 
-.totals-block tr:last-child td {
+.totals-table tr:last-child td {
   font-weight: 500;
   padding-top: 10px;
 }
@@ -317,7 +319,7 @@ input::placeholder {
 .payment-conditions-block, .discount-block {
   background-color: #f9f9f9;
   border-radius: 4px;
-  padding: 12px;
+  padding: 16px;
 }
 
 /* Action links styling */
@@ -350,6 +352,7 @@ input::placeholder {
   background-color: white;
   font-size: 14px;
   width: 64px;
+  height: 32px;
 }
 
 .dropdown-trigger:focus {
@@ -375,4 +378,74 @@ input::placeholder {
 .down-payment-input:focus {
   outline: none;
   border-color: #3498db;
+}
+
+/* Improved visual aesthetics */
+table {
+  margin-bottom: 40px;
+}
+
+tr {
+  min-height: 48px;
+  vertical-align: middle;
+}
+
+td, th {
+  vertical-align: middle;
+  line-height: 1.5;
+}
+
+/* Improved typography */
+.text-base {
+  font-size: 15px;
+}
+
+.text-lg {
+  font-size: 18px;
+}
+
+.text-xl {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* Better spacing */
+.mb-10 {
+  margin-bottom: 40px;
+}
+
+.mt-12 {
+  margin-top: 48px;
+}
+
+.p-5 {
+  padding: 20px;
+}
+
+.py-3 {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+/* Total TTC block styling */
+.totals-table tr.border-t td {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.totals-table tr:last-child {
+  border-top: 1px solid #d1d5db;
+  margin-top: 8px;
+}
+
+.totals-table tr:last-child td {
+  padding-top: 12px;
+}
+
+/* More subtle placeholder text */
+::placeholder {
+  color: #aaa;
+  font-style: italic;
+  opacity: 0.6;
 }

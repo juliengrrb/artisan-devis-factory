@@ -62,7 +62,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors hover:bg-muted/20 data-[state=selected]:bg-muted data-[type=Titre]:font-medium data-[type=Titre]:bg-slate-100 data-[type=Sous-titre]:font-medium data-[type=Sous-titre]:bg-slate-50 data-[type=Texte]:text-gray-700 data-[type=Texte]:bg-white data-[type=Saut\\ de\\ page]:text-gray-500 data-[type=Saut\\ de\\ page]:border-b-dashed data-[type=Saut\\ de\\ page]:border-b-2 data-[type=Fourniture]:bg-white data-[type=Fourniture]:text-gray-700 data-[type=Main\\ d\\'oeuvre]:bg-white data-[type=Main\\ d\\'oeuvre]:text-gray-700 data-[type=Ouvrage]:bg-white data-[type=Ouvrage]:text-gray-700 h-14",
+      "border-b transition-colors hover:bg-muted/20 data-[state=selected]:bg-muted data-[type=Titre]:font-medium data-[type=Titre]:bg-slate-100 data-[type=Sous-titre]:font-medium data-[type=Sous-titre]:bg-slate-50 data-[type=Texte]:text-gray-700 data-[type=Texte]:bg-white data-[type=Saut\\ de\\ page]:text-gray-500 data-[type=Saut\\ de\\ page]:border-b-dashed data-[type=Saut\\ de\\ page]:border-b-2 data-[type=Fourniture]:bg-white data-[type=Fourniture]:text-gray-700 data-[type=Main\\ d\\'oeuvre]:bg-white data-[type=Main\\ d\\'oeuvre]:text-gray-700 data-[type=Ouvrage]:bg-white data-[type=Ouvrage]:text-gray-700 h-16",
       className
     )}
     {...props}

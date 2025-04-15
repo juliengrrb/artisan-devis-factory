@@ -165,15 +165,15 @@ export function QuoteItem({
     return (
       <tr 
         ref={rowRef}
-        className={`${getBgColor()} border-b border-gray-200 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : 'h-14'}`} 
+        className={`${getBgColor()} border-b border-gray-200 ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : 'h-16'}`} 
         data-type={item.type}
       >
-        <td className="py-2 px-4 text-center w-10">
+        <td className="py-3 px-4 text-center w-10">
           {itemNumber && (
             <span className="text-gray-700 font-medium">{itemNumber}</span>
           )}
         </td>
-        <td className={`py-2 px-4 ${getTextItemStyles()}`} colSpan={isTextItem() ? 6 : 1}>
+        <td className={`py-3 px-4 ${getTextItemStyles()}`} colSpan={isTextItem() ? 6 : 1}>
           {isPageBreak() ? '- - - - - - - - - - Saut de page - - - - - - - - - -' : item.designation}
           {item.details && !isTextItem() && (
             <div className="text-sm text-gray-500 mt-1 whitespace-pre-line">
@@ -183,14 +183,14 @@ export function QuoteItem({
         </td>
         {!isTextItem() && (
           <>
-            <td className="py-2 px-4 text-right text-gray-700">{item.quantity || '-'}</td>
-            <td className="py-2 px-4 text-center text-gray-700">{item.unit || '-'}</td>
-            <td className="py-2 px-4 text-right text-gray-700 font-medium">{item.unitPrice ? formatCurrency(item.unitPrice) : '-'}</td>
-            <td className="py-2 px-4 text-center text-gray-700">{item.vat ? `${item.vat} %` : '-'}</td>
-            <td className="py-2 px-4 text-right text-gray-700 font-medium">
+            <td className="py-3 px-4 text-right text-gray-700 align-middle">{item.quantity || '-'}</td>
+            <td className="py-3 px-4 text-center text-gray-700 align-middle">{item.unit || '-'}</td>
+            <td className="py-3 px-4 text-right text-gray-700 font-medium text-base align-middle">{item.unitPrice ? formatCurrency(item.unitPrice) : '-'}</td>
+            <td className="py-3 px-4 text-center text-gray-700 align-middle">{item.vat ? `${item.vat} %` : '-'}</td>
+            <td className="py-3 px-4 text-right text-gray-700 font-medium text-base align-middle">
               {formatCurrency(item.totalHT)}
               {(item.type === 'Titre' || item.type === 'Sous-titre') && (
-                <div className="text-sm text-gray-500">Sous-total : {formatCurrency(item.totalHT)}</div>
+                <div className="text-sm text-gray-500 mt-1">Sous-total : {formatCurrency(item.totalHT)}</div>
               )}
             </td>
           </>
@@ -202,13 +202,13 @@ export function QuoteItem({
   if (isEditable) {
     if (isTextItem()) {
       return (
-        <tr className="bg-white border-b border-gray-200 h-14">
-          <td className="py-2 px-4">
+        <tr className="bg-white border-b border-gray-200 h-16">
+          <td className="py-3 px-4">
             <div className="flex items-center text-gray-700 font-medium">
               {itemNumber}
             </div>
           </td>
-          <td className="py-2 px-4" colSpan={6}>
+          <td className="py-3 px-4" colSpan={6}>
             <div className="flex items-center w-full">
               <Input
                 name="designation"
@@ -234,13 +234,13 @@ export function QuoteItem({
     }
     
     return (
-      <tr className="bg-white border-b border-gray-200 h-14">
-        <td className="py-2 px-4">
+      <tr className="bg-white border-b border-gray-200 h-16">
+        <td className="py-3 px-4">
           <div className="flex items-center text-gray-700 font-medium">
             {itemNumber}
           </div>
         </td>
-        <td className="py-2 px-4">
+        <td className="py-3 px-4">
           <Input
             name="designation"
             value={editedItem.designation}
@@ -250,7 +250,7 @@ export function QuoteItem({
             placeholder="Saisissez une désignation..."
           />
         </td>
-        <td className="py-2 px-4">
+        <td className="py-3 px-4">
           <Input
             name="quantity"
             type="number"
@@ -262,7 +262,7 @@ export function QuoteItem({
             placeholder="Qté"
           />
         </td>
-        <td className="py-2 px-4">
+        <td className="py-3 px-4">
           <select
             name="unit"
             value={editedItem.unit}
@@ -275,7 +275,7 @@ export function QuoteItem({
             <option value="kg">kg</option>
           </select>
         </td>
-        <td className="py-2 px-4">
+        <td className="py-3 px-4">
           <Input
             name="unitPrice"
             type="number"
@@ -288,7 +288,7 @@ export function QuoteItem({
             placeholder="Prix"
           />
         </td>
-        <td className="py-2 px-4">
+        <td className="py-3 px-4">
           <select
             name="vat"
             value={editedItem.vat}
@@ -300,7 +300,7 @@ export function QuoteItem({
             <option value="20">20 %</option>
           </select>
         </td>
-        <td className="py-2 px-4 text-right">
+        <td className="py-3 px-4 text-right">
           {formatCurrency(
             (typeof editedItem.quantity === 'string' ? parseFloat(editedItem.quantity) || 0 : editedItem.quantity || 0) * 
             (typeof editedItem.unitPrice === 'string' ? parseFloat(editedItem.unitPrice) || 0 : editedItem.unitPrice || 0)
@@ -322,14 +322,14 @@ export function QuoteItem({
     <tr 
       ref={rowRef}
       data-type={item.type} 
-      className={`${getBgColor()} border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${isDragged ? 'opacity-50' : ''} ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : 'h-14'}`} 
+      className={`${getBgColor()} border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${isDragged ? 'opacity-50' : ''} ${isPageBreak() ? 'h-6 border-b-2 border-dashed' : 'h-16'}`} 
       onClick={handleEdit}
       draggable={isDraggable()}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <td className="py-2 px-4 text-gray-700 w-12 align-middle">
+      <td className="py-3 px-4 text-gray-700 w-12 align-middle">
         <div className="flex items-center">
           {isDraggable() && (
             <span className="drag-handle flex justify-center text-gray-400 mr-1 cursor-move">
@@ -341,7 +341,7 @@ export function QuoteItem({
           )}
         </div>
       </td>
-      <td className={`py-2 px-4 ${getTextItemStyles()}`} colSpan={isTextItem() ? 6 : 1}>
+      <td className={`py-3 px-4 ${getTextItemStyles()}`} colSpan={isTextItem() ? 6 : 1}>
         {isPageBreak() ? '- - - - - - - - - - Saut de page - - - - - - - - - -' : item.designation}
         {item.details && !isTextItem() && (
           <div className="text-sm text-gray-500 mt-1 whitespace-pre-line">
@@ -351,14 +351,14 @@ export function QuoteItem({
       </td>
       {!isTextItem() && (
         <>
-          <td className="py-2 px-4 text-right text-gray-700">{item.quantity || '-'}</td>
-          <td className="py-2 px-4 text-center text-gray-700">{item.unit || '-'}</td>
-          <td className="py-2 px-4 text-right text-gray-700 font-medium">{item.unitPrice ? formatCurrency(item.unitPrice) : '-'}</td>
-          <td className="py-2 px-4 text-center text-gray-700">{item.vat ? `${item.vat} %` : '-'}</td>
-          <td className="py-2 px-4 text-right text-gray-700 font-medium">
+          <td className="py-3 px-4 text-right text-gray-700 align-middle">{item.quantity || '-'}</td>
+          <td className="py-3 px-4 text-center text-gray-700 align-middle">{item.unit || '-'}</td>
+          <td className="py-3 px-4 text-right text-gray-700 font-medium text-base align-middle">{item.unitPrice ? formatCurrency(item.unitPrice) : '-'}</td>
+          <td className="py-3 px-4 text-center text-gray-700 align-middle">{item.vat ? `${item.vat} %` : '-'}</td>
+          <td className="py-3 px-4 text-right text-gray-700 font-medium text-base align-middle">
             {formatCurrency(item.totalHT)}
             {(item.type === 'Titre' || item.type === 'Sous-titre') && (
-              <div className="text-sm text-gray-500">Sous-total : {formatCurrency(item.totalHT)}</div>
+              <div className="text-sm text-gray-500 mt-1">Sous-total : {formatCurrency(item.totalHT)}</div>
             )}
           </td>
         </>
