@@ -1,3 +1,4 @@
+
 export interface Client {
   id: string;
   type: 'Particulier' | 'Professionnel';
@@ -60,7 +61,7 @@ export interface Quote {
   footer?: string;
   status?: 'draft' | 'sent' | 'accepted' | 'rejected';
   discount?: number;
-  discountType?: '%' | '€ HT' | '€ TTC';
+  discountType?: "%" | "€ HT" | "€ TTC";
   discountAmount?: number;
   netTotalHT?: number;
 }
