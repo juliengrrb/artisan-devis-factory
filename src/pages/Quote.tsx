@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/Header";
 import { useAppContext } from "@/context/AppContext";
@@ -952,3 +953,287 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
                     onClick={handleAddSubtitle}
                   >
                     <Plus className="h-4 w-4 mr-2" />
+                    Sous-titre
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="border-gray-300 text-gray-600 hover:bg-gray-50 h-10 btn-devis"
+                    onClick={handleAddPageBreak}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Saut de page
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex flex-col space-y-8 mt-12">
+                <div className="flex flex-wrap items-start">
+                  <div className="w-full lg:w-1/2 pr-0 lg:pr-8 mb-6 lg:mb-0">
+                    <h3 className="text-gray-800 font-medium mb-4 text-base">Conditions de paiement</h3>
+                    
+                    {isEditingDownPayment ? (
+                      <div className="p-4 bg-white border border-gray-200 rounded-md shadow-sm mb-4">
+                        <div className="flex items-center mb-3">
+                          <div className="w-2/3 mr-2">
+                            <label className="block text-sm text-gray-600 mb-1">Montant de l'acompte</label>
+                            <Input
+                              type="number"
+                              value={downPaymentValue}
+                              onChange={handleDownPaymentValueChange}
+                              placeholder="Montant"
+                              className="form-control-devis"
+                            />
+                          </div>
+                          <div className="w-1/3">
+                            <label className="block text-sm text-gray-600 mb-1">Type</label>
+                            <div className="flex border rounded-md overflow-hidden">
+                              <button
+                                className={`flex-1 py-1 px-2 text-sm ${downPaymentType === '%' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
+                                onClick={() => handleDownPaymentTypeChange('%')}
+                              >
+                                %
+                              </button>
+                              <button
+                                className={`flex-1 py-1 px-2 text-sm ${downPaymentType === '€' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
+                                onClick={() => handleDownPaymentTypeChange('€')}
+                              >
+                                €
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="text-sm text-gray-600 mb-4">
+                          {downPaymentType === '%' ? (
+                            <p>Soit {formatCurrency(downPaymentAmount)}</p>
+                          ) : null}
+                        </div>
+                        
+                        <div className="flex justify-end space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-gray-300 text-gray-700 btn-devis"
+                            onClick={handleCancelDownPayment}
+                          >
+                            Annuler
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="bg-blue-500 hover:bg-blue-600 text-white btn-devis"
+                            onClick={handleSaveDownPayment}
+                          >
+                            Enregistrer
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-4 bg-gray-50 rounded-md relative">
+                        {hasDownPayment ? (
+                          <>
+                            <pre className="whitespace-pre-wrap font-sans text-gray-700 text-sm">
+                              {currentQuote.paymentConditions}
+                            </pre>
+                            {mode === 'edit' && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="absolute top-2 right-2 text-blue-500 z-10 btn-devis"
+                                onClick={handleEditDownPayment}
+                              >
+                                <PenLine className="h-4 w-4 mr-1" />
+                                Modifier
+                              </Button>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-gray-500 mb-2 text-sm">
+                              Aucun acompte spécifié. Les conditions par défaut s'appliquent.
+                            </p>
+                            {mode === 'edit' && (
+                              <Button
+                                variant="outline"
+                                className="text-blue-500 mt-2 btn-devis"
+                                onClick={handleAddDownPayment}
+                              >
+                                <Plus className="h-4 w-4 mr-1" />
+                                Ajouter un acompte
+                              </Button>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="w-full lg:w-1/2 lg:pl-8">
+                    <div className="bg-gray-50 p-4 rounded-md ml-auto max-w-xs">
+                      <h3 className="text-gray-800 font-medium mb-3 text-base">Total TTC</h3>
+                      
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-gray-800">
+                          <span className="text-sm">Sous-total HT</span>
+                          <span className="font-medium">{formatCurrency(totals.totalHT)}</span>
+                        </div>
+                        
+                        {hasDiscount ? (
+                          <>
+                            <div className="flex justify-between text-gray-800 border-b pb-1 mb-1">
+                              <div className="flex items-center text-sm">
+                                <span className="mr-2">Remise globale</span>
+                                {mode === 'edit' && (
+                                  <>
+                                    <button
+                                      className="text-blue-500 hover:text-blue-700 mr-1"
+                                      onClick={handleEditDiscount}
+                                    >
+                                      <PenLine className="h-3 w-3" />
+                                    </button>
+                                    <button
+                                      className="text-red-500 hover:text-red-700"
+                                      onClick={handleRemoveDiscount}
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                              <span className="text-gray-800">
+                                {discountType === '%' ? `${discountValue} %` : formatCurrency(parseFloat(discountValue))}
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-gray-800 border-b pb-1 mb-1">
+                              <span className="text-sm">Remise</span>
+                              <span className="font-medium text-red-600">{formatCurrency(discountAmount)}</span>
+                            </div>
+                            <div className="flex justify-between font-medium text-gray-800 border-b pb-1 mb-1">
+                              <span className="text-sm">Total net HT</span>
+                              <span>{formatCurrency(totals.netTotalHT)}</span>
+                            </div>
+                          </>
+                        ) : (
+                          mode === 'edit' && (
+                            <div className="flex justify-start pb-1 mb-1 border-b">
+                              <Button
+                                variant="outline"
+                                className="text-blue-500 p-0 h-6 text-xs btn-devis"
+                                onClick={handleAddDiscount}
+                              >
+                                <Plus className="h-3 w-3 mr-1" />
+                                Ajouter une remise globale
+                              </Button>
+                            </div>
+                          )
+                        )}
+                        
+                        {isAddingDiscount ? (
+                          <div className="p-3 bg-white border border-gray-200 rounded shadow-sm mb-1">
+                            <div className="flex items-center mb-2">
+                              <div className="w-2/3 mr-2">
+                                <label className="block text-xs text-gray-600 mb-1">Remise</label>
+                                <Input
+                                  type="number"
+                                  value={discountValue}
+                                  onChange={handleDiscountValueChange}
+                                  placeholder="Montant"
+                                  className="form-control-devis"
+                                />
+                              </div>
+                              <div className="w-1/3">
+                                <label className="block text-xs text-gray-600 mb-1">Type</label>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button className="w-full justify-between text-xs" variant="outline">
+                                      {discountType}
+                                      <ChevronDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent>
+                                    <DropdownMenuItem onClick={() => handleDiscountTypeChange("%")}>
+                                      %
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleDiscountTypeChange("€ HT")}>
+                                      € HT
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleDiscountTypeChange("€ TTC")}>
+                                      € TTC
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </div>
+                            </div>
+                            <div className="flex justify-end space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="border-gray-300 text-gray-700 text-xs btn-devis"
+                                onClick={handleCancelDiscount}
+                              >
+                                Annuler
+                              </Button>
+                              <Button
+                                size="sm"
+                                className="bg-blue-500 hover:bg-blue-600 text-white text-xs btn-devis"
+                                onClick={handleSaveDiscount}
+                              >
+                                Appliquer
+                              </Button>
+                            </div>
+                          </div>
+                        ) : null}
+                        
+                        <div className="flex justify-between text-gray-800">
+                          <span className="text-sm">TVA 10%</span>
+                          <span>{formatCurrency(totals.totalTVA10)}</span>
+                        </div>
+                        <div className="flex justify-between text-gray-800">
+                          <span className="text-sm">TVA 20%</span>
+                          <span>{formatCurrency(totals.totalTVA20)}</span>
+                        </div>
+                        <div className="flex justify-between font-bold text-gray-800 pt-1 mt-1 border-t">
+                          <span>Total TTC</span>
+                          <span className="text-lg">{formatCurrency(totals.totalTTC)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="w-full mt-8">
+                  <h3 className="text-gray-800 font-medium mb-3 text-base">Notes et conditions</h3>
+                  <Textarea
+                    value={footerNotes}
+                    onChange={handleFooterNotesChange}
+                    placeholder="Saisissez vos notes et conditions générales de vente..."
+                    className="w-full min-h-[150px] border-gray-200 focus:border-blue-500 focus:ring-blue-500 text-sm form-control-devis"
+                    disabled={mode !== 'edit'}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {showClientForm && (
+        <ClientForm 
+          onClose={() => setShowClientForm(false)}
+        />
+      )}
+
+      {showProjectForm && selectedClientId && (
+        <ProjectForm 
+          clientId={selectedClientId}
+          onClose={() => setShowProjectForm(false)} 
+        />
+      )}
+
+      {showQuoteNumberForm && (
+        <QuoteNumberForm 
+          onClose={() => setShowQuoteNumberForm(false)}
+        />
+      )}
+    </div>
+  );
+}
