@@ -8,10 +8,26 @@ import { QuoteItem as QuoteItemComponent } from "@/components/QuoteItem";
 import { QuoteSelectors } from "@/components/QuoteSelectors";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { PenLine, Plus, Eye, Hash } from "lucide-react";
+import { 
+  PenLine, 
+  Plus, 
+  Eye, 
+  Hash, 
+  Percent, 
+  Euro, 
+  CheckCircle2, 
+  Check 
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { QuoteItem } from "@/types";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Quote() {
   const { 
@@ -42,7 +58,26 @@ export default function Quote() {
   const [footerNotes, setFooterNotes] = useState("");
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
-  const [totals, setTotals] = useState({ totalHT: 0, totalTVA10: 0, totalTVA20: 0, totalTTC: 0 });
+  const [totals, setTotals] = useState({ 
+    totalHT: 0, 
+    totalTVA10: 0, 
+    totalTVA20: 0, 
+    totalTTC: 0,
+    discount: 0,
+    discountType: '%',
+    discountAmount: 0,
+    netTotalHT: 0
+  });
+  
+  const [isEditingDownPayment, setIsEditingDownPayment] = useState(false);
+  const [downPaymentValue, setDownPaymentValue] = useState("10");
+  const [downPaymentType, setDownPaymentType] = useState<'%' | '€'>('%');
+  const [downPaymentAmount, setDownPaymentAmount] = useState(0);
+  
+  const [isAddingDiscount, setIsAddingDiscount] = useState(false);
+  const [discountValue, setDiscountValue] = useState("0.00");
+  const [discountType, setDiscountType] = useState<'%' | '€ HT' | '€ TTC'>('%');
+  const [hasDiscount, setHasDiscount] = useState(false);
 
   useEffect(() => {
     if (!currentQuote) {
@@ -68,6 +103,10 @@ export default function Quote() {
     if (currentQuote?.items) {
       const calculatedTotals = calculateTotals(currentQuote.items);
       setTotals(calculatedTotals);
+      
+      if (downPaymentType === '%') {
+        setDownPaymentAmount((calculatedTotals.totalTTC * parseFloat(downPaymentValue)) / 100);
+      }
     }
   }, [currentQuote]);
 
@@ -348,6 +387,10 @@ export default function Quote() {
     updateQuote(updatedQuote);
     
     setTotals(newTotals);
+    
+    if (downPaymentType === '%') {
+      setDownPaymentAmount((newTotals.totalTTC * parseFloat(downPaymentValue)) / 100);
+    }
   };
 
   const handleToggleDescription = () => {
@@ -400,7 +443,16 @@ export default function Quote() {
 
   const calculateTotals = (items?: QuoteItem[]) => {
     if (!items || items.length === 0) {
-      return { totalHT: 0, totalTVA10: 0, totalTVA20: 0, totalTTC: 0 };
+      return { 
+        totalHT: 0, 
+        totalTVA10: 0, 
+        totalTVA20: 0, 
+        totalTTC: 0,
+        discount: hasDiscount ? parseFloat(discountValue) || 0 : 0,
+        discountType: discountType,
+        discountAmount: 0,
+        netTotalHT: 0
+      };
     }
     
     let totalHT = 0;
@@ -429,14 +481,166 @@ export default function Quote() {
       }
     });
     
-    const totalTTC = totalHT + totalTVA10 + totalTVA20;
+    let discountAmount = 0;
+    let netTotalHT = totalHT;
+    
+    if (hasDiscount) {
+      const discountVal = parseFloat(discountValue) || 0;
+      
+      if (discountType === '%') {
+        discountAmount = totalHT * (discountVal / 100);
+        netTotalHT = totalHT - discountAmount;
+      } else if (discountType === '€ HT') {
+        discountAmount = discountVal;
+        netTotalHT = totalHT - discountAmount;
+      } else if (discountType === '€ TTC') {
+        const currentTTC = totalHT + totalTVA10 + totalTVA20;
+        const ratio = totalHT / currentTTC;
+        discountAmount = discountVal * ratio;
+        netTotalHT = totalHT - discountAmount;
+      }
+    } else {
+      netTotalHT = totalHT;
+    }
+    
+    let adjustedTVA10 = 0;
+    let adjustedTVA20 = 0;
+    
+    if (totalHT > 0) {
+      adjustedTVA10 = (totalTVA10 / totalHT) * netTotalHT;
+      adjustedTVA20 = (totalTVA20 / totalHT) * netTotalHT;
+    }
+    
+    const totalTTC = netTotalHT + adjustedTVA10 + adjustedTVA20;
     
     return { 
       totalHT: Number(totalHT.toFixed(2)), 
-      totalTVA10: Number(totalTVA10.toFixed(2)), 
-      totalTVA20: Number(totalTVA20.toFixed(2)), 
-      totalTTC: Number(totalTTC.toFixed(2)) 
+      totalTVA10: Number(adjustedTVA10.toFixed(2)), 
+      totalTVA20: Number(adjustedTVA20.toFixed(2)), 
+      totalTTC: Number(totalTTC.toFixed(2)),
+      discount: hasDiscount ? parseFloat(discountValue) || 0 : 0,
+      discountType: discountType,
+      discountAmount: Number(discountAmount.toFixed(2)),
+      netTotalHT: Number(netTotalHT.toFixed(2))
     };
+  };
+
+  const handleEditDownPayment = () => {
+    setIsEditingDownPayment(true);
+  };
+
+  const handleDownPaymentValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDownPaymentValue(e.target.value);
+    
+    if (downPaymentType === '%') {
+      const newAmount = (totals.totalTTC * parseFloat(e.target.value)) / 100;
+      setDownPaymentAmount(newAmount);
+    } else {
+      setDownPaymentAmount(parseFloat(e.target.value) || 0);
+    }
+  };
+
+  const handleDownPaymentTypeChange = (type: '%' | '€') => {
+    setDownPaymentType(type);
+    
+    if (type === '%') {
+      const newAmount = (totals.totalTTC * parseFloat(downPaymentValue)) / 100;
+      setDownPaymentAmount(newAmount);
+    } else {
+      setDownPaymentAmount(parseFloat(downPaymentValue) || 0);
+    }
+  };
+
+  const handleSaveDownPayment = () => {
+    if (!currentQuote) return;
+    
+    const paymentAmount = downPaymentType === '%' ? 
+      (totals.totalTTC * parseFloat(downPaymentValue)) / 100 : 
+      parseFloat(downPaymentValue);
+    
+    const paymentConditions = `Acompte de ${downPaymentValue} ${downPaymentType} soit ${paymentAmount.toFixed(2)} € TTC
+Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
+    
+    updateQuote({
+      ...currentQuote,
+      paymentConditions
+    });
+    
+    setIsEditingDownPayment(false);
+  };
+
+  const handleCancelDownPayment = () => {
+    if (currentQuote) {
+      const match = currentQuote.paymentConditions.match(/Acompte de (\d+) %/);
+      if (match && match[1]) {
+        setDownPaymentValue(match[1]);
+        setDownPaymentType('%');
+      } else {
+        setDownPaymentValue("10");
+        setDownPaymentType('%');
+      }
+    }
+    
+    setIsEditingDownPayment(false);
+  };
+
+  const handleAddDiscount = () => {
+    setIsAddingDiscount(true);
+  };
+
+  const handleDiscountValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDiscountValue(e.target.value);
+    setHasDiscount(true);
+    
+    if (currentQuote) {
+      const newTotals = calculateTotals(currentQuote.items);
+      setTotals(newTotals);
+    }
+  };
+
+  const handleDiscountTypeChange = (type: '%' | '€ HT' | '€ TTC') => {
+    setDiscountType(type);
+    
+    if (currentQuote) {
+      const newTotals = calculateTotals(currentQuote.items);
+      setTotals(newTotals);
+    }
+  };
+
+  const handleSaveDiscount = () => {
+    setIsAddingDiscount(false);
+    setHasDiscount(true);
+    
+    if (currentQuote) {
+      const newTotals = calculateTotals(currentQuote.items);
+      
+      updateQuote({
+        ...currentQuote,
+        totalHT: newTotals.totalHT,
+        totalTVA10: newTotals.totalTVA10,
+        totalTVA20: newTotals.totalTVA20,
+        totalTTC: newTotals.totalTTC,
+        discount: parseFloat(discountValue) || 0,
+        discountType: discountType,
+        discountAmount: newTotals.discountAmount,
+        netTotalHT: newTotals.netTotalHT
+      });
+      
+      setTotals(newTotals);
+    }
+  };
+
+  const handleCancelDiscount = () => {
+    setIsAddingDiscount(false);
+    
+    if (!hasDiscount) {
+      setDiscountValue("0.00");
+      setDiscountType('%');
+    }
+  };
+
+  const handleEditDiscount = () => {
+    setIsAddingDiscount(true);
   };
 
   if (!currentQuote) {
@@ -690,18 +894,147 @@ export default function Quote() {
               <div className="flex mb-4">
                 <div className="w-1/2">
                   <h3 className="text-md font-medium mb-3 text-devis">Conditions de paiement</h3>
-                  <pre className="whitespace-pre-wrap font-sans bg-gray-50 p-3 rounded text-sm text-devis">
-                    {currentQuote.paymentConditions}
-                  </pre>
+                  
+                  {isEditingDownPayment ? (
+                    <div className="py-2">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="text-sm">Acompte de</span>
+                        <Input
+                          type="number"
+                          value={downPaymentValue}
+                          onChange={handleDownPaymentValueChange}
+                          className="w-24 h-8 text-sm border-gray-300"
+                        />
+                        <DropdownMenu>
+                          <DropdownMenuTrigger className="flex items-center justify-between border border-gray-300 rounded px-2 py-1 text-sm w-12 bg-white">
+                            {downPaymentType}
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem onClick={() => handleDownPaymentTypeChange('%')}>
+                              <span className="text-sm">%</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDownPaymentTypeChange('€')}>
+                              <span className="text-sm">€</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        <span className="text-sm">
+                          ({downPaymentAmount.toFixed(2)} € TTC)
+                        </span>
+                      </div>
+                      <div className="text-sm mb-3">Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire</div>
+                      <div className="flex space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={handleCancelDownPayment}
+                          className="border-gray-300 text
+                          -sm"
+                        >
+                          Annuler
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          onClick={handleSaveDownPayment}
+                          className="bg-devis-blue text-white text-sm hover:bg-blue-600"
+                        >
+                          <Check className="h-4 w-4 mr-1" />
+                          Valider
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-gray-50 p-3 rounded">
+                      <pre className="whitespace-pre-wrap font-sans text-sm text-devis">
+                        {currentQuote.paymentConditions}
+                      </pre>
+                      <div className="mt-2">
+                        <Button
+                          variant="orange"
+                          className="text-[#3399ff] hover:text-blue-700 flex items-center p-0 bg-transparent hover:bg-transparent text-sm"
+                          onClick={handleEditDownPayment}
+                        >
+                          {currentQuote.paymentConditions.includes('Acompte') ? (
+                            <>
+                              <PenLine className="h-4 w-4 mr-1" />
+                              <span>Modifier l'acompte</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="h-4 w-4 mr-1" />
+                              <span>Ajouter un acompte</span>
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="w-1/2 pl-8">
                   <table className="w-full">
                     <tbody>
-                      <tr>
-                        <td className="py-1 text-left text-sm">Total net HT</td>
-                        <td className="py-1 text-right font-medium text-sm">{totals.totalHT.toFixed(2)} €</td>
-                      </tr>
+                      {hasDiscount && (
+                        <>
+                          <tr>
+                            <td className="py-1 text-left text-sm">Sous-total HT</td>
+                            <td className="py-1 text-right font-medium text-sm">{totals.totalHT.toFixed(2)} €</td>
+                          </tr>
+                          <tr>
+                            <td className="py-1 text-left text-sm flex items-center">
+                              Remise globale
+                              {isAddingDiscount ? (
+                                <div className="flex items-center ml-2">
+                                  <Input
+                                    type="number"
+                                    value={discountValue}
+                                    onChange={handleDiscountValueChange}
+                                    className="w-20 h-7 text-sm border-gray-300 mr-1"
+                                  />
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger className="flex items-center justify-between border border-gray-300 rounded px-2 py-1 text-sm w-16 bg-white">
+                                      {discountType}
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                      <DropdownMenuItem onClick={() => handleDiscountTypeChange('%')}>
+                                        <span className="text-sm">%</span>
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => handleDiscountTypeChange('€ HT')}>
+                                        <span className="text-sm">€ HT</span>
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => handleDiscountTypeChange('€ TTC')}>
+                                        <span className="text-sm">€ TTC</span>
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </div>
+                              ) : (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="ml-2 p-0 border-none shadow-none h-6 text-blue-500 hover:text-blue-700 hover:bg-transparent"
+                                  onClick={handleEditDiscount}
+                                >
+                                  <PenLine className="h-3 w-3 mr-1" />
+                                </Button>
+                              )}
+                            </td>
+                            <td className="py-1 text-right text-sm">{totals.discountAmount.toFixed(2)} €</td>
+                          </tr>
+                          <tr>
+                            <td className="py-1 text-left font-medium text-sm">Total net HT</td>
+                            <td className="py-1 text-right font-medium text-sm">{totals.netTotalHT.toFixed(2)} €</td>
+                          </tr>
+                        </>
+                      )}
+                      
+                      {(!hasDiscount || !isAddingDiscount) && (
+                        <tr>
+                          <td className="py-1 text-left text-sm">Total net HT</td>
+                          <td className="py-1 text-right font-medium text-sm">{(hasDiscount ? totals.netTotalHT : totals.totalHT).toFixed(2)} €</td>
+                        </tr>
+                      )}
+                      
                       <tr>
                         <td className="py-1 text-left text-sm">TVA 10 %</td>
                         <td className="py-1 text-right text-sm">{totals.totalTVA10.toFixed(2)} €</td>
@@ -717,12 +1050,38 @@ export default function Quote() {
                     </tbody>
                   </table>
                   
-                  <div className="mt-3 text-right">
-                    <button className="text-blue-500 flex items-center justify-end ml-auto hover:text-blue-700 text-sm">
-                      <Plus className="h-4 w-4 mr-1" />
-                      Ajouter une remise
-                    </button>
-                  </div>
+                  {isAddingDiscount && (
+                    <div className="mt-3 flex justify-end space-x-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={handleCancelDiscount}
+                        className="text-sm"
+                      >
+                        Annuler
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        onClick={handleSaveDiscount}
+                        className="bg-devis-blue hover:bg-blue-600 text-white text-sm"
+                      >
+                        <Check className="h-4 w-4 mr-1" />
+                        Valider
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {!hasDiscount && !isAddingDiscount && (
+                    <div className="mt-3 text-right">
+                      <button 
+                        onClick={handleAddDiscount}
+                        className="text-[#3399ff] flex items-center justify-end ml-auto hover:text-blue-700 text-sm"
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Ajouter une remise
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
               

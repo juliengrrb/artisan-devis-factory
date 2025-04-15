@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { Client, Project, Quote, QuoteItem } from '@/types';
 
@@ -23,7 +22,6 @@ type AppContextType = {
   getNextQuoteNumber: () => string;
 };
 
-// Données initiales pour les tests
 const initialClients: Client[] = [
   {
     id: '1',
@@ -248,7 +246,11 @@ const initialQuotes: Quote[] = [
     totalTVA10: 105.80, 
     totalTVA20: 472.35,
     totalTTC: 3997.88,
-    description: 'Rénovation du restaurant rue Rivoli\n(Salle du restaurant et à l\'étage)'
+    description: 'Rénovation du restaurant rue Rivoli\n(Salle du restaurant et à l\'étage)',
+    discount: 0,
+    discountType: '%',
+    discountAmount: 0,
+    netTotalHT: 3419.73
   }
 ];
 
@@ -314,7 +316,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       totalHT: 0,
       totalTVA10: 0,
       totalTVA20: 0,
-      totalTTC: 0
+      totalTTC: 0,
+      discount: 0,
+      discountType: '%',
+      discountAmount: 0,
+      netTotalHT: 0
     };
     
     setQuotes([...quotes, newQuote]);

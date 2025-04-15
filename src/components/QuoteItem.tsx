@@ -47,14 +47,13 @@ export function QuoteItem({
     // Ensure we have valid numbers before updating
     const updatedItem = {
       ...editedItem,
-      quantity: editedItem.quantity === '' ? 0 : Number(editedItem.quantity),
-      unitPrice: editedItem.unitPrice === '' ? 0 : Number(editedItem.unitPrice),
-      totalHT: calculateTotalHT(
-        editedItem.quantity === '' ? 0 : Number(editedItem.quantity), 
-        editedItem.unitPrice === '' ? 0 : Number(editedItem.unitPrice)
-      ),
-      vat: editedItem.vat === '' ? 0 : Number(editedItem.vat)
+      quantity: typeof editedItem.quantity === 'string' ? parseFloat(editedItem.quantity) || 0 : editedItem.quantity || 0,
+      unitPrice: typeof editedItem.unitPrice === 'string' ? parseFloat(editedItem.unitPrice) || 0 : editedItem.unitPrice || 0,
+      vat: typeof editedItem.vat === 'string' ? parseFloat(editedItem.vat) || 0 : editedItem.vat || 0
     };
+    
+    // Calculate the total
+    updatedItem.totalHT = calculateTotalHT(updatedItem.quantity, updatedItem.unitPrice);
     
     onUpdate(updatedItem);
     setIsEditable(false);
@@ -81,8 +80,11 @@ export function QuoteItem({
     
     // Calculate total if quantity or unitPrice changed
     if (name === 'quantity' || name === 'unitPrice') {
-      const quantity = name === 'quantity' ? (value === '' ? 0 : parseFloat(value)) : (editedItem.quantity === '' ? 0 : parseFloat(editedItem.quantity?.toString() || '0'));
-      const unitPrice = name === 'unitPrice' ? (value === '' ? 0 : parseFloat(value)) : (editedItem.unitPrice === '' ? 0 : parseFloat(editedItem.unitPrice?.toString() || '0'));
+      const quantity = name === 'quantity' ? (value === '' ? 0 : parseFloat(value)) : 
+        (typeof editedItem.quantity === 'string' ? parseFloat(editedItem.quantity) || 0 : editedItem.quantity || 0);
+        
+      const unitPrice = name === 'unitPrice' ? (value === '' ? 0 : parseFloat(value)) : 
+        (typeof editedItem.unitPrice === 'string' ? parseFloat(editedItem.unitPrice) || 0 : editedItem.unitPrice || 0);
       
       updatedItem.totalHT = quantity * unitPrice;
     }
@@ -244,7 +246,7 @@ export function QuoteItem({
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             className="input-quantity form-control-devis"
-            placeholder="0"
+            placeholder=""
           />
         </td>
         <td className="py-1 px-4">
@@ -269,7 +271,7 @@ export function QuoteItem({
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             className="input-price form-control-devis"
-            placeholder="0"
+            placeholder=""
           />
         </td>
         <td className="py-1 px-4">
@@ -285,7 +287,9 @@ export function QuoteItem({
           </select>
         </td>
         <td className="py-1 px-4 text-right">
-          {(parseFloat(editedItem.quantity?.toString() || '0') * parseFloat(editedItem.unitPrice?.toString() || '0')).toFixed(2)} €
+          {(typeof editedItem.quantity === 'string' ? parseFloat(editedItem.quantity) || 0 : editedItem.quantity || 0) * 
+           (typeof editedItem.unitPrice === 'string' ? parseFloat(editedItem.unitPrice) || 0 : editedItem.unitPrice || 0)
+          }.toFixed(2) €
           <Button 
             size="sm" 
             variant="ghost" 

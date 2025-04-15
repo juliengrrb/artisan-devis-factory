@@ -1,15 +1,15 @@
 
 export interface Client {
   id: string;
-  civility: 'M' | 'Mme' | 'M et Mme';
   type: 'Particulier' | 'Professionnel';
-  firstName: string;
-  lastName: string;
-  address: string;
-  addressComplement?: string;
-  zipCode: string;
-  city: string;
-  country: string;
+  civility: 'M' | 'Mme';
+  firstName?: string;
+  lastName?: string;
+  companyName?: string;
+  address?: string;
+  zipCode?: string;
+  city?: string;
+  country?: string;
   email?: string;
   phone?: string;
   notes?: string;
@@ -18,9 +18,11 @@ export interface Client {
 export interface Project {
   id: string;
   name: string;
-  client: string; // Client ID
+  client: string;
+  address?: string;
+  zipCode?: string;
+  city?: string;
   description?: string;
-  notes?: string;
 }
 
 export interface QuoteItem {
@@ -32,10 +34,10 @@ export interface QuoteItem {
   vat: number;
   totalHT: number;
   parentId?: string;
-  level: number;
-  position: number;
+  level?: number;
+  position?: number;
+  type?: 'Titre' | 'Sous-titre' | 'Fourniture' | 'Main d\'oeuvre' | 'Ouvrage' | 'Texte' | 'Saut de page';
   details?: string;
-  type?: 'Titre' | 'Sous-titre' | 'Texte' | 'Saut de page' | 'Fourniture' | 'Main d\'oeuvre' | 'Ouvrage';
 }
 
 export interface Quote {
@@ -43,16 +45,21 @@ export interface Quote {
   number: string;
   date: string;
   validUntil: string;
-  client?: Client;
   clientId?: string;
-  project?: Project;
   projectId?: string;
+  client?: Client;
+  project?: Project;
   items: QuoteItem[];
-  paymentConditions: string;
   totalHT: number;
   totalTVA10: number;
   totalTVA20: number;
   totalTTC: number;
-  footer?: string;
+  paymentConditions: string;
   description?: string;
+  footer?: string;
+  status?: 'draft' | 'sent' | 'accepted' | 'rejected';
+  discount?: number;
+  discountType?: '%' | '€ HT' | '€ TTC';
+  discountAmount?: number;
+  netTotalHT?: number;
 }
