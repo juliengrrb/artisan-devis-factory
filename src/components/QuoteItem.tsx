@@ -2,7 +2,7 @@
 import { QuoteItem as QuoteItemType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Check, GripVertical } from "lucide-react";
 
 interface QuoteItemProps {
@@ -92,6 +92,13 @@ export function QuoteItem({
     setEditedItem(updatedItem);
   };
 
+  // Handle focus on number inputs to clear initial zero values
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (e.target.type === 'number' && (e.target.value === '0' || e.target.value === '0.00')) {
+      e.target.value = '';
+    }
+  };
+
   const getBgColor = () => {
     if (item.type === 'Titre') {
       return 'bg-item-title';
@@ -120,6 +127,10 @@ export function QuoteItem({
 
   const isDraggable = () => {
     return !isPageBreak() && !isEditable;
+  };
+
+  const formatCurrency = (value: number): string => {
+    return `${value.toFixed(2)} €`;
   };
 
   const handleDragStart = (e: React.DragEvent) => {
@@ -174,12 +185,12 @@ export function QuoteItem({
           <>
             <td className="py-1 px-4 text-right text-devis">{item.quantity || '-'}</td>
             <td className="py-1 px-4 text-center text-devis">{item.unit || '-'}</td>
-            <td className="py-1 px-4 text-right text-devis">{item.unitPrice ? `${Number(item.unitPrice).toFixed(2)} €` : '-'}</td>
+            <td className="py-1 px-4 text-right text-devis">{item.unitPrice ? formatCurrency(item.unitPrice) : '-'}</td>
             <td className="py-1 px-4 text-center text-devis">{item.vat ? `${item.vat} %` : '-'}</td>
             <td className="py-1 px-4 text-right text-devis">
-              {Number(item.totalHT).toFixed(2)} €
+              {formatCurrency(item.totalHT)}
               {(item.type === 'Titre' || item.type === 'Sous-titre') && (
-                <div className="text-sm text-devis-light">Sous-total : {Number(item.totalHT).toFixed(2)} €</div>
+                <div className="text-sm text-devis-light">Sous-total : {formatCurrency(item.totalHT)}</div>
               )}
             </td>
           </>
@@ -245,6 +256,7 @@ export function QuoteItem({
             value={editedItem.quantity?.toString() || ''}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
+            onFocus={handleFocus}
             className="input-quantity form-control-devis"
             placeholder=""
           />
@@ -270,6 +282,7 @@ export function QuoteItem({
             value={editedItem.unitPrice?.toString() || ''}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
+            onFocus={handleFocus}
             className="input-price form-control-devis"
             placeholder=""
           />
@@ -287,9 +300,10 @@ export function QuoteItem({
           </select>
         </td>
         <td className="py-1 px-4 text-right">
-          {(typeof editedItem.quantity === 'string' ? parseFloat(editedItem.quantity) || 0 : editedItem.quantity || 0) * 
-           (typeof editedItem.unitPrice === 'string' ? parseFloat(editedItem.unitPrice) || 0 : editedItem.unitPrice || 0)
-          }.toFixed(2) €
+          {formatCurrency(
+            (typeof editedItem.quantity === 'string' ? parseFloat(editedItem.quantity) || 0 : editedItem.quantity || 0) * 
+            (typeof editedItem.unitPrice === 'string' ? parseFloat(editedItem.unitPrice) || 0 : editedItem.unitPrice || 0)
+          )}
           <Button 
             size="sm" 
             variant="ghost" 
@@ -338,12 +352,12 @@ export function QuoteItem({
         <>
           <td className="py-1 px-4 text-right text-devis">{item.quantity || '-'}</td>
           <td className="py-1 px-4 text-center text-devis">{item.unit || '-'}</td>
-          <td className="py-1 px-4 text-right text-devis">{item.unitPrice ? `${Number(item.unitPrice).toFixed(2)} €` : '-'}</td>
+          <td className="py-1 px-4 text-right text-devis">{item.unitPrice ? formatCurrency(item.unitPrice) : '-'}</td>
           <td className="py-1 px-4 text-center text-devis">{item.vat ? `${item.vat} %` : '-'}</td>
           <td className="py-1 px-4 text-right text-devis">
-            {Number(item.totalHT).toFixed(2)} €
+            {formatCurrency(item.totalHT)}
             {(item.type === 'Titre' || item.type === 'Sous-titre') && (
-              <div className="text-sm text-devis-light">Sous-total : {Number(item.totalHT).toFixed(2)} €</div>
+              <div className="text-sm text-devis-light">Sous-total : {formatCurrency(item.totalHT)}</div>
             )}
           </td>
         </>

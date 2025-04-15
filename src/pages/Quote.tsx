@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/Header";
 import { useAppContext } from "@/context/AppContext";
@@ -73,6 +74,7 @@ export default function Quote() {
   const [downPaymentValue, setDownPaymentValue] = useState("10");
   const [downPaymentType, setDownPaymentType] = useState<'%' | '€'>('%');
   const [downPaymentAmount, setDownPaymentAmount] = useState(0);
+  const [hasDownPayment, setHasDownPayment] = useState(false);
   
   const [isAddingDiscount, setIsAddingDiscount] = useState(false);
   const [discountValue, setDiscountValue] = useState("0.00");
@@ -89,6 +91,28 @@ export default function Quote() {
       
       const calculatedTotals = calculateTotals(currentQuote.items);
       setTotals(calculatedTotals);
+      
+      // Check if current quote has a payment condition with acompte
+      if (currentQuote.paymentConditions && currentQuote.paymentConditions.includes('Acompte')) {
+        setHasDownPayment(true);
+        
+        // Extract the down payment percentage from the string
+        const match = currentQuote.paymentConditions.match(/Acompte de (\d+) %/);
+        if (match && match[1]) {
+          setDownPaymentValue(match[1]);
+          setDownPaymentType('%');
+          
+          // Calculate down payment amount
+          setDownPaymentAmount((calculatedTotals.totalTTC * parseInt(match[1])) / 100);
+        }
+      }
+      
+      // Check if current quote has a discount
+      if (currentQuote.discount) {
+        setHasDiscount(true);
+        setDiscountValue(currentQuote.discount.toString());
+        setDiscountType(currentQuote.discountType || '%');
+      }
     }
   }, []);
 
@@ -104,7 +128,7 @@ export default function Quote() {
       const calculatedTotals = calculateTotals(currentQuote.items);
       setTotals(calculatedTotals);
       
-      if (downPaymentType === '%') {
+      if (hasDownPayment && downPaymentType === '%') {
         setDownPaymentAmount((calculatedTotals.totalTTC * parseFloat(downPaymentValue)) / 100);
       }
     }
@@ -186,6 +210,10 @@ export default function Quote() {
 
   const handleDragEnd = () => {
     setDraggedItemId(null);
+  };
+
+  const formatCurrency = (value: number): string => {
+    return `${value.toFixed(2)} €`;
   };
 
   const handleSaveQuote = () => {
@@ -388,7 +416,7 @@ export default function Quote() {
     
     setTotals(newTotals);
     
-    if (downPaymentType === '%') {
+    if (hasDownPayment && downPaymentType === '%') {
       setDownPaymentAmount((newTotals.totalTTC * parseFloat(downPaymentValue)) / 100);
     }
   };
@@ -438,6 +466,13 @@ export default function Quote() {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && isEditingDescription) {
       handleSaveDescription();
+    }
+  };
+
+  // Handle focus on number inputs to clear initial zero values
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (e.target.type === 'number' && (e.target.value === '0' || e.target.value === '0.00')) {
+      e.target.value = '';
     }
   };
 
@@ -525,6 +560,11 @@ export default function Quote() {
     };
   };
 
+  const handleAddDownPayment = () => {
+    setIsEditingDownPayment(true);
+    setHasDownPayment(true);
+  };
+
   const handleEditDownPayment = () => {
     setIsEditingDownPayment(true);
   };
@@ -533,10 +573,10 @@ export default function Quote() {
     setDownPaymentValue(e.target.value);
     
     if (downPaymentType === '%') {
-      const newAmount = (totals.totalTTC * parseFloat(e.target.value)) / 100;
+      const newAmount = (totals.totalTTC * parseFloat(e.target.value || '0')) / 100;
       setDownPaymentAmount(newAmount);
     } else {
-      setDownPaymentAmount(parseFloat(e.target.value) || 0);
+      setDownPaymentAmount(parseFloat(e.target.value || '0'));
     }
   };
 
@@ -544,10 +584,10 @@ export default function Quote() {
     setDownPaymentType(type);
     
     if (type === '%') {
-      const newAmount = (totals.totalTTC * parseFloat(downPaymentValue)) / 100;
+      const newAmount = (totals.totalTTC * parseFloat(downPaymentValue || '0')) / 100;
       setDownPaymentAmount(newAmount);
     } else {
-      setDownPaymentAmount(parseFloat(downPaymentValue) || 0);
+      setDownPaymentAmount(parseFloat(downPaymentValue || '0'));
     }
   };
 
@@ -555,8 +595,8 @@ export default function Quote() {
     if (!currentQuote) return;
     
     const paymentAmount = downPaymentType === '%' ? 
-      (totals.totalTTC * parseFloat(downPaymentValue)) / 100 : 
-      parseFloat(downPaymentValue);
+      (totals.totalTTC * parseFloat(downPaymentValue || '0')) / 100 : 
+      parseFloat(downPaymentValue || '0');
     
     const paymentConditions = `Acompte de ${downPaymentValue} ${downPaymentType} soit ${paymentAmount.toFixed(2)} € TTC
 Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
@@ -567,10 +607,13 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
     });
     
     setIsEditingDownPayment(false);
+    setHasDownPayment(true);
+    
+    toast.success("Acompte mis à jour");
   };
 
   const handleCancelDownPayment = () => {
-    if (currentQuote) {
+    if (currentQuote && hasDownPayment) {
       const match = currentQuote.paymentConditions.match(/Acompte de (\d+) %/);
       if (match && match[1]) {
         setDownPaymentValue(match[1]);
@@ -579,6 +622,9 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
         setDownPaymentValue("10");
         setDownPaymentType('%');
       }
+    } else {
+      setDownPaymentValue("10");
+      setDownPaymentType('%');
     }
     
     setIsEditingDownPayment(false);
@@ -627,6 +673,8 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
       });
       
       setTotals(newTotals);
+      
+      toast.success("Remise mise à jour");
     }
   };
 
@@ -893,7 +941,18 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
               
               <div className="flex mb-4">
                 <div className="w-1/2">
-                  <h3 className="text-md font-medium mb-3 text-devis">Conditions de paiement</h3>
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-md font-medium text-devis">Conditions de paiement</h3>
+                    {!hasDownPayment && !isEditingDownPayment && (
+                      <button
+                        className="text-[#3399ff] hover:text-blue-700 flex items-center text-sm ml-2"
+                        onClick={handleAddDownPayment}
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        <span>Ajouter un acompte</span>
+                      </button>
+                    )}
+                  </div>
                   
                   {isEditingDownPayment ? (
                     <div className="py-2">
@@ -903,33 +962,20 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
                           type="number"
                           value={downPaymentValue}
                           onChange={handleDownPaymentValueChange}
+                          onFocus={handleFocus}
                           className="w-24 h-8 text-sm border-gray-300"
                         />
-                        <DropdownMenu>
-                          <DropdownMenuTrigger className="flex items-center justify-between border border-gray-300 rounded px-2 py-1 text-sm w-12 bg-white">
-                            {downPaymentType}
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem onClick={() => handleDownPaymentTypeChange('%')}>
-                              <span className="text-sm">%</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDownPaymentTypeChange('€')}>
-                              <span className="text-sm">€</span>
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                        <span className="text-sm">
+                        <span className="text-sm">%</span>
+                        <span className="text-sm ml-2">
                           ({downPaymentAmount.toFixed(2)} € TTC)
                         </span>
                       </div>
-                      <div className="text-sm mb-3">Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire</div>
-                      <div className="flex space-x-2">
+                      <div className="flex space-x-2 mt-3">
                         <Button 
                           variant="outline" 
                           size="sm" 
                           onClick={handleCancelDownPayment}
-                          className="border-gray-300 text
-                          -sm"
+                          className="border-gray-300 text-sm"
                         >
                           Annuler
                         </Button>
@@ -943,7 +989,7 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
                         </Button>
                       </div>
                     </div>
-                  ) : (
+                  ) : hasDownPayment ? (
                     <div className="bg-gray-50 p-3 rounded">
                       <pre className="whitespace-pre-wrap font-sans text-sm text-devis">
                         {currentQuote.paymentConditions}
@@ -954,134 +1000,133 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
                           className="text-[#3399ff] hover:text-blue-700 flex items-center p-0 bg-transparent hover:bg-transparent text-sm"
                           onClick={handleEditDownPayment}
                         >
-                          {currentQuote.paymentConditions.includes('Acompte') ? (
-                            <>
-                              <PenLine className="h-4 w-4 mr-1" />
-                              <span>Modifier l'acompte</span>
-                            </>
-                          ) : (
-                            <>
-                              <Plus className="h-4 w-4 mr-1" />
-                              <span>Ajouter un acompte</span>
-                            </>
-                          )}
+                          <PenLine className="h-4 w-4 mr-1" />
+                          <span>Modifier l'acompte</span>
                         </Button>
                       </div>
+                    </div>
+                  ) : (
+                    <div className="bg-gray-50 p-3 rounded h-24 flex items-center justify-center">
+                      <p className="text-sm text-gray-500">Aucune condition de paiement définie</p>
                     </div>
                   )}
                 </div>
                 
                 <div className="w-1/2 pl-8">
-                  <table className="w-full">
-                    <tbody>
-                      {hasDiscount && (
-                        <>
-                          <tr>
-                            <td className="py-1 text-left text-sm">Sous-total HT</td>
-                            <td className="py-1 text-right font-medium text-sm">{totals.totalHT.toFixed(2)} €</td>
-                          </tr>
-                          <tr>
-                            <td className="py-1 text-left text-sm flex items-center">
-                              Remise globale
-                              {isAddingDiscount ? (
-                                <div className="flex items-center ml-2">
-                                  <Input
-                                    type="number"
-                                    value={discountValue}
-                                    onChange={handleDiscountValueChange}
-                                    className="w-20 h-7 text-sm border-gray-300 mr-1"
-                                  />
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger className="flex items-center justify-between border border-gray-300 rounded px-2 py-1 text-sm w-16 bg-white">
-                                      {discountType}
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                      <DropdownMenuItem onClick={() => handleDiscountTypeChange('%')}>
-                                        <span className="text-sm">%</span>
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem onClick={() => handleDiscountTypeChange('€ HT')}>
-                                        <span className="text-sm">€ HT</span>
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem onClick={() => handleDiscountTypeChange('€ TTC')}>
-                                        <span className="text-sm">€ TTC</span>
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                </div>
-                              ) : (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="ml-2 p-0 border-none shadow-none h-6 text-blue-500 hover:text-blue-700 hover:bg-transparent"
-                                  onClick={handleEditDiscount}
-                                >
-                                  <PenLine className="h-3 w-3 mr-1" />
-                                </Button>
-                              )}
-                            </td>
-                            <td className="py-1 text-right text-sm">{totals.discountAmount.toFixed(2)} €</td>
-                          </tr>
-                          <tr>
-                            <td className="py-1 text-left font-medium text-sm">Total net HT</td>
-                            <td className="py-1 text-right font-medium text-sm">{totals.netTotalHT.toFixed(2)} €</td>
-                          </tr>
-                        </>
-                      )}
-                      
-                      {(!hasDiscount || !isAddingDiscount) && (
-                        <tr>
-                          <td className="py-1 text-left text-sm">Total net HT</td>
-                          <td className="py-1 text-right font-medium text-sm">{(hasDiscount ? totals.netTotalHT : totals.totalHT).toFixed(2)} €</td>
-                        </tr>
-                      )}
-                      
-                      <tr>
-                        <td className="py-1 text-left text-sm">TVA 10 %</td>
-                        <td className="py-1 text-right text-sm">{totals.totalTVA10.toFixed(2)} €</td>
-                      </tr>
-                      <tr>
-                        <td className="py-1 text-left text-sm">TVA 20 %</td>
-                        <td className="py-1 text-right text-sm">{totals.totalTVA20.toFixed(2)} €</td>
-                      </tr>
-                      <tr className="border-t border-gray-200">
-                        <td className="py-1 text-left font-medium text-devis text-sm">Total TTC</td>
-                        <td className="py-1 text-right font-medium text-devis text-sm">{totals.totalTTC.toFixed(2)} €</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  
-                  {isAddingDiscount && (
-                    <div className="mt-3 flex justify-end space-x-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={handleCancelDiscount}
-                        className="text-sm"
-                      >
-                        Annuler
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        onClick={handleSaveDiscount}
-                        className="bg-devis-blue hover:bg-blue-600 text-white text-sm"
-                      >
-                        <Check className="h-4 w-4 mr-1" />
-                        Valider
-                      </Button>
-                    </div>
-                  )}
-                  
-                  {!hasDiscount && !isAddingDiscount && (
-                    <div className="mt-3 text-right">
-                      <button 
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-md font-medium text-devis invisible">Totaux</h3>
+                    {!hasDiscount && !isAddingDiscount && (
+                      <button
                         onClick={handleAddDiscount}
                         className="text-[#3399ff] flex items-center justify-end ml-auto hover:text-blue-700 text-sm"
                       >
                         <Plus className="h-4 w-4 mr-1" />
                         Ajouter une remise
                       </button>
-                    </div>
-                  )}
+                    )}
+                  </div>
+                  
+                  <div className="bg-white p-3 rounded border border-gray-100 shadow-sm">
+                    <table className="w-full">
+                      <tbody>
+                        {hasDiscount && (
+                          <>
+                            <tr>
+                              <td className="py-1 text-left text-sm">Sous-total HT</td>
+                              <td className="py-1 text-right font-medium text-sm">{formatCurrency(totals.totalHT)}</td>
+                            </tr>
+                            <tr>
+                              <td className="py-1 text-left text-sm flex items-center">
+                                Remise globale
+                                {isAddingDiscount ? (
+                                  <div className="flex items-center ml-2">
+                                    <Input
+                                      type="number"
+                                      value={discountValue}
+                                      onChange={handleDiscountValueChange}
+                                      onFocus={handleFocus}
+                                      className="w-20 h-7 text-sm border-gray-300 mr-1"
+                                    />
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger className="flex items-center justify-between border border-gray-300 rounded px-2 py-1 text-sm w-16 bg-white">
+                                        {discountType}
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent>
+                                        <DropdownMenuItem onClick={() => handleDiscountTypeChange('%')}>
+                                          <span className="text-sm">%</span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleDiscountTypeChange('€ HT')}>
+                                          <span className="text-sm">€ HT</span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleDiscountTypeChange('€ TTC')}>
+                                          <span className="text-sm">€ TTC</span>
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  </div>
+                                ) : (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="ml-2 p-0 border-none shadow-none h-6 text-blue-500 hover:text-blue-700 hover:bg-transparent"
+                                    onClick={handleEditDiscount}
+                                  >
+                                    <PenLine className="h-3 w-3 mr-1" />
+                                  </Button>
+                                )}
+                              </td>
+                              <td className="py-1 text-right text-sm">{formatCurrency(totals.discountAmount)}</td>
+                            </tr>
+                            <tr>
+                              <td className="py-1 text-left font-medium text-sm">Total net HT</td>
+                              <td className="py-1 text-right font-medium text-sm">{formatCurrency(totals.netTotalHT)}</td>
+                            </tr>
+                          </>
+                        )}
+                        
+                        {(!hasDiscount || !isAddingDiscount) && (
+                          <tr>
+                            <td className="py-1 text-left text-sm">Total net HT</td>
+                            <td className="py-1 text-right font-medium text-sm">{formatCurrency(hasDiscount ? totals.netTotalHT : totals.totalHT)}</td>
+                          </tr>
+                        )}
+                        
+                        <tr>
+                          <td className="py-1 text-left text-sm">TVA 10 %</td>
+                          <td className="py-1 text-right text-sm">{formatCurrency(totals.totalTVA10)}</td>
+                        </tr>
+                        <tr>
+                          <td className="py-1 text-left text-sm">TVA 20 %</td>
+                          <td className="py-1 text-right text-sm">{formatCurrency(totals.totalTVA20)}</td>
+                        </tr>
+                        <tr className="border-t border-gray-200">
+                          <td className="py-2 text-left font-medium text-devis">Total TTC</td>
+                          <td className="py-2 text-right font-medium text-devis">{formatCurrency(totals.totalTTC)}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    
+                    {isAddingDiscount && (
+                      <div className="mt-3 flex justify-end space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={handleCancelDiscount}
+                          className="text-sm"
+                        >
+                          Annuler
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          onClick={handleSaveDiscount}
+                          className="bg-devis-blue hover:bg-blue-600 text-white text-sm"
+                        >
+                          <Check className="h-4 w-4 mr-1" />
+                          Valider
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               
