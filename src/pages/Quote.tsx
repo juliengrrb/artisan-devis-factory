@@ -486,7 +486,7 @@ export default function Quote() {
         totalTVA20: 0, 
         totalTTC: 0,
         discount: hasDiscount ? parseFloat(discountValue) || 0 : 0,
-        discountType: discountType,
+        discountType: discountType as const,
         discountAmount: 0,
         netTotalHT: 0
       };
@@ -656,14 +656,14 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
 
   const handleRemoveDiscount = () => {
     setHasDiscount(false);
-    setDiscountValue("10");
+    setDiscountValue("0");
     setDiscountType('%');
     
     if (currentQuote) {
       const updatedQuote = {
         ...currentQuote,
         discount: 0,
-        discountType: '%',
+        discountType: '%' as const,
         discountAmount: 0
       };
       
@@ -1219,7 +1219,6 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
       {showQuoteNumberForm && (
         <QuoteNumberForm 
           quote={currentQuote}
-          currentNumber={currentQuote.number} 
           onClose={() => setShowQuoteNumberForm(false)} 
         />
       )}

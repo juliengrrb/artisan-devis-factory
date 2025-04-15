@@ -1,7 +1,6 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Quote } from "@/types";
 import { useAppContext } from "@/context/AppContext";
 import { X } from "lucide-react";
@@ -21,6 +20,35 @@ export function QuoteNumberForm({ quote, onClose }: QuoteNumberFormProps) {
   const [currentNumber, setCurrentNumber] = useState("45");
   
   const [previewNumber, setPreviewNumber] = useState(quote.number);
+
+  useEffect(() => {
+    // Extract current values from the quote.number
+    if (quote.number) {
+      const parts = quote.number.split(/[-\/]/);
+      if (parts.length >= 2) {
+        setPrefix(parts[0]);
+        
+        // Detect separator
+        const separator = quote.number.includes('/') ? '/' : '-';
+        setSeparator(separator);
+        
+        // Extract the number part which should be the last part
+        const num = parts[parts.length - 1];
+        setCurrentNumber(num);
+        
+        // Detect number length
+        setNumberLength(num.length.toString());
+        
+        // Detect date format
+        const middlePart = parts.length > 2 ? parts[1] : '';
+        if (middlePart.length === 6) { // Format like "201907"
+          setDateFormat("Année + Mois");
+        } else if (middlePart.length === 4) { // Format like "2019"
+          setDateFormat("Année");
+        }
+      }
+    }
+  }, [quote.number]);
 
   const updatePreview = () => {
     const year = "2019";
