@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -156,7 +155,6 @@ export function ClientForm({ client, onClose }: ClientFormProps) {
             </div>
           </div>
           
-          {/* Rest of form - address, contact details, etc. */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Adresse</label>
             <Input

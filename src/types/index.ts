@@ -1,12 +1,12 @@
-
 export interface Client {
   id: string;
   type: 'Particulier' | 'Professionnel';
-  civility: 'M' | 'Mme';
+  civility: 'M' | 'Mme' | 'M et Mme';
   firstName?: string;
   lastName?: string;
   companyName?: string;
   address?: string;
+  addressComplement?: string;
   zipCode?: string;
   city?: string;
   country?: string;
@@ -23,6 +23,7 @@ export interface Project {
   zipCode?: string;
   city?: string;
   description?: string;
+  notes?: string;
 }
 
 export interface QuoteItem {
