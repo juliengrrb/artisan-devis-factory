@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/Header";
 import { useAppContext } from "@/context/AppContext";
@@ -1222,15 +1221,16 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
         />
       )}
 
-      {showProjectForm && selectedClientId && (
+      {showProjectForm && currentQuote?.clientId && (
         <ProjectForm 
-          clientId={selectedClientId}
+          clientId={currentQuote.clientId}
           onClose={() => setShowProjectForm(false)} 
         />
       )}
 
       {showQuoteNumberForm && (
         <QuoteNumberForm 
+          quote={currentQuote}
           onClose={() => setShowQuoteNumberForm(false)}
         />
       )}

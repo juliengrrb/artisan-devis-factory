@@ -41,30 +41,37 @@ export function Header({
   };
 
   return (
-    <div className="flex items-center bg-stone-900 border-b border-stone-700 p-2 w-full">
-      <h1 className="text-xl font-medium text-white mr-4">{title}</h1>
-      
-      {showEditButton && (
-        <Button 
-          variant="outline" 
-          size="sm"
-          className="flex items-center text-stone-200 bg-transparent border-stone-600 hover:bg-stone-800 mr-2"
-          onClick={onEdit}
-        >
-          <PenLine className="h-4 w-4 mr-1" />
-          Édition
-        </Button>
-      )}
+    <div className="flex items-center bg-stone-800 p-3 w-full border-b border-stone-700">
+      <div className="flex items-center">
+        <div className="flex items-center mr-6">
+          <HardHat className="h-6 w-6 text-orange-500 mr-2" />
+          <h1 className="text-xl font-bold text-white">Artisan Devis</h1>
+        </div>
+        
+        <h2 className="text-lg text-white font-medium mr-6">{title}</h2>
+      </div>
       
       {showPreviewButton && (
         <Button 
           variant="outline" 
           size="sm"
-          className="flex items-center text-stone-200 bg-transparent border-stone-600 hover:bg-stone-800"
+          className="flex items-center text-white bg-transparent border-stone-600 hover:bg-stone-700 mr-2"
           onClick={onPreview}
         >
           <Eye className="h-4 w-4 mr-1" />
           Prévisualisation
+        </Button>
+      )}
+      
+      {showEditButton && (
+        <Button 
+          variant="outline" 
+          size="sm"
+          className="flex items-center text-white bg-transparent border-stone-600 hover:bg-stone-700 mr-2"
+          onClick={onEdit}
+        >
+          <PenLine className="h-4 w-4 mr-1" />
+          Édition
         </Button>
       )}
       
@@ -75,7 +82,7 @@ export function Header({
           <Button 
             variant="outline" 
             size="sm"
-            className="flex items-center text-stone-200 bg-transparent border-stone-600 hover:bg-stone-800"
+            className="flex items-center text-white bg-transparent border-stone-600 hover:bg-stone-700"
             onClick={() => setIsOptionsOpen(!isOptionsOpen)}
           >
             Options <ChevronDown className="h-4 w-4 ml-1" />
@@ -98,7 +105,7 @@ export function Header({
           <Button 
             variant="outline" 
             size="sm"
-            className="bg-transparent border-stone-600 text-stone-200 hover:bg-stone-800"
+            className="bg-transparent border-stone-600 text-white hover:bg-stone-700"
             onClick={onCancel}
           >
             Annuler
@@ -108,7 +115,7 @@ export function Header({
         {showSaveButton && (
           <Button 
             size="sm"
-            className="bg-btp-600 text-white hover:bg-btp-700"
+            className="bg-orange-500 text-white hover:bg-orange-600 border-none"
             onClick={onSave}
           >
             Enregistrer
@@ -119,7 +126,7 @@ export function Header({
           <div className="relative">
             <Button 
               size="sm"
-              className="bg-btp-600 text-white hover:bg-btp-700 flex items-center"
+              className="bg-orange-500 text-white hover:bg-orange-600 border-none flex items-center"
               onClick={onFinalize}
             >
               Finaliser et envoyer <ChevronDown className="h-4 w-4 ml-1" />
@@ -131,7 +138,7 @@ export function Header({
       <Button 
         variant="ghost" 
         size="sm" 
-        className="ml-2 text-white hover:bg-stone-800"
+        className="ml-2 text-white hover:bg-stone-700"
         onClick={handleCreateQuote}
       >
         <X className="h-5 w-5" />
