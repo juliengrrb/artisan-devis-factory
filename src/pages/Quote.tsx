@@ -7,7 +7,7 @@ import { QuoteNumberForm } from "@/components/QuoteNumberForm";
 import { QuoteItem as QuoteItemComponent } from "@/components/QuoteItem";
 import { QuoteSelectors } from "@/components/QuoteSelectors";
 import { Button } from "@/components/ui/button";
-import { Textarea, EditableTextarea } from "@/components/ui/textarea";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   PenLine, 
   Plus, 
@@ -745,471 +745,345 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
         }}
       />
 
-      <div className="flex-grow p-6 bg-white">
-        <div className="flex">
-          <div className="flex-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-              <div className="flex justify-between mb-6">
-                <div>
-                  <div className="flex items-center mb-3">
-                    <h2 className="text-lg font-medium mr-2 text-gray-800">
-                      Devis n°{currentQuote.number}
-                    </h2>
-                    <button 
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={() => setShowQuoteNumberForm(true)}
-                    >
-                      <PenLine className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    En date du {new Date(currentQuote.date).toLocaleDateString('fr-FR')}
-                  </p>
-                  <div className="flex items-center">
-                    <p className="text-sm text-gray-600 mr-2">
-                      Valable jusqu'au {new Date(currentQuote.validUntil).toLocaleDateString('fr-FR')}
-                    </p>
-                    <button 
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={handleEditDate}
-                    >
-                      <PenLine className="h-4 w-4" />
-                    </button>
-                    {showValiditySelector && (
-                      <div className="absolute mt-20 bg-white border border-gray-200 rounded shadow-lg z-10 popup-devis">
-                        <ul className="py-1">
-                          {validityOptions.map((option, index) => (
-                            <li 
-                              key={index} 
-                              className="px-4 py-1 hover:bg-gray-50 cursor-pointer text-sm"
-                              onClick={() => handleValiditySelect(option)}
-                            >
-                              {option}
-                            </li>
-                          ))}
-                        </ul>
+      <div className="flex-grow p-0 bg-white">
+        <div className="border-b border-gray-200">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-blue-100 border-b border-gray-200 text-gray-700">
+                <th className="py-2 px-4 text-left w-12 font-medium text-sm">N°</th>
+                <th className="py-2 px-4 text-left font-medium text-sm">Désignation</th>
+                <th className="py-2 px-4 text-right w-20 font-medium text-sm">Qté</th>
+                <th className="py-2 px-4 text-center w-20 font-medium text-sm">Unité</th>
+                <th className="py-2 px-4 text-right w-28 font-medium text-sm">Prix U. HT</th>
+                <th className="py-2 px-4 text-center w-20 font-medium text-sm">TVA</th>
+                <th className="py-2 px-4 text-right w-32 font-medium text-sm">Total HT</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentQuote.items.length === 0 ? (
+                <tr className="bg-white h-16">
+                  <td colSpan={7} className="py-6 text-center text-gray-500">
+                    Cliquez sur un des boutons ci-dessous pour ajouter un élément à votre document
+                  </td>
+                </tr>
+              ) : (
+                currentQuote.items.map((item, index) => (
+                  <QuoteItemComponent 
+                    key={item.id} 
+                    item={item} 
+                    onUpdate={handleUpdateQuoteItem}
+                    isEditing={mode === 'edit'}
+                    itemNumber={getItemNumber(item, index, currentQuote.items)}
+                    onDragStart={handleDragStart}
+                    onDragOver={handleDragOver}
+                    onDragEnd={handleDragEnd}
+                    draggedItemId={draggedItemId}
+                  />
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+              
+        <div className="p-4">
+          <div className="flex mb-10">
+            <div className="flex space-x-3">
+              <Button 
+                variant="outline" 
+                className="border-gray-300 text-gray-600 hover:bg-gray-50 h-10"
+                onClick={() => handleAddSection('Fourniture')}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Fourniture
+              </Button>
+              <Button 
+                variant="outline" 
+                className="border-gray-300 text-gray-600 hover:bg-gray-50 h-10"
+                onClick={() => handleAddSection('Main d\'oeuvre')}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Main d'oeuvre
+              </Button>
+              <Button 
+                variant="outline" 
+                className="border-gray-300 text-gray-600 hover:bg-gray-50 h-10"
+                onClick={() => handleAddSection('Ouvrage')}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Ouvrage
+              </Button>
+            </div>
+            <div className="flex ml-auto space-x-2">
+              <Button 
+                variant="outline" 
+                className="border-gray-300 text-gray-600 hover:bg-gray-50 h-10"
+                onClick={handleAddTitle}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Titre
+              </Button>
+              <Button 
+                variant="outline" 
+                className="border-gray-300 text-gray-600 hover:bg-gray-50 h-10"
+                onClick={handleAddSubtitle}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Sous-titre
+              </Button>
+              <Button 
+                variant="outline" 
+                className="border-gray-300 text-gray-600 hover:bg-gray-50 h-10"
+                onClick={handleAddPageBreak}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Saut de page
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex flex-col space-y-8 mt-12">
+            <div className="flex flex-wrap items-start">
+              <div className="w-full lg:w-1/2 pr-0 lg:pr-8 mb-6 lg:mb-0">
+                <h3 className="text-gray-800 font-medium mb-4 text-base">Conditions de paiement</h3>
+                
+                {isEditingDownPayment ? (
+                  <div className="p-4 bg-white border border-gray-200 rounded-md shadow-sm mb-4">
+                    <div className="flex items-center mb-3">
+                      <div className="w-2/3 mr-2">
+                        <label className="block text-sm text-gray-600 mb-1">Montant de l'acompte</label>
+                        <Input
+                          type="number"
+                          value={downPaymentValue}
+                          onChange={handleDownPaymentValueChange}
+                          placeholder="Montant"
+                          className="form-control-devis"
+                        />
                       </div>
-                    )}
-                  </div>
-                  
-                  {mode === 'edit' && (
-                    <div className="mt-3">
-                      {!currentQuote.description && !isEditingDescription ? (
-                        <Button 
-                          variant="outline"
-                          className="add-description-btn p-0 flex items-center text-blue-500 hover:text-blue-700"
-                          onClick={() => setIsEditingDescription(true)}
-                        >
-                          <Plus className="h-4 w-4 mr-1" />
-                          <span>Ajouter une description</span>
-                        </Button>
+                      <div className="w-1/3">
+                        <label className="block text-sm text-gray-600 mb-1">Type</label>
+                        <div className="flex border rounded-md overflow-hidden">
+                          <button
+                            className={`flex-1 py-1 px-2 text-sm ${downPaymentType === '%' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
+                            onClick={() => handleDownPaymentTypeChange('%')}
+                          >
+                            %
+                          </button>
+                          <button
+                            className={`flex-1 py-1 px-2 text-sm ${downPaymentType === '€' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
+                            onClick={() => handleDownPaymentTypeChange('€')}
+                          >
+                            €
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="text-sm text-gray-600 mb-4">
+                      {downPaymentType === '%' ? (
+                        <p>Soit {formatCurrency(downPaymentAmount)}</p>
                       ) : null}
                     </div>
-                  )}
-                </div>
-
-                <div className="w-72">
-                  <QuoteSelectors 
-                    onClientSelect={handleClientSelect}
-                    onProjectSelect={handleProjectSelect}
-                    selectedClientId={currentQuote.clientId}
-                    selectedProjectId={currentQuote.projectId}
-                  />
-                </div>
-              </div>
-              
-              <div className="mb-6 relative">
-                {currentQuote.description && !isEditingDescription ? (
-                  <div className="mb-6 relative">
-                    {mode === 'edit' && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="absolute top-2 right-2 text-blue-500 z-10 btn-devis"
-                        onClick={() => setIsEditingDescription(true)}
-                      >
-                        <PenLine className="h-4 w-4 mr-1" />
-                        Modifier
-                      </Button>
-                    )}
-                    <div className="p-4 bg-gray-50 rounded">
-                      <pre className="whitespace-pre-wrap font-sans text-gray-700 text-sm">
-                        {currentQuote.description}
-                      </pre>
-                    </div>
-                  </div>
-                ) : mode === 'edit' && isEditingDescription ? (
-                  <div className="mb-6">
-                    <div className="space-y-2">
-                      <Textarea
-                        value={description}
-                        onChange={(e) => handleDescriptionChange(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        placeholder="Description du devis"
-                        className="w-full border-gray-200 focus:border-blue-500 focus:ring-blue-500 resize-none text-sm form-control-devis"
-                        autoFocus
-                      />
-                      <div className="flex justify-end space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-gray-300 text-gray-700 btn-devis"
-                          onClick={() => setIsEditingDescription(false)}
-                        >
-                          Annuler
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="bg-blue-500 hover:bg-blue-600 text-white btn-devis"
-                          onClick={handleSaveDescription}
-                        >
-                          Enregistrer
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-              
-              <div className="mb-10">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-blue-500 text-white">
-                      <th className="py-3 px-4 text-left w-12 font-medium">N°</th>
-                      <th className="py-3 px-4 text-left font-medium">Désignation</th>
-                      <th className="py-3 px-4 text-right w-20 font-medium">Qté</th>
-                      <th className="py-3 px-4 text-center w-20 font-medium">Unité</th>
-                      <th className="py-3 px-4 text-right w-28 font-medium">Prix U. HT</th>
-                      <th className="py-3 px-4 text-center w-20 font-medium">TVA</th>
-                      <th className="py-3 px-4 text-right w-32 font-medium">Total HT</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentQuote.items.length === 0 ? (
-                      <tr className="bg-white h-16">
-                        <td colSpan={7} className="py-6 text-center text-gray-500">
-                          Cliquez sur un des boutons ci-dessous pour ajouter un élément à votre document
-                        </td>
-                      </tr>
-                    ) : (
-                      currentQuote.items.map((item, index) => (
-                        <QuoteItemComponent 
-                          key={item.id} 
-                          item={item} 
-                          onUpdate={handleUpdateQuoteItem}
-                          isEditing={mode === 'edit'}
-                          itemNumber={getItemNumber(item, index, currentQuote.items)}
-                          onDragStart={handleDragStart}
-                          onDragOver={handleDragOver}
-                          onDragEnd={handleDragEnd}
-                          draggedItemId={draggedItemId}
-                        />
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              
-              <div className="flex mb-10">
-                <div className="flex space-x-3">
-                  <Button 
-                    variant="outline" 
-                    className="border-gray-300 text-gray-600 hover:bg-gray-50 h-10 btn-devis"
-                    onClick={() => handleAddSection('Fourniture')}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Fourniture
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="border-gray-300 text-gray-600 hover:bg-gray-50 h-10 btn-devis"
-                    onClick={() => handleAddSection('Main d\'oeuvre')}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Main d'oeuvre
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="border-gray-300 text-gray-600 hover:bg-gray-50 h-10 btn-devis"
-                    onClick={() => handleAddSection('Ouvrage')}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Ouvrage
-                  </Button>
-                </div>
-                <div className="flex ml-auto space-x-2">
-                  <Button 
-                    variant="outline" 
-                    className="border-gray-300 text-gray-600 hover:bg-gray-50 h-10 btn-devis"
-                    onClick={handleAddTitle}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Titre
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="border-gray-300 text-gray-600 hover:bg-gray-50 h-10 btn-devis"
-                    onClick={handleAddSubtitle}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Sous-titre
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="border-gray-300 text-gray-600 hover:bg-gray-50 h-10 btn-devis"
-                    onClick={handleAddPageBreak}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Saut de page
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex flex-col space-y-8 mt-12">
-                <div className="flex flex-wrap items-start">
-                  <div className="w-full lg:w-1/2 pr-0 lg:pr-8 mb-6 lg:mb-0">
-                    <h3 className="text-gray-800 font-medium mb-4 text-base">Conditions de paiement</h3>
                     
-                    {isEditingDownPayment ? (
-                      <div className="p-4 bg-white border border-gray-200 rounded-md shadow-sm mb-4">
-                        <div className="flex items-center mb-3">
+                    <div className="flex justify-end space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-gray-300 text-gray-700 btn-devis"
+                        onClick={handleCancelDownPayment}
+                      >
+                        Annuler
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="bg-blue-500 hover:bg-blue-600 text-white btn-devis"
+                        onClick={handleSaveDownPayment}
+                      >
+                        Enregistrer
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-gray-50 rounded-md relative">
+                    {hasDownPayment ? (
+                      <>
+                        <pre className="whitespace-pre-wrap font-sans text-gray-700 text-sm">
+                          {currentQuote.paymentConditions}
+                        </pre>
+                        {mode === 'edit' && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="absolute top-2 right-2 text-blue-500 z-10 btn-devis"
+                            onClick={handleEditDownPayment}
+                          >
+                            <PenLine className="h-4 w-4 mr-1" />
+                            Modifier
+                          </Button>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-gray-500 mb-2 text-sm">
+                          Aucun acompte spécifié. Les conditions par défaut s'appliquent.
+                        </p>
+                        {mode === 'edit' && (
+                          <Button
+                            variant="outline"
+                            className="text-blue-500 mt-2 btn-devis"
+                            onClick={handleAddDownPayment}
+                          >
+                            <Plus className="h-4 w-4 mr-1" />
+                            Ajouter un acompte
+                          </Button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              <div className="w-full lg:w-1/2 lg:pl-8">
+                <div className="bg-gray-50 p-4 rounded-md ml-auto max-w-xs">
+                  <h3 className="text-gray-800 font-medium mb-3 text-base">Total TTC</h3>
+                  
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-gray-800">
+                      <span className="text-sm">Sous-total HT</span>
+                      <span className="font-medium">{formatCurrency(totals.totalHT)}</span>
+                    </div>
+                    
+                    {hasDiscount ? (
+                      <>
+                        <div className="flex justify-between text-gray-800 border-b pb-1 mb-1">
+                          <div className="flex items-center text-sm">
+                            <span className="mr-2">Remise globale</span>
+                            {mode === 'edit' && (
+                              <>
+                                <button
+                                  className="text-blue-500 hover:text-blue-700 mr-1"
+                                  onClick={handleEditDiscount}
+                                >
+                                  <PenLine className="h-3 w-3" />
+                                </button>
+                                <button
+                                  className="text-red-500 hover:text-red-700"
+                                  onClick={handleRemoveDiscount}
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </>
+                            )}
+                          </div>
+                          <span className="text-gray-800">
+                            {discountType === '%' ? `${discountValue} %` : formatCurrency(parseFloat(discountValue))}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-gray-800 border-b pb-1 mb-1">
+                          <span className="text-sm">Remise</span>
+                          <span className="font-medium text-red-600">{formatCurrency(discountAmount)}</span>
+                        </div>
+                        <div className="flex justify-between font-medium text-gray-800 border-b pb-1 mb-1">
+                          <span className="text-sm">Total net HT</span>
+                          <span>{formatCurrency(totals.netTotalHT)}</span>
+                        </div>
+                      </>
+                    ) : (
+                      mode === 'edit' && (
+                        <div className="flex justify-start pb-1 mb-1 border-b">
+                          <Button
+                            variant="outline"
+                            className="text-blue-500 p-0 h-6 text-xs btn-devis"
+                            onClick={handleAddDiscount}
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            Ajouter une remise globale
+                          </Button>
+                        </div>
+                      )
+                    )}
+                    
+                    {isAddingDiscount ? (
+                      <div className="p-3 bg-white border border-gray-200 rounded shadow-sm mb-1">
+                        <div className="flex items-center mb-2">
                           <div className="w-2/3 mr-2">
-                            <label className="block text-sm text-gray-600 mb-1">Montant de l'acompte</label>
+                            <label className="block text-xs text-gray-600 mb-1">Remise</label>
                             <Input
                               type="number"
-                              value={downPaymentValue}
-                              onChange={handleDownPaymentValueChange}
+                              value={discountValue}
+                              onChange={handleDiscountValueChange}
                               placeholder="Montant"
                               className="form-control-devis"
                             />
                           </div>
                           <div className="w-1/3">
-                            <label className="block text-sm text-gray-600 mb-1">Type</label>
-                            <div className="flex border rounded-md overflow-hidden">
-                              <button
-                                className={`flex-1 py-1 px-2 text-sm ${downPaymentType === '%' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
-                                onClick={() => handleDownPaymentTypeChange('%')}
-                              >
-                                %
-                              </button>
-                              <button
-                                className={`flex-1 py-1 px-2 text-sm ${downPaymentType === '€' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
-                                onClick={() => handleDownPaymentTypeChange('€')}
-                              >
-                                €
-                              </button>
-                            </div>
+                            <label className="block text-xs text-gray-600 mb-1">Type</label>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button className="w-full justify-between text-xs" variant="outline">
+                                  {discountType}
+                                  <ChevronDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => handleDiscountTypeChange("%")}>
+                                  %
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleDiscountTypeChange("€ HT")}>
+                                  € HT
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleDiscountTypeChange("€ TTC")}>
+                                  € TTC
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
-                        
-                        <div className="text-sm text-gray-600 mb-4">
-                          {downPaymentType === '%' ? (
-                            <p>Soit {formatCurrency(downPaymentAmount)}</p>
-                          ) : null}
-                        </div>
-                        
                         <div className="flex justify-end space-x-2">
                           <Button
                             variant="outline"
                             size="sm"
-                            className="border-gray-300 text-gray-700 btn-devis"
-                            onClick={handleCancelDownPayment}
+                            className="border-gray-300 text-gray-700 text-xs btn-devis"
+                            onClick={handleCancelDiscount}
                           >
                             Annuler
                           </Button>
                           <Button
                             size="sm"
-                            className="bg-blue-500 hover:bg-blue-600 text-white btn-devis"
-                            onClick={handleSaveDownPayment}
+                            className="bg-blue-500 hover:bg-blue-600 text-white text-xs btn-devis"
+                            onClick={handleSaveDiscount}
                           >
-                            Enregistrer
+                            Appliquer
                           </Button>
                         </div>
                       </div>
-                    ) : (
-                      <div className="p-4 bg-gray-50 rounded-md relative">
-                        {hasDownPayment ? (
-                          <>
-                            <pre className="whitespace-pre-wrap font-sans text-gray-700 text-sm">
-                              {currentQuote.paymentConditions}
-                            </pre>
-                            {mode === 'edit' && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="absolute top-2 right-2 text-blue-500 z-10 btn-devis"
-                                onClick={handleEditDownPayment}
-                              >
-                                <PenLine className="h-4 w-4 mr-1" />
-                                Modifier
-                              </Button>
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            <p className="text-gray-500 mb-2 text-sm">
-                              Aucun acompte spécifié. Les conditions par défaut s'appliquent.
-                            </p>
-                            {mode === 'edit' && (
-                              <Button
-                                variant="outline"
-                                className="text-blue-500 mt-2 btn-devis"
-                                onClick={handleAddDownPayment}
-                              >
-                                <Plus className="h-4 w-4 mr-1" />
-                                Ajouter un acompte
-                              </Button>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="w-full lg:w-1/2 lg:pl-8">
-                    <div className="bg-gray-50 p-4 rounded-md ml-auto max-w-xs">
-                      <h3 className="text-gray-800 font-medium mb-3 text-base">Total TTC</h3>
-                      
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-gray-800">
-                          <span className="text-sm">Sous-total HT</span>
-                          <span className="font-medium">{formatCurrency(totals.totalHT)}</span>
-                        </div>
-                        
-                        {hasDiscount ? (
-                          <>
-                            <div className="flex justify-between text-gray-800 border-b pb-1 mb-1">
-                              <div className="flex items-center text-sm">
-                                <span className="mr-2">Remise globale</span>
-                                {mode === 'edit' && (
-                                  <>
-                                    <button
-                                      className="text-blue-500 hover:text-blue-700 mr-1"
-                                      onClick={handleEditDiscount}
-                                    >
-                                      <PenLine className="h-3 w-3" />
-                                    </button>
-                                    <button
-                                      className="text-red-500 hover:text-red-700"
-                                      onClick={handleRemoveDiscount}
-                                    >
-                                      <X className="h-3 w-3" />
-                                    </button>
-                                  </>
-                                )}
-                              </div>
-                              <span className="text-gray-800">
-                                {discountType === '%' ? `${discountValue} %` : formatCurrency(parseFloat(discountValue))}
-                              </span>
-                            </div>
-                            <div className="flex justify-between text-gray-800 border-b pb-1 mb-1">
-                              <span className="text-sm">Remise</span>
-                              <span className="font-medium text-red-600">{formatCurrency(discountAmount)}</span>
-                            </div>
-                            <div className="flex justify-between font-medium text-gray-800 border-b pb-1 mb-1">
-                              <span className="text-sm">Total net HT</span>
-                              <span>{formatCurrency(totals.netTotalHT)}</span>
-                            </div>
-                          </>
-                        ) : (
-                          mode === 'edit' && (
-                            <div className="flex justify-start pb-1 mb-1 border-b">
-                              <Button
-                                variant="outline"
-                                className="text-blue-500 p-0 h-6 text-xs btn-devis"
-                                onClick={handleAddDiscount}
-                              >
-                                <Plus className="h-3 w-3 mr-1" />
-                                Ajouter une remise globale
-                              </Button>
-                            </div>
-                          )
-                        )}
-                        
-                        {isAddingDiscount ? (
-                          <div className="p-3 bg-white border border-gray-200 rounded shadow-sm mb-1">
-                            <div className="flex items-center mb-2">
-                              <div className="w-2/3 mr-2">
-                                <label className="block text-xs text-gray-600 mb-1">Remise</label>
-                                <Input
-                                  type="number"
-                                  value={discountValue}
-                                  onChange={handleDiscountValueChange}
-                                  placeholder="Montant"
-                                  className="form-control-devis"
-                                />
-                              </div>
-                              <div className="w-1/3">
-                                <label className="block text-xs text-gray-600 mb-1">Type</label>
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button className="w-full justify-between text-xs" variant="outline">
-                                      {discountType}
-                                      <ChevronDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent>
-                                    <DropdownMenuItem onClick={() => handleDiscountTypeChange("%")}>
-                                      %
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleDiscountTypeChange("€ HT")}>
-                                      € HT
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleDiscountTypeChange("€ TTC")}>
-                                      € TTC
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </div>
-                            </div>
-                            <div className="flex justify-end space-x-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="border-gray-300 text-gray-700 text-xs btn-devis"
-                                onClick={handleCancelDiscount}
-                              >
-                                Annuler
-                              </Button>
-                              <Button
-                                size="sm"
-                                className="bg-blue-500 hover:bg-blue-600 text-white text-xs btn-devis"
-                                onClick={handleSaveDiscount}
-                              >
-                                Appliquer
-                              </Button>
-                            </div>
-                          </div>
-                        ) : null}
-                        
-                        <div className="flex justify-between text-gray-800">
-                          <span className="text-sm">TVA 10%</span>
-                          <span>{formatCurrency(totals.totalTVA10)}</span>
-                        </div>
-                        <div className="flex justify-between text-gray-800">
-                          <span className="text-sm">TVA 20%</span>
-                          <span>{formatCurrency(totals.totalTVA20)}</span>
-                        </div>
-                        <div className="flex justify-between font-bold text-gray-800 pt-1 mt-1 border-t">
-                          <span>Total TTC</span>
-                          <span className="text-lg">{formatCurrency(totals.totalTTC)}</span>
-                        </div>
-                      </div>
+                    ) : null}
+                    
+                    <div className="flex justify-between text-gray-800">
+                      <span className="text-sm">TVA 10%</span>
+                      <span>{formatCurrency(totals.totalTVA10)}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-800">
+                      <span className="text-sm">TVA 20%</span>
+                      <span>{formatCurrency(totals.totalTVA20)}</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-gray-800 pt-1 mt-1 border-t">
+                      <span>Total TTC</span>
+                      <span className="text-lg">{formatCurrency(totals.totalTTC)}</span>
                     </div>
                   </div>
                 </div>
-                
-                <div className="w-full mt-8">
-                  <h3 className="text-gray-800 font-medium mb-3 text-base">Notes et conditions</h3>
-                  <Textarea
-                    value={footerNotes}
-                    onChange={handleFooterNotesChange}
-                    placeholder="Saisissez vos notes et conditions générales de vente..."
-                    className="w-full min-h-[150px] border-gray-200 focus:border-blue-500 focus:ring-blue-500 text-sm form-control-devis"
-                    disabled={mode !== 'edit'}
-                  />
-                </div>
               </div>
+            </div>
+            
+            <div className="w-full mt-8">
+              <h3 className="text-gray-800 font-medium mb-3 text-base">Notes et conditions</h3>
+              <Textarea
+                value={footerNotes}
+                onChange={handleFooterNotesChange}
+                placeholder="Saisissez vos notes et conditions générales de vente..."
+                className="w-full min-h-[150px] border-gray-200 focus:border-blue-500 focus:ring-blue-500 text-sm form-control-devis"
+                disabled={mode !== 'edit'}
+              />
             </div>
           </div>
         </div>

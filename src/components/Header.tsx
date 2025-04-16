@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { PenLine, Eye, ChevronDown, X, HardHat } from "lucide-react";
+import { PenLine, Eye, ChevronDown, X } from "lucide-react";
 import { useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 
@@ -41,37 +41,30 @@ export function Header({
   };
 
   return (
-    <div className="flex items-center bg-stone-800 p-3 w-full border-b border-stone-700">
-      <div className="flex items-center">
-        <div className="flex items-center mr-6">
-          <HardHat className="h-6 w-6 text-orange-500 mr-2" />
-          <h1 className="text-xl font-bold text-white">Artisan Devis</h1>
-        </div>
-        
-        <h2 className="text-lg text-white font-medium mr-6">{title}</h2>
-      </div>
-      
-      {showPreviewButton && (
-        <Button 
-          variant="outline" 
-          size="sm"
-          className="flex items-center text-white bg-transparent border-stone-600 hover:bg-stone-700 mr-2"
-          onClick={onPreview}
-        >
-          <Eye className="h-4 w-4 mr-1" />
-          Prévisualisation
-        </Button>
-      )}
+    <div className="flex items-center bg-white border-b border-gray-200 p-2 w-full shadow-sm">
+      <h1 className="text-xl font-medium text-gray-700 mr-6">{title}</h1>
       
       {showEditButton && (
         <Button 
-          variant="outline" 
+          variant="ghost" 
           size="sm"
-          className="flex items-center text-white bg-transparent border-stone-600 hover:bg-stone-700 mr-2"
+          className="flex items-center text-blue-500 mr-4 hover:bg-blue-50"
           onClick={onEdit}
         >
-          <PenLine className="h-4 w-4 mr-1" />
+          <PenLine className="h-4 w-4 mr-2" />
           Édition
+        </Button>
+      )}
+      
+      {showPreviewButton && (
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className="flex items-center text-blue-500 mr-4 hover:bg-blue-50"
+          onClick={onPreview}
+        >
+          <Eye className="h-4 w-4 mr-2" />
+          Prévisualisation
         </Button>
       )}
       
@@ -82,18 +75,18 @@ export function Header({
           <Button 
             variant="outline" 
             size="sm"
-            className="flex items-center text-white bg-transparent border-stone-600 hover:bg-stone-700"
+            className="flex items-center text-gray-700 bg-white border-gray-300 hover:bg-gray-50 mr-2"
             onClick={() => setIsOptionsOpen(!isOptionsOpen)}
           >
             Options <ChevronDown className="h-4 w-4 ml-1" />
           </Button>
           
           {isOptionsOpen && (
-            <div className="absolute right-0 mt-1 w-40 bg-white border border-stone-200 rounded shadow-lg z-10">
+            <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded shadow-lg z-10">
               <ul className="py-1">
-                <li className="px-4 py-2 hover:bg-stone-100 text-stone-900 cursor-pointer">Configuration</li>
-                <li className="px-4 py-2 hover:bg-stone-100 text-stone-900 cursor-pointer">Format numéro</li>
-                <li className="px-4 py-2 hover:bg-stone-100 text-stone-900 cursor-pointer">Personnaliser</li>
+                <li className="px-4 py-2 hover:bg-gray-100 text-gray-700 cursor-pointer">Configuration</li>
+                <li className="px-4 py-2 hover:bg-gray-100 text-gray-700 cursor-pointer">Format numéro</li>
+                <li className="px-4 py-2 hover:bg-gray-100 text-gray-700 cursor-pointer">Personnaliser</li>
               </ul>
             </div>
           )}
@@ -105,7 +98,7 @@ export function Header({
           <Button 
             variant="outline" 
             size="sm"
-            className="bg-transparent border-stone-600 text-white hover:bg-stone-700"
+            className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
             onClick={onCancel}
           >
             Annuler
@@ -115,7 +108,7 @@ export function Header({
         {showSaveButton && (
           <Button 
             size="sm"
-            className="bg-orange-500 text-white hover:bg-orange-600 border-none"
+            className="bg-blue-500 text-white hover:bg-blue-600 border-none"
             onClick={onSave}
           >
             Enregistrer
@@ -126,7 +119,7 @@ export function Header({
           <div className="relative">
             <Button 
               size="sm"
-              className="bg-orange-500 text-white hover:bg-orange-600 border-none flex items-center"
+              className="bg-green-600 text-white hover:bg-green-700 border-none flex items-center"
               onClick={onFinalize}
             >
               Finaliser et envoyer <ChevronDown className="h-4 w-4 ml-1" />
@@ -138,7 +131,7 @@ export function Header({
       <Button 
         variant="ghost" 
         size="sm" 
-        className="ml-2 text-white hover:bg-stone-700"
+        className="ml-2 text-gray-500 hover:bg-gray-100"
         onClick={handleCreateQuote}
       >
         <X className="h-5 w-5" />

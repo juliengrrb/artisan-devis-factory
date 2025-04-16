@@ -35,52 +35,38 @@ export function Navbar() {
   ];
 
   return (
-    <>
-      {/* Desktop Navbar */}
-      <div className="hidden md:flex flex-col h-screen bg-gradient-to-b from-stone-900 to-btp-950 w-64 fixed">
-        <div className="px-6 py-4 flex items-center">
-          <HardHat className="h-8 w-8 text-btp-500 mr-3" />
-          <h1 className="text-white text-2xl font-bold">Artisan Devis</h1>
-        </div>
-        
-        <nav className="flex-1 mt-4">
-          <ul>
-            {navItems.map((item, index) => (
-              <li key={index}>
-                <Link
-                  to={item.path}
-                  className={`flex items-center px-6 py-3 ${
-                    item.active 
-                      ? "bg-btp-800 text-btp-200" 
-                      : "text-stone-300 hover:bg-stone-800 hover:text-btp-200"
-                  }`}
-                >
-                  {item.icon}
-                  <span className="ml-4">{item.name}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        
-        <div className="px-6 py-4 border-t border-stone-800">
-          <div className="flex items-center">
-            <div className="h-8 w-8 rounded-full bg-btp-500 flex items-center justify-center text-white font-semibold">
-              A
-            </div>
-            <div className="ml-3">
-              <p className="text-white">Artisan Pro</p>
-              <p className="text-stone-400 text-sm">artisan@example.com</p>
-            </div>
-          </div>
-        </div>
+    <div className="flex flex-col h-screen bg-gradient-to-b from-stone-900 to-stone-950 w-64">
+      <div className="px-6 py-4 flex items-center border-b border-stone-700">
+        <HardHat className="h-8 w-8 text-orange-500 mr-3" />
+        <h1 className="text-white text-2xl font-bold">Artisan Devis</h1>
       </div>
       
-      {/* Mobile Navbar */}
+      {/* Desktop nav */}
+      <nav className="flex-1 mt-4 hidden md:block">
+        <ul>
+          {navItems.map((item, index) => (
+            <li key={index}>
+              <Link
+                to={item.path}
+                className={`flex items-center px-6 py-3 ${
+                  item.active 
+                    ? "bg-stone-800 text-orange-400" 
+                    : "text-stone-300 hover:bg-stone-800 hover:text-orange-400"
+                }`}
+              >
+                {item.icon}
+                <span className="ml-4">{item.name}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      
+      {/* Mobile nav header */}
       <div className="md:hidden bg-stone-900 fixed top-0 left-0 right-0 z-10">
         <div className="flex justify-between items-center px-4 py-3">
           <div className="flex items-center">
-            <HardHat className="h-6 w-6 text-btp-500 mr-2" />
+            <HardHat className="h-6 w-6 text-orange-500 mr-2" />
             <h1 className="text-white text-xl font-bold">Artisan Devis</h1>
           </div>
           <button 
@@ -100,8 +86,8 @@ export function Navbar() {
                     to={item.path}
                     className={`flex items-center px-4 py-2 rounded-md ${
                       item.active 
-                        ? "bg-btp-800 text-btp-200" 
-                        : "text-stone-300 hover:bg-stone-800 hover:text-btp-200"
+                        ? "bg-stone-800 text-orange-400" 
+                        : "text-stone-300 hover:bg-stone-800 hover:text-orange-400"
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -114,6 +100,19 @@ export function Navbar() {
           </nav>
         )}
       </div>
-    </>
+      
+      {/* User profile section */}
+      <div className="px-6 py-4 border-t border-stone-800">
+        <div className="flex items-center">
+          <div className="h-8 w-8 rounded-full bg-orange-500 flex items-center justify-center text-white font-semibold">
+            A
+          </div>
+          <div className="ml-3">
+            <p className="text-white">Artisan Pro</p>
+            <p className="text-stone-400 text-sm">artisan@example.com</p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
