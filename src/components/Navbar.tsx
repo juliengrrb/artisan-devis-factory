@@ -35,7 +35,7 @@ export function Navbar() {
   ];
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-b from-stone-900 to-stone-950 w-64">
+    <div className="flex flex-col h-screen bg-gradient-to-b from-stone-900 to-stone-950 w-64 shadow-lg">
       <div className="px-6 py-4 flex items-center border-b border-stone-700">
         <HardHat className="h-8 w-8 text-orange-500 mr-3" />
         <h1 className="text-white text-2xl font-bold">Artisan Devis</h1>

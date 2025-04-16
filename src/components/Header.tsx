@@ -41,14 +41,14 @@ export function Header({
   };
 
   return (
-    <div className="flex items-center bg-white border-b border-gray-200 p-2 w-full shadow-sm">
-      <h1 className="text-xl font-medium text-gray-700 mr-6">{title}</h1>
+    <div className="flex items-center bg-stone-900 border-b border-stone-700 p-2 w-full shadow-sm">
+      <h1 className="text-xl font-medium text-white mr-6">{title}</h1>
       
       {showEditButton && (
         <Button 
           variant="ghost" 
           size="sm"
-          className="flex items-center text-blue-500 mr-4 hover:bg-blue-50"
+          className="flex items-center text-white hover:bg-stone-800 mr-2"
           onClick={onEdit}
         >
           <PenLine className="h-4 w-4 mr-2" />
@@ -60,7 +60,7 @@ export function Header({
         <Button 
           variant="ghost" 
           size="sm"
-          className="flex items-center text-blue-500 mr-4 hover:bg-blue-50"
+          className="flex items-center text-white hover:bg-stone-800 mr-4"
           onClick={onPreview}
         >
           <Eye className="h-4 w-4 mr-2" />
@@ -75,7 +75,7 @@ export function Header({
           <Button 
             variant="outline" 
             size="sm"
-            className="flex items-center text-gray-700 bg-white border-gray-300 hover:bg-gray-50 mr-2"
+            className="flex items-center text-white bg-transparent border-stone-700 hover:bg-stone-800 mr-2"
             onClick={() => setIsOptionsOpen(!isOptionsOpen)}
           >
             Options <ChevronDown className="h-4 w-4 ml-1" />
@@ -98,7 +98,7 @@ export function Header({
           <Button 
             variant="outline" 
             size="sm"
-            className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+            className="bg-transparent border-stone-700 text-white hover:bg-stone-800"
             onClick={onCancel}
           >
             Annuler
@@ -131,7 +131,7 @@ export function Header({
       <Button 
         variant="ghost" 
         size="sm" 
-        className="ml-2 text-gray-500 hover:bg-gray-100"
+        className="ml-2 text-white hover:bg-stone-800"
         onClick={handleCreateQuote}
       >
         <X className="h-5 w-5" />

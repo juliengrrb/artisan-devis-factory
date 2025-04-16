@@ -23,10 +23,10 @@ export function Layout() {
 
   return (
     <div className="flex h-screen bg-white">
-      {/* Sidebar toggle area */}
+      {/* Sidebar toggle area - narrow strip on the left edge */}
       {!isMobile && (
         <div 
-          className="fixed top-0 left-0 h-screen w-2 z-40 hover:cursor-pointer"
+          className="fixed top-0 left-0 h-screen w-2 z-40 hover:cursor-pointer bg-transparent"
           onMouseEnter={() => setShowSidebar(true)}
         />
       )}
@@ -42,9 +42,11 @@ export function Layout() {
       </div>
       
       {/* Show mobile navbar on small screens */}
-      <div className={`${isMobile ? "block" : "hidden"} z-30`}>
-        <Navbar />
-      </div>
+      {isMobile && (
+        <div className="block z-30">
+          <Navbar />
+        </div>
+      )}
       
       {/* Main content takes full width */}
       <div className="flex-1 min-h-screen flex flex-col w-full">

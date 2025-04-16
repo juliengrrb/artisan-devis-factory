@@ -746,6 +746,130 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
       />
 
       <div className="flex-grow p-0 bg-white">
+        <div className="p-4 bg-white">
+          <div className="flex justify-between mb-6">
+            <div>
+              <div className="flex items-center mb-3">
+                <h2 className="text-lg font-medium mr-2 text-gray-800">
+                  Devis n°{currentQuote.number}
+                </h2>
+                <button 
+                  className="text-blue-500 hover:text-blue-700"
+                  onClick={() => setShowQuoteNumberForm(true)}
+                >
+                  <PenLine className="h-4 w-4" />
+                </button>
+              </div>
+              <p className="text-sm text-gray-600 mb-2">
+                En date du {new Date(currentQuote.date).toLocaleDateString('fr-FR')}
+              </p>
+              <div className="flex items-center">
+                <p className="text-sm text-gray-600 mr-2">
+                  Valable jusqu'au {new Date(currentQuote.validUntil).toLocaleDateString('fr-FR')}
+                </p>
+                <button 
+                  className="text-blue-500 hover:text-blue-700"
+                  onClick={handleEditDate}
+                >
+                  <PenLine className="h-4 w-4" />
+                </button>
+                {showValiditySelector && (
+                  <div className="absolute mt-20 bg-white border border-gray-200 rounded shadow-lg z-10">
+                    <ul className="py-1">
+                      {validityOptions.map((option, index) => (
+                        <li 
+                          key={index} 
+                          className="px-4 py-1 hover:bg-gray-50 cursor-pointer text-sm"
+                          onClick={() => handleValiditySelect(option)}
+                        >
+                          {option}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              
+              {mode === 'edit' && (
+                <div className="mt-3">
+                  {!currentQuote.description && !isEditingDescription ? (
+                    <Button 
+                      variant="outline"
+                      className="p-0 flex items-center text-blue-500 hover:text-blue-700"
+                      onClick={() => setIsEditingDescription(true)}
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      <span>Ajouter une description</span>
+                    </Button>
+                  ) : null}
+                </div>
+              )}
+            </div>
+
+            <div className="w-72">
+              <QuoteSelectors 
+                onClientSelect={handleClientSelect}
+                onProjectSelect={handleProjectSelect}
+                selectedClientId={currentQuote.clientId}
+                selectedProjectId={currentQuote.projectId}
+              />
+            </div>
+          </div>
+          
+          <div className="mb-6 relative">
+            {currentQuote.description && !isEditingDescription ? (
+              <div className="mb-6 relative">
+                {mode === 'edit' && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute top-2 right-2 text-blue-500 z-10"
+                    onClick={() => setIsEditingDescription(true)}
+                  >
+                    <PenLine className="h-4 w-4 mr-1" />
+                    Modifier
+                  </Button>
+                )}
+                <div className="p-4 bg-gray-50 rounded">
+                  <pre className="whitespace-pre-wrap font-sans text-gray-700 text-sm">
+                    {currentQuote.description}
+                  </pre>
+                </div>
+              </div>
+            ) : mode === 'edit' && isEditingDescription ? (
+              <div className="mb-6">
+                <div className="space-y-2">
+                  <Textarea
+                    value={description}
+                    onChange={(e) => handleDescriptionChange(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Description du devis"
+                    className="w-full border-gray-200 focus:border-blue-500 focus:ring-blue-500 resize-none text-sm"
+                    autoFocus
+                  />
+                  <div className="flex justify-end space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-gray-300 text-gray-700"
+                      onClick={() => setIsEditingDescription(false)}
+                    >
+                      Annuler
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="bg-blue-500 hover:bg-blue-600 text-white"
+                      onClick={handleSaveDescription}
+                    >
+                      Enregistrer
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </div>
+
         <div className="border-b border-gray-200">
           <table className="w-full border-collapse">
             <thead>
@@ -888,14 +1012,14 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-gray-300 text-gray-700 btn-devis"
+                        className="border-gray-300 text-gray-700"
                         onClick={handleCancelDownPayment}
                       >
                         Annuler
                       </Button>
                       <Button
                         size="sm"
-                        className="bg-blue-500 hover:bg-blue-600 text-white btn-devis"
+                        className="bg-blue-500 hover:bg-blue-600 text-white"
                         onClick={handleSaveDownPayment}
                       >
                         Enregistrer
@@ -913,7 +1037,7 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="absolute top-2 right-2 text-blue-500 z-10 btn-devis"
+                            className="absolute top-2 right-2 text-blue-500 z-10"
                             onClick={handleEditDownPayment}
                           >
                             <PenLine className="h-4 w-4 mr-1" />
@@ -929,7 +1053,7 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
                         {mode === 'edit' && (
                           <Button
                             variant="outline"
-                            className="text-blue-500 mt-2 btn-devis"
+                            className="text-blue-500 mt-2"
                             onClick={handleAddDownPayment}
                           >
                             <Plus className="h-4 w-4 mr-1" />
@@ -992,7 +1116,7 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
                         <div className="flex justify-start pb-1 mb-1 border-b">
                           <Button
                             variant="outline"
-                            className="text-blue-500 p-0 h-6 text-xs btn-devis"
+                            className="text-blue-500 p-0 h-6 text-xs"
                             onClick={handleAddDiscount}
                           >
                             <Plus className="h-3 w-3 mr-1" />
@@ -1042,14 +1166,14 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
                           <Button
                             variant="outline"
                             size="sm"
-                            className="border-gray-300 text-gray-700 text-xs btn-devis"
+                            className="border-gray-300 text-gray-700 text-xs"
                             onClick={handleCancelDiscount}
                           >
                             Annuler
                           </Button>
                           <Button
                             size="sm"
-                            className="bg-blue-500 hover:bg-blue-600 text-white text-xs btn-devis"
+                            className="bg-blue-500 hover:bg-blue-600 text-white text-xs"
                             onClick={handleSaveDiscount}
                           >
                             Appliquer
@@ -1081,7 +1205,7 @@ Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
                 value={footerNotes}
                 onChange={handleFooterNotesChange}
                 placeholder="Saisissez vos notes et conditions générales de vente..."
-                className="w-full min-h-[150px] border-gray-200 focus:border-blue-500 focus:ring-blue-500 text-sm form-control-devis"
+                className="w-full min-h-[150px] border-gray-200 focus:border-blue-500 focus:ring-blue-500 text-sm"
                 disabled={mode !== 'edit'}
               />
             </div>
