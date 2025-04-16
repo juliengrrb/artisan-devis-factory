@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { X } from "lucide-react";
+import { X, ChevronLeft } from "lucide-react";
 
 // Tab components
 import TabMesDocuments from "./documentConfig/TabMesDocuments";
@@ -129,6 +129,20 @@ export default function DocumentAppearanceConfig({
     }
   };
 
+  const getTabTitle = () => {
+    switch (activeTab) {
+      case "mes-documents": return "Mes documents";
+      case "visuels": return "Visuels";
+      case "entreprise": return "Entreprise";
+      case "labels": return "Labels";
+      case "entetes": return "Entêtes";
+      case "pieds-pages": return "Pieds de pages";
+      case "devis": return "Devis";
+      case "factures": return "Factures";
+      default: return "Visuels";
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
       {/* Header */}
@@ -147,8 +161,8 @@ export default function DocumentAppearanceConfig({
           >
             Enregistrer
           </button>
-          <button onClick={onCancel} className="text-gray-500 hover:text-gray-700">
-            <X className="h-6 w-6" />
+          <button onClick={onCancel} className="ml-4 text-gray-500 hover:text-gray-700">
+            <X className="h-5 w-5" />
           </button>
         </div>
       </div>
@@ -162,9 +176,8 @@ export default function DocumentAppearanceConfig({
               className="flex items-center text-gray-500 hover:text-gray-900"
               onClick={() => onCancel()}
             >
-              <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
+              <ChevronLeft className="h-5 w-5 mr-2" />
+              <span className="sr-only">Retour</span>
             </button>
           </div>
           <nav className="flex-1 overflow-y-auto">
@@ -196,6 +209,7 @@ export default function DocumentAppearanceConfig({
 
         {/* Main tab content on the left */}
         <div className="w-1/3 overflow-y-auto p-6 bg-white border-r border-gray-200">
+          <h2 className="text-lg font-medium mb-6">{getTabTitle()}</h2>
           {renderTabContent()}
         </div>
 
@@ -299,6 +313,14 @@ const QuotePreview = ({ config }: { config: DocumentConfig }) => {
               <td className="py-2 px-4 border-b border-gray-200 text-right">1221,73 €</td>
             </tr>
             {/* More invoice items would go here */}
+            <tr>
+              <td className="py-2 px-4 border-b border-gray-200">1.1.1</td>
+              <td className="py-2 px-4 border-b border-gray-200">Peinture du plafond et tâches associées - Préparation, protection, installation échafaudage, dépose des panneaux acoustiques, ponçage, repose des panneaux acoustiques.</td>
+              <td className="py-2 px-4 border-b border-gray-200 text-right">20,00 m²</td>
+              <td className="py-2 px-4 border-b border-gray-200 text-right">36,00 €</td>
+              <td className="py-2 px-4 border-b border-gray-200 text-right">20,00%</td>
+              <td className="py-2 px-4 border-b border-gray-200 text-right">720,00 €</td>
+            </tr>
           </tbody>
         </table>
       </div>

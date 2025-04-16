@@ -54,14 +54,16 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
         <h2 className="text-lg font-medium mb-4">Logo</h2>
         <div className="flex items-center mb-4">
           {config.logo.url ? (
-            <img 
-              src={config.logo.url} 
-              alt="Logo" 
-              className="w-24 h-24 object-contain mr-4 border border-gray-200"
-            />
+            <div className="w-24 h-24 flex items-center justify-center mr-4 border border-gray-200">
+              <img 
+                src={config.logo.url} 
+                alt="Logo" 
+                className="max-w-full max-h-full object-contain" 
+              />
+            </div>
           ) : (
             <div className="w-24 h-24 bg-gray-100 flex items-center justify-center mr-4 rounded-lg">
-              <span className="text-gray-400 text-xs">VOTRE LOGO</span>
+              <span className="text-gray-400 text-xs text-center">VOTRE LOGO</span>
             </div>
           )}
           <div>
@@ -131,15 +133,15 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
       <section className="mb-8">
         <h3 className="text-base font-medium mb-4">Ordre des éléments de l'entête</h3>
         <div className="flex flex-wrap gap-2 mb-4">
-          {config.headerOrder.map((_, index) => (
+          {[1, 2, 3, 4, 5, 6].map((num) => (
             <button
-              key={index}
+              key={num}
               className={`w-10 h-10 rounded-full border ${
-                index === 0 ? 'border-blue-500 text-blue-500' : 'border-gray-300 text-gray-500'
+                num === 1 ? 'border-blue-500 text-blue-500' : 'border-gray-300 text-gray-500'
               } flex items-center justify-center`}
-              onClick={() => handleHeaderOrderChange(index)}
+              onClick={() => handleHeaderOrderChange(num - 1)}
             >
-              {index + 1}
+              {num}
             </button>
           ))}
         </div>
@@ -159,7 +161,7 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
         <h3 className="text-base font-medium mb-4">Style des tableaux</h3>
         <div className="flex gap-4 mb-4">
           <button
-            className={`w-64 h-24 border rounded-md p-3 ${config.tableStyle === 'style1' ? 'border-blue-500' : 'border-gray-300'}`}
+            className={`w-60 h-20 border rounded-md p-3 ${config.tableStyle === 'style1' ? 'border-blue-500' : 'border-gray-300'}`}
             onClick={() => handleTableStyleChange('style1')}
           >
             <div className="space-y-2">
@@ -170,7 +172,7 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
             </div>
           </button>
           <button
-            className={`w-64 h-24 border rounded-md p-3 ${config.tableStyle === 'style2' ? 'border-blue-500' : 'border-gray-300'}`}
+            className={`w-60 h-20 border rounded-md p-3 ${config.tableStyle === 'style2' ? 'border-blue-500' : 'border-gray-300'}`}
             onClick={() => handleTableStyleChange('style2')}
           >
             <div className="h-full grid grid-cols-4 gap-2">

@@ -37,7 +37,7 @@ const TabLabels = ({ config, updateConfig }: TabLabelsProps) => {
         </div>
         
         <div className="flex flex-wrap gap-2 mb-4">
-          {[1, 2, 3, "bas"].map((pos) => (
+          {[1, 2, 3, "Bas"].map((pos) => (
             <button
               key={pos.toString()}
               className={`border rounded-full w-10 h-10 flex items-center justify-center ${
@@ -45,7 +45,7 @@ const TabLabels = ({ config, updateConfig }: TabLabelsProps) => {
               }`}
               onClick={() => handleLabelChange({ position: pos })}
             >
-              {pos === "bas" ? "Bas" : pos}
+              {pos}
             </button>
           ))}
         </div>
