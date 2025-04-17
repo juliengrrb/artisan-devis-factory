@@ -26,9 +26,9 @@ export default function AppearanceConfigButton({
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200"
+        className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 text-sm"
       >
-        <Sliders className="h-4 w-4 mr-2" />
+        <Sliders className="h-4 w-4 mr-1.5" />
         Modifier l'apparence
       </button>
 

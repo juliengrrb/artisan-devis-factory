@@ -146,22 +146,22 @@ export default function DocumentAppearanceConfig({
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
       {/* Header */}
-      <div className="py-4 px-6 border-b border-gray-200 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Configuration de vos documents</h1>
+      <div className="py-3 px-6 border-b border-gray-200 flex justify-between items-center bg-white">
+        <h1 className="text-xl font-semibold">Configuration de vos documents</h1>
         <div className="flex gap-2">
           <button
             onClick={onCancel}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            className="px-3 py-1.5 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 text-sm font-medium"
           >
             Annuler
           </button>
           <button
             onClick={() => onSave(config)}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            className="px-3 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-medium"
           >
             Enregistrer
           </button>
-          <button onClick={onCancel} className="ml-4 text-gray-500 hover:text-gray-700">
+          <button onClick={onCancel} className="ml-2 text-gray-500 hover:text-gray-700">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -170,13 +170,13 @@ export default function DocumentAppearanceConfig({
       {/* Main content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left sidebar with tabs */}
-        <div className="w-64 border-r border-gray-200 flex flex-col overflow-hidden">
+        <div className="w-48 border-r border-gray-200 flex flex-col overflow-hidden">
           <div className="p-4 border-b border-gray-200">
             <button 
               className="flex items-center text-gray-500 hover:text-gray-900"
               onClick={() => onCancel()}
             >
-              <ChevronLeft className="h-5 w-5 mr-2" />
+              <ChevronLeft className="h-5 w-5" />
               <span className="sr-only">Retour</span>
             </button>
           </div>
@@ -192,9 +192,9 @@ export default function DocumentAppearanceConfig({
                 { id: "devis", label: "Devis" },
                 { id: "factures", label: "Factures" },
               ].map((tab) => (
-                <li key={tab.id} className="border-b border-gray-100">
+                <li key={tab.id} className="border-b border-gray-100 last:border-0">
                   <button
-                    className={`w-full text-left px-6 py-4 focus:outline-none ${
+                    className={`w-full text-left px-4 py-3 focus:outline-none ${
                       activeTab === tab.id ? "bg-gray-100 font-medium" : "text-gray-700 hover:bg-gray-50"
                     }`}
                     onClick={() => setActiveTab(tab.id)}
@@ -207,14 +207,14 @@ export default function DocumentAppearanceConfig({
           </nav>
         </div>
 
-        {/* Main tab content on the left */}
-        <div className="w-1/3 overflow-y-auto p-6 bg-white border-r border-gray-200">
-          <h2 className="text-lg font-medium mb-6">{getTabTitle()}</h2>
+        {/* Main tab content in the middle */}
+        <div className="w-1/4 overflow-y-auto p-5 bg-white border-r border-gray-200">
+          <h2 className="text-lg font-medium mb-5">{getTabTitle()}</h2>
           {renderTabContent()}
         </div>
 
         {/* Document preview on the right */}
-        <div className="flex-1 bg-gray-50 overflow-y-auto p-6">
+        <div className="flex-1 bg-gray-50 overflow-y-auto p-4">
           <QuotePreview config={config} />
         </div>
       </div>
@@ -225,9 +225,9 @@ export default function DocumentAppearanceConfig({
 // Preview component for the quote
 const QuotePreview = ({ config }: { config: DocumentConfig }) => {
   return (
-    <div className="bg-white shadow-lg p-8 max-w-5xl mx-auto">
+    <div className="bg-white shadow p-6 max-w-4xl mx-auto">
       {/* Demo quote header */}
-      <div className="flex justify-between mb-8">
+      <div className="flex justify-between mb-6">
         <div className="flex items-start">
           {!config.logo.noLogo && (
             <div 
@@ -249,10 +249,10 @@ const QuotePreview = ({ config }: { config: DocumentConfig }) => {
           )}
           
           <div>
-            <h1 className="text-2xl font-medium" style={{ color: config.color }}>Devis demo</h1>
+            <h1 className="text-xl font-medium" style={{ color: config.color }}>Devis demo</h1>
             <p className="text-sm">N°{config.quote.number}</p>
             <p className="text-sm">Date de création: 27/06/2019</p>
-            <p className="text-sm">Échéance au: 27/07/2019</p>
+            <p className="text-sm">Échéance au: 13/06/2019</p>
           </div>
         </div>
         
@@ -265,7 +265,7 @@ const QuotePreview = ({ config }: { config: DocumentConfig }) => {
       </div>
       
       {/* Company info */}
-      <div className="mb-8">
+      <div className="mb-6">
         <p className="font-medium">{config.company.name}</p>
         <p className="text-sm">{config.company.address}</p>
         <p className="text-sm">{config.company.zipCode} {config.company.city}</p>
@@ -276,50 +276,102 @@ const QuotePreview = ({ config }: { config: DocumentConfig }) => {
       </div>
       
       {/* Quote title */}
-      <div className="mb-6">
-        <h2 className="text-lg font-medium">Rénovation restaurant</h2>
+      <div className="mb-5">
+        <h2 className="text-base font-medium">Rénovation restaurant</h2>
       </div>
       
       {/* Quote table */}
-      <div className="mb-8 overflow-x-auto">
+      <div className="mb-6 overflow-x-auto">
         <table className={`w-full border-collapse ${
           config.tableStyle === "style1" ? "border border-gray-200" : "border-none"
         }`}>
           <thead>
             <tr style={{ backgroundColor: config.color + "33" }}>
-              <th className="py-2 px-4 text-left border-b border-gray-200">N°</th>
-              <th className="py-2 px-4 text-left border-b border-gray-200">DESIGNATION</th>
-              <th className="py-2 px-4 text-right border-b border-gray-200">QTÉ</th>
-              <th className="py-2 px-4 text-right border-b border-gray-200">PRIX U.</th>
-              <th className="py-2 px-4 text-right border-b border-gray-200">TVA</th>
-              <th className="py-2 px-4 text-right border-b border-gray-200">TOTAL HT</th>
+              <th className="py-2 px-2 text-left border-b border-gray-200">N°</th>
+              <th className="py-2 px-2 text-left border-b border-gray-200">DESIGNATION</th>
+              <th className="py-2 px-2 text-right border-b border-gray-200">QTÉ</th>
+              <th className="py-2 px-2 text-right border-b border-gray-200">PRIX U.</th>
+              <th className="py-2 px-2 text-right border-b border-gray-200">TVA</th>
+              <th className="py-2 px-2 text-right border-b border-gray-200">TOTAL HT</th>
             </tr>
           </thead>
           <tbody>
             <tr className="bg-gray-50">
-              <td className="py-2 px-4 border-b border-gray-200">1</td>
-              <td className="py-2 px-4 border-b border-gray-200 font-medium">Salle du restaurant</td>
-              <td className="py-2 px-4 border-b border-gray-200 text-right"></td>
-              <td className="py-2 px-4 border-b border-gray-200 text-right"></td>
-              <td className="py-2 px-4 border-b border-gray-200 text-right"></td>
-              <td className="py-2 px-4 border-b border-gray-200 text-right">3451,63 €</td>
+              <td className="py-2 px-2 border-b border-gray-200">1</td>
+              <td className="py-2 px-2 border-b border-gray-200 font-medium">Salle du restaurant</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">3451,63 €</td>
             </tr>
             <tr>
-              <td className="py-2 px-4 border-b border-gray-200">1.1</td>
-              <td className="py-2 px-4 border-b border-gray-200">Coin bar</td>
-              <td className="py-2 px-4 border-b border-gray-200 text-right"></td>
-              <td className="py-2 px-4 border-b border-gray-200 text-right"></td>
-              <td className="py-2 px-4 border-b border-gray-200 text-right"></td>
-              <td className="py-2 px-4 border-b border-gray-200 text-right">1221,73 €</td>
+              <td className="py-2 px-2 border-b border-gray-200">1.1</td>
+              <td className="py-2 px-2 border-b border-gray-200">Coin bar</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">1221,73 €</td>
             </tr>
-            {/* More invoice items would go here */}
             <tr>
-              <td className="py-2 px-4 border-b border-gray-200">1.1.1</td>
-              <td className="py-2 px-4 border-b border-gray-200">Peinture du plafond et tâches associées - Préparation, protection, installation échafaudage, dépose des panneaux acoustiques, ponçage, repose des panneaux acoustiques.</td>
-              <td className="py-2 px-4 border-b border-gray-200 text-right">20,00 m²</td>
-              <td className="py-2 px-4 border-b border-gray-200 text-right">36,00 €</td>
-              <td className="py-2 px-4 border-b border-gray-200 text-right">20,00%</td>
-              <td className="py-2 px-4 border-b border-gray-200 text-right">720,00 €</td>
+              <td className="py-2 px-2 border-b border-gray-200">1.1.1</td>
+              <td className="py-2 px-2 border-b border-gray-200">Peinture du plafond et tâches associées - Préparation, protection, installation échafaudage, dépose des panneaux acoustiques, ponçage, repose des panneaux acoustiques.</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">20,00 m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">36,00 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">20,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">720,00 €</td>
+            </tr>
+            <tr>
+              <td className="py-2 px-2 border-b border-gray-200">1.1.2</td>
+              <td className="py-2 px-2 border-b border-gray-200">Dépose de l'ancienne moquette</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">30,00 m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">10,75 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">20,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">322,50 €</td>
+            </tr>
+            <tr>
+              <td className="py-2 px-2 border-b border-gray-200">1.1.3</td>
+              <td className="py-2 px-2 border-b border-gray-200">
+                Cloisons de séparation<br />
+                - BA13 standard sur ossature métallique x 1 (m²)<br />
+                - Rail R90 et double montant M88 x 1 (m²)<br />
+                - Isolation GR80 x 1 (m²)
+              </td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">8,75 u</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">11,34 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">20,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">99,23 €</td>
+            </tr>
+            <tr>
+              <td className="py-2 px-2 border-b border-gray-200">1.1.4</td>
+              <td className="py-2 px-2 border-b border-gray-200">Enlèvement des déchets</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">1,00 u</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">80,00 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">20,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">80,00 €</td>
+            </tr>
+            <tr className="bg-gray-50">
+              <td className="py-2 px-2 border-b border-gray-200">1.2</td>
+              <td className="py-2 px-2 border-b border-gray-200 font-medium">Salle à l'étage</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">2229,90 €</td>
+            </tr>
+            <tr>
+              <td className="py-2 px-2 border-b border-gray-200">1.2.1</td>
+              <td className="py-2 px-2 border-b border-gray-200">Pose d'un nouveau revêtement de sol spécial restaurant</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">30,00 m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">62,00 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">10,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">1860,00 €</td>
+            </tr>
+            <tr>
+              <td className="py-2 px-2 border-b border-gray-200">1.2.2</td>
+              <td className="py-2 px-2 border-b border-gray-200">Application d'un ragréage</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">30,00 m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">12,33 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">10,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right">369,90 €</td>
             </tr>
           </tbody>
         </table>
@@ -333,8 +385,8 @@ const QuotePreview = ({ config }: { config: DocumentConfig }) => {
             Méthodes de paiement acceptées : 
             {config.quote.paymentMethods.cheque && " Chèque,"}
             {config.quote.paymentMethods.cash && " Espèces,"}
-            {config.quote.paymentMethods.bankTransfer && " Virement bancaire,"}
-            {config.quote.paymentMethods.creditCard && " Carte bancaire"}
+            {config.quote.paymentMethods.bankTransfer && " Virement bancaire"}
+            {config.quote.paymentMethods.creditCard && (config.quote.paymentMethods.bankTransfer ? "." : ", Carte bancaire.")}
           </p>
         </div>
         
@@ -357,31 +409,7 @@ const QuotePreview = ({ config }: { config: DocumentConfig }) => {
           </div>
         </div>
       </div>
-      
-      {/* Client signature */}
-      <div className="mt-10">
-        <h3 className="text-sm font-medium mb-2">Pour le client</h3>
-        <div className="border border-gray-200 p-4 rounded">
-          <p className="text-sm mb-4">Mention "Bon pour accord", date et signature</p>
-          <p className="text-sm text-gray-400">....... / ....... / ............</p>
-        </div>
-      </div>
-      
-      {/* Footer */}
-      <div className="mt-10 pt-4 border-t border-gray-200 text-xs text-gray-500">
-        <p>
-          {config.company.name} | {config.company.address} {config.company.zipCode} {config.company.city} {config.company.country} | SARL au capital de {config.company.capital}€
-        </p>
-        <p>
-          {config.company.siret} RCS {config.company.rcs} | NAF : {config.company.naf}
-        </p>
-        <p>
-          Immatriculé au Répertoire des métiers sous le N°{config.company.registrationNumber}
-        </p>
-        <p>
-          Tél : {config.company.phone} | Email : {config.company.email} | {config.company.website}
-        </p>
-      </div>
     </div>
   );
 };
+

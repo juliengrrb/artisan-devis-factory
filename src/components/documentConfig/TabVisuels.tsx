@@ -3,8 +3,7 @@ import React from "react";
 import { 
   AlignLeft, 
   AlignCenter, 
-  AlignRight,
-  Upload
+  AlignRight
 } from "lucide-react";
 import { Slider } from "../ui/slider";
 import { DocumentConfig } from "../../types/documentConfig";
@@ -17,11 +16,6 @@ type TabVisuelsProps = {
 const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
   const handleLogoChange = (data: Partial<DocumentConfig["logo"]>) => {
     updateConfig("logo", data);
-  };
-
-  const handleHeaderOrderChange = (index: number) => {
-    // This would actually need more complex logic to handle reordering
-    updateConfig("headerOrder", [...config.headerOrder]);
   };
 
   const handleTableStyleChange = (style: string) => {
@@ -50,11 +44,11 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
 
   return (
     <div>
-      <section className="mb-8">
-        <h2 className="text-lg font-medium mb-4">Logo</h2>
-        <div className="flex items-center mb-4">
+      <section className="mb-6">
+        <h3 className="text-base font-medium mb-3">Logo</h3>
+        <div className="flex items-center mb-3">
           {config.logo.url ? (
-            <div className="w-24 h-24 flex items-center justify-center mr-4 border border-gray-200">
+            <div className="w-16 h-16 flex items-center justify-center mr-4 border border-gray-200 rounded">
               <img 
                 src={config.logo.url} 
                 alt="Logo" 
@@ -62,14 +56,14 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
               />
             </div>
           ) : (
-            <div className="w-24 h-24 bg-gray-100 flex items-center justify-center mr-4 rounded-lg">
+            <div className="w-16 h-16 bg-gray-100 flex items-center justify-center mr-4 rounded-full">
               <span className="text-gray-400 text-xs text-center">VOTRE LOGO</span>
             </div>
           )}
           <div>
             <label 
               htmlFor="logo-upload" 
-              className="px-4 py-2 mb-3 border border-gray-300 rounded-md inline-block cursor-pointer hover:bg-gray-50"
+              className="px-3 py-1.5 border border-gray-300 rounded inline-block cursor-pointer hover:bg-gray-50 text-sm"
             >
               Ajouter votre logo
             </label>
@@ -80,37 +74,37 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
               className="hidden" 
               onChange={handleFileUpload}
             />
-            <div className="flex items-center mt-2">
-              <input 
-                type="checkbox" 
-                id="no-logo" 
-                checked={config.logo.noLogo} 
-                onChange={(e) => handleLogoChange({ noLogo: e.target.checked })}
-                className="mr-2" 
-              />
-              <label htmlFor="no-logo">Je n'ai pas de logo</label>
-            </div>
           </div>
+        </div>
+        <div className="flex items-center mt-2">
+          <input 
+            type="checkbox" 
+            id="no-logo" 
+            checked={config.logo.noLogo} 
+            onChange={(e) => handleLogoChange({ noLogo: e.target.checked })}
+            className="mr-2" 
+          />
+          <label htmlFor="no-logo" className="text-sm">Je n'ai pas de logo</label>
         </div>
       </section>
 
-      <section className="mb-6">
+      <section className="mb-5">
         <h3 className="text-base font-medium mb-2">Alignement</h3>
         <div className="flex gap-2 mb-4">
           <button 
-            className={`p-2 border rounded-md ${config.logo.alignment === 'left' ? 'border-blue-500 text-blue-500' : 'border-gray-300 text-gray-500'}`}
+            className={`p-2 border rounded ${config.logo.alignment === 'left' ? 'border-blue-500 text-blue-500' : 'border-gray-300 text-gray-500'}`}
             onClick={() => handleLogoChange({ alignment: 'left' })}
           >
             <AlignLeft size={16} />
           </button>
           <button 
-            className={`p-2 border rounded-md ${config.logo.alignment === 'center' ? 'border-blue-500 text-blue-500' : 'border-gray-300 text-gray-500'}`}
+            className={`p-2 border rounded ${config.logo.alignment === 'center' ? 'border-blue-500 text-blue-500' : 'border-gray-300 text-gray-500'}`}
             onClick={() => handleLogoChange({ alignment: 'center' })}
           >
             <AlignCenter size={16} />
           </button>
           <button 
-            className={`p-2 border rounded-md ${config.logo.alignment === 'right' ? 'border-blue-500 text-blue-500' : 'border-gray-300 text-gray-500'}`}
+            className={`p-2 border rounded ${config.logo.alignment === 'right' ? 'border-blue-500 text-blue-500' : 'border-gray-300 text-gray-500'}`}
             onClick={() => handleLogoChange({ alignment: 'right' })}
           >
             <AlignRight size={16} />
@@ -118,7 +112,7 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
         </div>
       </section>
 
-      <section className="mb-8">
+      <section className="mb-6">
         <h3 className="text-base font-medium mb-2">Taille</h3>
         <Slider 
           value={[config.logo.size]} 
@@ -130,22 +124,22 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
         />
       </section>
 
-      <section className="mb-8">
-        <h3 className="text-base font-medium mb-4">Ordre des éléments de l'entête</h3>
-        <div className="flex flex-wrap gap-2 mb-4">
+      <section className="mb-6">
+        <h3 className="text-base font-medium mb-3">Ordre des éléments de l'entête</h3>
+        <div className="flex flex-wrap gap-2 mb-3">
           {[1, 2, 3, 4, 5, 6].map((num) => (
             <button
               key={num}
-              className={`w-10 h-10 rounded-full border ${
+              className={`w-8 h-8 rounded-full border ${
                 num === 1 ? 'border-blue-500 text-blue-500' : 'border-gray-300 text-gray-500'
-              } flex items-center justify-center`}
-              onClick={() => handleHeaderOrderChange(num - 1)}
+              } flex items-center justify-center text-sm`}
+              onClick={() => {}}
             >
               {num}
             </button>
           ))}
         </div>
-        <div className="flex items-center mt-4">
+        <div className="flex items-center mt-3">
           <input 
             type="checkbox" 
             id="envelopes" 
@@ -153,29 +147,29 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
             onChange={(e) => updateConfig("envelopes", e.target.checked)}
             className="mr-2" 
           />
-          <label htmlFor="envelopes">Enveloppes à fenêtre</label>
+          <label htmlFor="envelopes" className="text-sm">Enveloppes à fenêtre</label>
         </div>
       </section>
 
-      <section className="mb-8">
-        <h3 className="text-base font-medium mb-4">Style des tableaux</h3>
-        <div className="flex gap-4 mb-4">
+      <section className="mb-6">
+        <h3 className="text-base font-medium mb-3">Style des tableaux</h3>
+        <div className="flex gap-3 mb-4">
           <button
-            className={`w-60 h-20 border rounded-md p-3 ${config.tableStyle === 'style1' ? 'border-blue-500' : 'border-gray-300'}`}
+            className={`w-48 h-16 border rounded p-2 ${config.tableStyle === 'style1' ? 'border-blue-500' : 'border-gray-300'}`}
             onClick={() => handleTableStyleChange('style1')}
           >
-            <div className="space-y-2">
-              <div className="h-2 bg-gray-200 rounded w-full"></div>
-              <div className="h-2 bg-gray-200 rounded w-full"></div>
-              <div className="h-2 bg-gray-200 rounded w-full"></div>
-              <div className="h-2 bg-gray-200 rounded w-full"></div>
+            <div className="space-y-1.5">
+              <div className="h-1.5 bg-gray-200 rounded w-full"></div>
+              <div className="h-1.5 bg-gray-200 rounded w-full"></div>
+              <div className="h-1.5 bg-gray-200 rounded w-full"></div>
+              <div className="h-1.5 bg-gray-200 rounded w-full"></div>
             </div>
           </button>
           <button
-            className={`w-60 h-20 border rounded-md p-3 ${config.tableStyle === 'style2' ? 'border-blue-500' : 'border-gray-300'}`}
+            className={`w-48 h-16 border rounded p-2 ${config.tableStyle === 'style2' ? 'border-blue-500' : 'border-gray-300'}`}
             onClick={() => handleTableStyleChange('style2')}
           >
-            <div className="h-full grid grid-cols-4 gap-2">
+            <div className="h-full grid grid-cols-4 gap-1">
               <div className="border-r border-gray-200"></div>
               <div className="border-r border-gray-200"></div>
               <div className="border-r border-gray-200"></div>
@@ -186,12 +180,12 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
       </section>
 
       <section>
-        <h3 className="text-base font-medium mb-4">Couleurs</h3>
+        <h3 className="text-base font-medium mb-3">Couleurs</h3>
         <div className="grid grid-cols-5 gap-2">
           {colors.map((color) => (
             <button
               key={color}
-              className={`w-10 h-10 rounded-full ${config.color === color ? 'ring-2 ring-offset-2 ring-blue-500' : ''}`}
+              className={`w-8 h-8 rounded-full ${config.color === color ? 'ring-2 ring-offset-2 ring-blue-500' : ''}`}
               style={{ backgroundColor: color }}
               onClick={() => handleColorChange(color)}
               aria-label={`Color ${color}`}

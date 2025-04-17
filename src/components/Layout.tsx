@@ -54,24 +54,24 @@ export function Layout() {
       {/* Main content takes full width */}
       <div className="flex-1 min-h-screen flex flex-col w-full">
         {/* Top bar for mode switching in quote view */}
-        <div className="bg-gray-800 text-white py-2 px-4 flex justify-between items-center">
+        <div className="bg-gray-800 text-white py-2 px-3 flex justify-between items-center">
           <div className="flex space-x-2">
             <button 
               onClick={() => setMode("edit")} 
-              className={`flex items-center px-4 py-1 rounded ${
+              className={`flex items-center px-3 py-1 rounded text-sm ${
                 mode === "edit" ? "bg-gray-700" : "hover:bg-gray-700"
               }`}
             >
-              <Pencil className="h-4 w-4 mr-2" />
+              <Pencil className="h-4 w-4 mr-1.5" />
               Édition
             </button>
             <button 
               onClick={() => setMode("preview")} 
-              className={`flex items-center px-4 py-1 rounded ${
+              className={`flex items-center px-3 py-1 rounded text-sm ${
                 mode === "preview" ? "bg-gray-700" : "hover:bg-gray-700"
               }`}
             >
-              <Eye className="h-4 w-4 mr-2" />
+              <Eye className="h-4 w-4 mr-1.5" />
               Prévisualisation
             </button>
           </div>
@@ -79,13 +79,13 @@ export function Layout() {
           {mode === "preview" && (
             <div className="flex items-center space-x-2">
               <AppearanceConfigButton />
-              <button className="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-700">
+              <button className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">
                 Annuler
               </button>
-              <button className="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+              <button className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
                 Enregistrer
               </button>
-              <div className="px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer">
+              <div className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer text-sm">
                 Finaliser et envoyer
               </div>
             </div>
