@@ -5,8 +5,13 @@ import { Checkbox } from "../ui/checkbox";
 import { Slider } from "../ui/slider";
 import { DocumentConfig } from "../../types/documentConfig";
 import { Button } from "../ui/button";
-import { Tooltip } from "../ui/tooltip";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 type TabVisuelsProps = {
   config: DocumentConfig;
@@ -45,7 +50,7 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
                 <img src={config.logo.url} alt="Logo" className="max-w-full max-h-full object-contain" />
               </div>
             ) : (
-              <div className="w-16 h-16 bg-gray-100 flex items-center justify-center rounded text-center">
+              <div className="w-16 h-16 bg-gray-100 flex items-center justify-center rounded-full text-center">
                 <span className="text-gray-400 text-[10px]">VOTRE LOGO</span>
               </div>
             )}
@@ -69,8 +74,8 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
         <div className="flex items-center">
           <Checkbox 
             id="no-logo" 
-            checked={config.logo.noLogo}
-            onCheckedChange={(checked) => handleLogoChange({ noLogo: checked })}
+            checked={!!config.logo.noLogo}
+            onCheckedChange={(checked) => handleLogoChange({ noLogo: !!checked })}
           />
           <label htmlFor="no-logo" className="text-sm ml-2">Je n'ai pas de logo</label>
         </div>
@@ -80,45 +85,68 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
       <section>
         <h3 className="text-base font-medium mb-3">Alignement</h3>
         <div className="flex gap-2">
-          <Tooltip content="Aligner à gauche">
-            <Button
-              variant="outline"
-              size="icon"
-              className={cn(
-                "border-gray-200",
-                config.logo.alignment === "left" && "border-blue-500 text-blue-500"
-              )}
-              onClick={() => handleLogoChange({ alignment: "left" })}
-            >
-              <AlignLeft className="h-4 w-4" />
-            </Button>
-          </Tooltip>
-          <Tooltip content="Centrer">
-            <Button
-              variant="outline"
-              size="icon"
-              className={cn(
-                "border-gray-200",
-                config.logo.alignment === "center" && "border-blue-500 text-blue-500"
-              )}
-              onClick={() => handleLogoChange({ alignment: "center" })}
-            >
-              <AlignCenter className="h-4 w-4" />
-            </Button>
-          </Tooltip>
-          <Tooltip content="Aligner à droite">
-            <Button
-              variant="outline"
-              size="icon"
-              className={cn(
-                "border-gray-200",
-                config.logo.alignment === "right" && "border-blue-500 text-blue-500"
-              )}
-              onClick={() => handleLogoChange({ alignment: "right" })}
-            >
-              <AlignRight className="h-4 w-4" />
-            </Button>
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className={cn(
+                    "border-gray-200",
+                    config.logo.alignment === "left" && "border-blue-500 text-blue-500"
+                  )}
+                  onClick={() => handleLogoChange({ alignment: "left" })}
+                >
+                  <AlignLeft className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Aligner à gauche</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className={cn(
+                    "border-gray-200",
+                    config.logo.alignment === "center" && "border-blue-500 text-blue-500"
+                  )}
+                  onClick={() => handleLogoChange({ alignment: "center" })}
+                >
+                  <AlignCenter className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Centrer</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className={cn(
+                    "border-gray-200",
+                    config.logo.alignment === "right" && "border-blue-500 text-blue-500"
+                  )}
+                  onClick={() => handleLogoChange({ alignment: "right" })}
+                >
+                  <AlignRight className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Aligner à droite</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </section>
 
@@ -156,8 +184,8 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
         <div className="flex items-center">
           <Checkbox
             id="envelopes"
-            checked={config.envelopes}
-            onCheckedChange={(checked) => updateConfig("envelopes", checked)}
+            checked={!!config.envelopes}
+            onCheckedChange={(checked) => updateConfig("envelopes", !!checked)}
           />
           <label htmlFor="envelopes" className="text-sm ml-2">
             Enveloppes à fenêtre

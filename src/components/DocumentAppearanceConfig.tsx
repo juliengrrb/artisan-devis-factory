@@ -1,6 +1,7 @@
 
 import React, { useState } from "react";
 import { X, ChevronLeft } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 
 // Tab components
 import TabMesDocuments from "./documentConfig/TabMesDocuments";
@@ -129,20 +130,6 @@ export default function DocumentAppearanceConfig({
     }
   };
 
-  const getTabTitle = () => {
-    switch (activeTab) {
-      case "mes-documents": return "Mes documents";
-      case "visuels": return "Visuels";
-      case "entreprise": return "Entreprise";
-      case "labels": return "Labels";
-      case "entetes": return "Entêtes";
-      case "pieds-pages": return "Pieds de pages";
-      case "devis": return "Devis";
-      case "factures": return "Factures";
-      default: return "Visuels";
-    }
-  };
-
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
       {/* Header */}
@@ -174,7 +161,7 @@ export default function DocumentAppearanceConfig({
           <div className="p-4 border-b border-gray-200">
             <button 
               className="flex items-center text-gray-500 hover:text-gray-900"
-              onClick={() => onCancel()}
+              onClick={onCancel}
             >
               <ChevronLeft className="h-5 w-5" />
               <span className="sr-only">Retour</span>
@@ -209,7 +196,16 @@ export default function DocumentAppearanceConfig({
 
         {/* Middle section for tab content */}
         <div className="w-[400px] overflow-y-auto p-6 bg-white border-r border-gray-200">
-          <h2 className="text-lg font-medium mb-6">{getTabTitle()}</h2>
+          <h2 className="text-lg font-medium mb-6">
+            {activeTab === "mes-documents" ? "Mes documents" : 
+             activeTab === "visuels" ? "Visuels" :
+             activeTab === "entreprise" ? "Entreprise" :
+             activeTab === "labels" ? "Labels" :
+             activeTab === "entetes" ? "Entêtes" :
+             activeTab === "pieds-pages" ? "Pieds de pages" :
+             activeTab === "devis" ? "Devis" :
+             activeTab === "factures" ? "Factures" : "Visuels"}
+          </h2>
           {renderTabContent()}
         </div>
 
@@ -227,8 +223,7 @@ export default function DocumentAppearanceConfig({
 // Preview component for the quote
 const QuotePreview = ({ config }: { config: DocumentConfig }) => {
   return (
-    <div className="bg-white shadow p-6 max-w-4xl mx-auto">
-      {/* Demo quote header */}
+    <div className="bg-white shadow p-6 w-full">
       <div className="flex justify-between mb-6">
         <div className="flex items-start">
           {!config.logo.noLogo && (
@@ -289,108 +284,108 @@ const QuotePreview = ({ config }: { config: DocumentConfig }) => {
         }`}>
           <thead>
             <tr style={{ backgroundColor: config.color + "33" }}>
-              <th className="py-2 px-2 text-left border-b border-gray-200">N°</th>
-              <th className="py-2 px-2 text-left border-b border-gray-200">DESIGNATION</th>
-              <th className="py-2 px-2 text-right border-b border-gray-200">QTÉ</th>
-              <th className="py-2 px-2 text-center border-b border-gray-200">UNITÉ</th>
-              <th className="py-2 px-2 text-right border-b border-gray-200">PRIX U.</th>
-              <th className="py-2 px-2 text-center border-b border-gray-200">TVA</th>
-              <th className="py-2 px-2 text-right border-b border-gray-200">TOTAL HT</th>
+              <th className="py-2 px-2 text-left border-b border-gray-200 text-sm">N°</th>
+              <th className="py-2 px-2 text-left border-b border-gray-200 text-sm">DESIGNATION</th>
+              <th className="py-2 px-2 text-right border-b border-gray-200 text-sm">QTÉ</th>
+              <th className="py-2 px-2 text-center border-b border-gray-200 text-sm">UNITÉ</th>
+              <th className="py-2 px-2 text-right border-b border-gray-200 text-sm">PRIX U.</th>
+              <th className="py-2 px-2 text-center border-b border-gray-200 text-sm">TVA</th>
+              <th className="py-2 px-2 text-right border-b border-gray-200 text-sm">TOTAL HT</th>
             </tr>
           </thead>
           <tbody>
             <tr className="bg-gray-50">
-              <td className="py-2 px-2 border-b border-gray-200">1</td>
-              <td className="py-2 px-2 border-b border-gray-200 font-medium">Salle du restaurant</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center"></td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center"></td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">3451,63 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">1</td>
+              <td className="py-2 px-2 border-b border-gray-200 font-medium text-sm">Salle du restaurant</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">3451,63 €</td>
             </tr>
             <tr>
-              <td className="py-2 px-2 border-b border-gray-200">1.1</td>
-              <td className="py-2 px-2 border-b border-gray-200">Coin bar</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center"></td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center"></td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">1221,73 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">1.1</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">Coin bar</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">1221,73 €</td>
             </tr>
             <tr>
-              <td className="py-2 px-2 border-b border-gray-200">1.1.1</td>
-              <td className="py-2 px-2 border-b border-gray-200">Peinture du plafond et tâches associées - Préparation, protection, installation échafaudage, dépose des panneaux acoustiques, ponçage, repose des panneaux acoustiques.</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">20,00 m²</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center">m²</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">36,00 €</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center">20,00%</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">720,00 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">1.1.1</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">Peinture du plafond et tâches associées - Préparation, protection, installation échafaudage, dépose des panneaux acoustiques, ponçage, repose des panneaux acoustiques.</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">20,00 m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm">m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">36,00 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm">20,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">720,00 €</td>
             </tr>
             <tr>
-              <td className="py-2 px-2 border-b border-gray-200">1.1.2</td>
-              <td className="py-2 px-2 border-b border-gray-200">Dépose de l'ancienne moquette</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">30,00 m²</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center">m²</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">10,75 €</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center">20,00%</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">322,50 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">1.1.2</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">Dépose de l'ancienne moquette</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">30,00 m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm">m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">10,75 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm">20,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">322,50 €</td>
             </tr>
             <tr>
-              <td className="py-2 px-2 border-b border-gray-200">1.1.3</td>
-              <td className="py-2 px-2 border-b border-gray-200">
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">1.1.3</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">
                 Cloisons de séparation<br />
                 - BA13 standard sur ossature métallique x 1 (m²)<br />
                 - Rail R90 et double montant M88 x 1 (m²)<br />
                 - Isolation GR80 x 1 (m²)
               </td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">8,75 u</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center">u</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">11,34 €</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center">20,00%</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">99,23 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">8,75 u</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm">u</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">11,34 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm">20,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">99,23 €</td>
             </tr>
             <tr>
-              <td className="py-2 px-2 border-b border-gray-200">1.1.4</td>
-              <td className="py-2 px-2 border-b border-gray-200">Enlèvement des déchets</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">1,00 u</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center">u</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">80,00 €</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center">20,00%</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">80,00 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">1.1.4</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">Enlèvement des déchets</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">1,00 u</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm">u</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">80,00 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm">20,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">80,00 €</td>
             </tr>
             <tr className="bg-gray-50">
-              <td className="py-2 px-2 border-b border-gray-200">1.2</td>
-              <td className="py-2 px-2 border-b border-gray-200 font-medium">Salle à l'étage</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center"></td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center"></td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">2229,90 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">1.2</td>
+              <td className="py-2 px-2 border-b border-gray-200 font-medium text-sm">Salle à l'étage</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">2229,90 €</td>
             </tr>
             <tr>
-              <td className="py-2 px-2 border-b border-gray-200">1.2.1</td>
-              <td className="py-2 px-2 border-b border-gray-200">Pose d'un nouveau revêtement de sol spécial restaurant</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">30,00 m²</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center">m²</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">62,00 €</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center">10,00%</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">1860,00 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">1.2.1</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">Pose d'un nouveau revêtement de sol spécial restaurant</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">30,00 m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm">m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">62,00 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm">10,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">1860,00 €</td>
             </tr>
             <tr>
-              <td className="py-2 px-2 border-b border-gray-200">1.2.2</td>
-              <td className="py-2 px-2 border-b border-gray-200">Application d'un ragréage</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">30,00 m²</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center">m²</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">12,33 €</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-center">10,00%</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">369,90 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">1.2.2</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-sm">Application d'un ragréage</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">30,00 m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm">m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">12,33 €</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center text-sm">10,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-right text-sm">369,90 €</td>
             </tr>
           </tbody>
         </table>
       </div>
       
       {/* Payment info */}
-      <div className="flex justify-between">
+      <div className="flex justify-between mt-4">
         <div>
           <h3 className="text-sm font-medium mb-2">Conditions de paiement</h3>
           <p className="text-sm">
@@ -404,20 +399,20 @@ const QuotePreview = ({ config }: { config: DocumentConfig }) => {
         
         <div className="text-right">
           <div className="flex justify-between mb-1">
-            <span className="mr-8">Total net HT</span>
-            <span>2767,23 €</span>
+            <span className="mr-8 text-sm">Total net HT</span>
+            <span className="text-sm">2767,23 €</span>
           </div>
           <div className="flex justify-between mb-1">
-            <span className="mr-8">TVA 10,00 %</span>
-            <span>222,99 €</span>
+            <span className="mr-8 text-sm">TVA 10,00 %</span>
+            <span className="text-sm">222,99 €</span>
           </div>
           <div className="flex justify-between mb-4">
-            <span className="mr-8">TVA 20,00 %</span>
-            <span>107,55 €</span>
+            <span className="mr-8 text-sm">TVA 20,00 %</span>
+            <span className="text-sm">107,55 €</span>
           </div>
           <div className="flex justify-between font-medium px-4 py-2" style={{ backgroundColor: config.color + "66" }}>
-            <span className="mr-8">TOTAL NET TTC</span>
-            <span>3098,17 €</span>
+            <span className="mr-8 text-sm">TOTAL NET TTC</span>
+            <span className="text-sm">3098,17 €</span>
           </div>
         </div>
       </div>
