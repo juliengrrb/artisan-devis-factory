@@ -207,15 +207,17 @@ export default function DocumentAppearanceConfig({
           </nav>
         </div>
 
-        {/* Main tab content in the middle */}
-        <div className="w-1/4 overflow-y-auto p-5 bg-white border-r border-gray-200">
-          <h2 className="text-lg font-medium mb-5">{getTabTitle()}</h2>
+        {/* Middle section for tab content */}
+        <div className="w-[400px] overflow-y-auto p-6 bg-white border-r border-gray-200">
+          <h2 className="text-lg font-medium mb-6">{getTabTitle()}</h2>
           {renderTabContent()}
         </div>
 
-        {/* Document preview on the right */}
-        <div className="flex-1 bg-gray-50 overflow-y-auto p-4">
-          <QuotePreview config={config} />
+        {/* Right preview panel */}
+        <div className="flex-1 bg-gray-50 overflow-y-auto p-8">
+          <div className="max-w-[800px] mx-auto">
+            <QuotePreview config={config} />
+          </div>
         </div>
       </div>
     </div>
