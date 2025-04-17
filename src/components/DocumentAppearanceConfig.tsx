@@ -290,8 +290,9 @@ const QuotePreview = ({ config }: { config: DocumentConfig }) => {
               <th className="py-2 px-2 text-left border-b border-gray-200">N°</th>
               <th className="py-2 px-2 text-left border-b border-gray-200">DESIGNATION</th>
               <th className="py-2 px-2 text-right border-b border-gray-200">QTÉ</th>
+              <th className="py-2 px-2 text-center border-b border-gray-200">UNITÉ</th>
               <th className="py-2 px-2 text-right border-b border-gray-200">PRIX U.</th>
-              <th className="py-2 px-2 text-right border-b border-gray-200">TVA</th>
+              <th className="py-2 px-2 text-center border-b border-gray-200">TVA</th>
               <th className="py-2 px-2 text-right border-b border-gray-200">TOTAL HT</th>
             </tr>
           </thead>
@@ -300,32 +301,36 @@ const QuotePreview = ({ config }: { config: DocumentConfig }) => {
               <td className="py-2 px-2 border-b border-gray-200">1</td>
               <td className="py-2 px-2 border-b border-gray-200 font-medium">Salle du restaurant</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center"></td>
               <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center"></td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">3451,63 €</td>
             </tr>
             <tr>
               <td className="py-2 px-2 border-b border-gray-200">1.1</td>
               <td className="py-2 px-2 border-b border-gray-200">Coin bar</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center"></td>
               <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center"></td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">1221,73 €</td>
             </tr>
             <tr>
               <td className="py-2 px-2 border-b border-gray-200">1.1.1</td>
               <td className="py-2 px-2 border-b border-gray-200">Peinture du plafond et tâches associées - Préparation, protection, installation échafaudage, dépose des panneaux acoustiques, ponçage, repose des panneaux acoustiques.</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">20,00 m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center">m²</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">36,00 €</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">20,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center">20,00%</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">720,00 €</td>
             </tr>
             <tr>
               <td className="py-2 px-2 border-b border-gray-200">1.1.2</td>
               <td className="py-2 px-2 border-b border-gray-200">Dépose de l'ancienne moquette</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">30,00 m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center">m²</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">10,75 €</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">20,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center">20,00%</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">322,50 €</td>
             </tr>
             <tr>
@@ -337,40 +342,45 @@ const QuotePreview = ({ config }: { config: DocumentConfig }) => {
                 - Isolation GR80 x 1 (m²)
               </td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">8,75 u</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center">u</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">11,34 €</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">20,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center">20,00%</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">99,23 €</td>
             </tr>
             <tr>
               <td className="py-2 px-2 border-b border-gray-200">1.1.4</td>
               <td className="py-2 px-2 border-b border-gray-200">Enlèvement des déchets</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">1,00 u</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center">u</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">80,00 €</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">20,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center">20,00%</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">80,00 €</td>
             </tr>
             <tr className="bg-gray-50">
               <td className="py-2 px-2 border-b border-gray-200">1.2</td>
               <td className="py-2 px-2 border-b border-gray-200 font-medium">Salle à l'étage</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center"></td>
               <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right"></td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center"></td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">2229,90 €</td>
             </tr>
             <tr>
               <td className="py-2 px-2 border-b border-gray-200">1.2.1</td>
               <td className="py-2 px-2 border-b border-gray-200">Pose d'un nouveau revêtement de sol spécial restaurant</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">30,00 m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center">m²</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">62,00 €</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">10,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center">10,00%</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">1860,00 €</td>
             </tr>
             <tr>
               <td className="py-2 px-2 border-b border-gray-200">1.2.2</td>
               <td className="py-2 px-2 border-b border-gray-200">Application d'un ragréage</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">30,00 m²</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center">m²</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">12,33 €</td>
-              <td className="py-2 px-2 border-b border-gray-200 text-right">10,00%</td>
+              <td className="py-2 px-2 border-b border-gray-200 text-center">10,00%</td>
               <td className="py-2 px-2 border-b border-gray-200 text-right">369,90 €</td>
             </tr>
           </tbody>
@@ -412,4 +422,3 @@ const QuotePreview = ({ config }: { config: DocumentConfig }) => {
     </div>
   );
 };
-
