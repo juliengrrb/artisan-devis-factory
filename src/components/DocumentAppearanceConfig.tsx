@@ -96,13 +96,13 @@ export default function DocumentAppearanceConfig({
 
   // Handle changes to the configuration
   const updateConfig = (section: string, data: any) => {
-    setConfig({
-      ...config,
+    setConfig((prevConfig) => ({
+      ...prevConfig,
       [section]: {
-        ...config[section as keyof DocumentConfig],
+        ...prevConfig[section],
         ...data,
       },
-    });
+    }));
   };
 
   // Render the appropriate tab content based on activeTab
@@ -129,10 +129,33 @@ export default function DocumentAppearanceConfig({
     }
   };
 
+  const getTabTitle = (tab: string) => {
+    switch (tab) {
+      case "visuels":
+        return "Visuels";
+      case "mes-documents":
+        return "Mes documents";
+      case "entreprise":
+        return "Entreprise";
+      case "labels":
+        return "Labels";
+      case "entetes":
+        return "Entêtes";
+      case "pieds-pages":
+        return "Pieds de pages";
+      case "devis":
+        return "Devis";
+      case "factures":
+        return "Factures";
+      default:
+        return "";
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
       {/* Header */}
-      <div className="py-3 px-6 border-b border-gray-200 flex justify-between items-center bg-white">
+      <div className="py-3 px-6 border-b border-gray-200 flex justify-between items-center bg-white shadow-sm">
         <h1 className="text-xl font-semibold">Configuration de vos documents</h1>
         <div className="flex gap-2">
           <button
@@ -156,7 +179,7 @@ export default function DocumentAppearanceConfig({
       {/* Main content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left sidebar with tabs */}
-        <div className="w-48 border-r border-gray-200 flex flex-col overflow-hidden">
+        <div className="w-48 border-r border-gray-200 flex flex-col overflow-hidden bg-white">
           <div className="p-4 border-b border-gray-200">
             <button 
               className="flex items-center text-gray-500 hover:text-gray-900"
@@ -195,31 +218,7 @@ export default function DocumentAppearanceConfig({
 
         {/* Middle section for tab content */}
         <div className="w-[400px] overflow-y-auto p-6 bg-white border-r border-gray-200">
-          {activeTab === "visuels" && (
-            <h2 className="text-lg font-medium mb-6">Visuels</h2>
-          )}
-          {activeTab === "mes-documents" && (
-            <h2 className="text-lg font-medium mb-6">Mes documents</h2>
-          )}
-          {activeTab === "entreprise" && (
-            <h2 className="text-lg font-medium mb-6">Entreprise</h2>
-          )}
-          {activeTab === "labels" && (
-            <h2 className="text-lg font-medium mb-6">Labels</h2>
-          )}
-          {activeTab === "entetes" && (
-            <h2 className="text-lg font-medium mb-6">Entêtes</h2>
-          )}
-          {activeTab === "pieds-pages" && (
-            <h2 className="text-lg font-medium mb-6">Pieds de pages</h2>
-          )}
-          {activeTab === "devis" && (
-            <h2 className="text-lg font-medium mb-6">Devis</h2>
-          )}
-          {activeTab === "factures" && (
-            <h2 className="text-lg font-medium mb-6">Factures</h2>
-          )}
-          
+          <h2 className="text-lg font-medium mb-6">{getTabTitle(activeTab)}</h2>
           {renderTabContent()}
         </div>
 
@@ -237,13 +236,13 @@ export default function DocumentAppearanceConfig({
 // Preview component for the quote
 const QuotePreview = ({ config }: { config: DocumentConfig }) => {
   return (
-    <div className="bg-white shadow p-6 w-full">
+    <div className="bg-white shadow-md p-6 w-full">
       {/* Header section with logo and company info */}
-      <div className="flex justify-between mb-6">
-        <div className="flex items-start">
+      <div className="flex justify-between mb-8">
+        <div className={`flex items-start ${config.logo.alignment === "right" ? "flex-row-reverse" : ""}`}>
           {!config.logo.noLogo && config.logo.url && (
             <div 
-              className={`mr-4 ${
+              className={`${config.logo.alignment === "right" ? "ml-4" : "mr-4"} ${
                 config.logo.alignment === "left" ? "self-start" : 
                 config.logo.alignment === "center" ? "self-center" : 
                 "self-end"

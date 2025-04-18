@@ -41,16 +41,16 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
   return (
     <div className="space-y-6">
       {/* Logo section */}
-      <section>
+      <section className="pb-4 border-b border-gray-100">
         <h3 className="text-base font-medium mb-3">Logo</h3>
         <div className="flex items-start mb-4">
           <div className="mr-4">
             {config.logo.url ? (
-              <div className="w-20 h-20 flex items-center justify-center border border-gray-200 rounded bg-white">
+              <div className="w-24 h-24 flex items-center justify-center border border-gray-200 rounded bg-white">
                 <img src={config.logo.url} alt="Logo" className="max-w-full max-h-full object-contain" />
               </div>
             ) : (
-              <div className="w-20 h-20 bg-gray-100 flex items-center justify-center rounded-full text-center">
+              <div className="w-24 h-24 bg-gray-100 flex items-center justify-center rounded-full text-center">
                 <span className="text-gray-400 text-xs">VOTRE LOGO</span>
               </div>
             )}
@@ -82,7 +82,7 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
       </section>
 
       {/* Alignment section */}
-      <section>
+      <section className="pb-4 border-b border-gray-100">
         <h3 className="text-base font-medium mb-3">Alignement</h3>
         <div className="flex gap-2">
           <TooltipProvider>
@@ -151,7 +151,7 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
       </section>
 
       {/* Size section */}
-      <section>
+      <section className="pb-4 border-b border-gray-100">
         <h3 className="text-base font-medium mb-3">Taille</h3>
         <Slider
           value={[config.logo.size]}
@@ -164,7 +164,7 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
       </section>
 
       {/* Header elements order section */}
-      <section className="pt-4 border-t border-gray-100">
+      <section className="pt-1 pb-4 border-b border-gray-100">
         <h3 className="text-base font-medium mb-3">Ordre des éléments de l'en-tête</h3>
         <div className="flex flex-wrap gap-2 mb-3">
           {[1, 2, 3, 4, 5, 6].map((num) => (
@@ -194,7 +194,7 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
       </section>
 
       {/* Table style section */}
-      <section className="pt-4 border-t border-gray-100">
+      <section className="pt-1 pb-4 border-b border-gray-100">
         <h3 className="text-base font-medium mb-3">Style des tableaux</h3>
         <div className="flex gap-4">
           <button
@@ -233,14 +233,14 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
       </section>
 
       {/* Colors section */}
-      <section className="pt-4 border-t border-gray-100">
+      <section className="pt-1">
         <h3 className="text-base font-medium mb-3">Couleurs</h3>
         <div className="grid grid-cols-10 gap-2">
           {[
             "#e0e0e0", "#616161", "#bbdefb", "#42a5f5", "#3f51b5",
             "#2c387e", "#1a237e", "#8bc34a", "#cddc39", "#33691e",
             "#ffeb3b", "#ff9800", "#e53935", "#7b1fa2", "#551da2",
-            "#ff80ab", "#a52714", "#4e342e", "#000000"
+            "#ff80ab", "#a52714", "#4e342e", "#000000", "#ffffff"
           ].map((color) => (
             <button
               key={color}

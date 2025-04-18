@@ -140,6 +140,9 @@ export function Layout() {
                     notes: "",
                   },
                 }}
+                onSave={(config) => {
+                  console.log("Configuration saved:", config);
+                }}
               />
               <button className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">
                 Annuler
