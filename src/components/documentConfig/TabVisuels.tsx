@@ -1,6 +1,6 @@
 
-import React from "react";
-import { AlignLeft, AlignCenter, AlignRight } from "lucide-react";
+import React, { useCallback } from "react";
+import { AlignLeft, AlignCenter, AlignRight, Upload, Check } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import { Slider } from "../ui/slider";
 import { DocumentConfig } from "../../types/documentConfig";
@@ -19,24 +19,32 @@ type TabVisuelsProps = {
 };
 
 const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
-  const handleLogoChange = (data: Partial<DocumentConfig["logo"]>) => {
-    updateConfig("logo", data);
-  };
+  const handleLogoChange = useCallback((data: Partial<DocumentConfig["logo"]>) => {
+    updateConfig("logo", { ...config.logo, ...data });
+  }, [config.logo, updateConfig]);
 
-  const handleTableStyleChange = (style: string) => {
+  const handleTableStyleChange = useCallback((style: string) => {
     updateConfig("tableStyle", style);
-  };
+  }, [updateConfig]);
 
-  const handleColorChange = (color: string) => {
+  const handleColorChange = useCallback((color: string) => {
     updateConfig("color", color);
-  };
+  }, [updateConfig]);
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       handleLogoChange({ url: URL.createObjectURL(file) });
     }
-  };
+  }, [handleLogoChange]);
+
+  const handleHeaderOrderChange = useCallback((index: number) => {
+    const newOrder = [...(config.headerOrder || [1, 2, 3, 4, 5, 6])];
+    // Move the clicked index to the front
+    const value = newOrder.splice(index, 1)[0];
+    newOrder.unshift(value);
+    updateConfig("headerOrder", newOrder);
+  }, [config.headerOrder, updateConfig]);
 
   return (
     <div className="space-y-6">
@@ -50,7 +58,7 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
                 <img src={config.logo.url} alt="Logo" className="max-w-full max-h-full object-contain" />
               </div>
             ) : (
-              <div className="w-24 h-24 bg-gray-100 flex items-center justify-center rounded-full text-center">
+              <div className="w-24 h-24 bg-gray-100 flex items-center justify-center rounded text-center">
                 <span className="text-gray-400 text-xs">VOTRE LOGO</span>
               </div>
             )}
@@ -58,8 +66,9 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
           <div>
             <label 
               htmlFor="logo-upload"
-              className="inline-flex px-3 py-1.5 border border-gray-300 rounded text-sm cursor-pointer hover:bg-gray-50"
+              className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded text-sm cursor-pointer hover:bg-gray-50"
             >
+              <Upload className="h-4 w-4 mr-1" />
               Ajouter votre logo
             </label>
             <input 
@@ -171,11 +180,12 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
             <button
               key={num}
               className={cn(
-                "w-8 h-8 rounded-full border text-sm",
-                num === 1
+                "w-8 h-8 rounded-full border text-sm flex items-center justify-center",
+                (config.headerOrder?.[0] === num)
                   ? "border-blue-400 text-blue-600 bg-blue-50"
                   : "border-gray-300 text-gray-500 hover:bg-gray-50"
               )}
+              onClick={() => handleHeaderOrderChange(num - 1)}
             >
               {num}
             </button>
@@ -199,7 +209,7 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
         <div className="flex gap-4">
           <button
             className={cn(
-              "w-40 h-16 border rounded p-2",
+              "w-40 h-16 border rounded p-2 relative",
               config.tableStyle === "style1" 
                 ? "border-blue-300" 
                 : "border-gray-300"
@@ -212,10 +222,15 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
               <div className="h-1.5 bg-gray-200 rounded w-full"></div>
               <div className="h-1.5 bg-gray-200 rounded w-full"></div>
             </div>
+            {config.tableStyle === "style1" && (
+              <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                <Check className="w-4 h-4 text-white" />
+              </div>
+            )}
           </button>
           <button
             className={cn(
-              "w-40 h-16 border rounded p-2",
+              "w-40 h-16 border rounded p-2 relative",
               config.tableStyle === "style2" 
                 ? "border-blue-300" 
                 : "border-gray-300"
@@ -228,6 +243,11 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
               <div className="border-r border-gray-200"></div>
               <div></div>
             </div>
+            {config.tableStyle === "style2" && (
+              <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                <Check className="w-4 h-4 text-white" />
+              </div>
+            )}
           </button>
         </div>
       </section>
@@ -245,13 +265,23 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
             <button
               key={color}
               className={cn(
-                "w-8 h-8 rounded-full",
+                "w-8 h-8 rounded-full relative",
                 config.color === color && "ring-2 ring-offset-2 ring-blue-500"
               )}
               style={{ backgroundColor: color }}
               onClick={() => handleColorChange(color)}
               aria-label={`Select color ${color}`}
-            />
+            >
+              {config.color === color && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  {color === "#ffffff" ? (
+                    <Check className="w-4 h-4 text-black" />
+                  ) : (
+                    <Check className="w-4 h-4 text-white" />
+                  )}
+                </div>
+              )}
+            </button>
           ))}
         </div>
       </section>

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { PenLine, Eye, ChevronDown, X } from "lucide-react";
 import { useState } from "react";
 import { useAppContext } from "@/context/AppContext";
+import { useLocation } from "react-router-dom";
 
 interface HeaderProps {
   title: string;
@@ -35,10 +36,18 @@ export function Header({
 }: HeaderProps) {
   const { createQuote } = useAppContext();
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const location = useLocation();
+
+  // Don't show the header controls on quote detail pages as they're handled by Layout
+  const isQuotePage = location.pathname.includes('/devis/');
 
   const handleCreateQuote = () => {
     createQuote();
   };
+
+  if (isQuotePage) {
+    return null;
+  }
 
   return (
     <div className="flex items-center bg-stone-900 border-b border-stone-700 p-2 w-full shadow-sm">
