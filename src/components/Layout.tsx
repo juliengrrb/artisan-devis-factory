@@ -1,10 +1,24 @@
-
 import { useState, useEffect } from "react";
 import { Navbar } from "./Navbar";
 import { Outlet, useLocation, useParams } from "react-router-dom";
-import { Eye, Pencil, PenLine, ChevronDown, X } from "lucide-react";
+import { 
+  Eye, 
+  PenLine, 
+  Download, 
+  Printer, 
+  RotateCcw, 
+  ChevronDown, 
+  X 
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { useAppContext } from "@/context/AppContext";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "./ui/dropdown-menu";
+import { toast } from "sonner";
 
 export function Layout() {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -12,7 +26,7 @@ export function Layout() {
   const [mode, setMode] = useState<"edit" | "preview">("edit");
   const location = useLocation();
   const { id } = useParams();
-  const { currentQuote } = useAppContext();
+  const { currentQuote, updateQuote } = useAppContext();
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -31,11 +45,19 @@ export function Layout() {
   const showToolbar = location.pathname.includes('/devis/');
 
   const handleSave = () => {
-    // Implement save logic
+    if (currentQuote) {
+      updateQuote(currentQuote);
+      toast.success("Devis enregistré avec succès");
+    }
   };
 
   const handleFinalize = () => {
-    // Implement finalize logic
+    toast.success("Devis finalisé et prêt à être envoyé");
+    // Implement finalization logic here
+  };
+
+  const handleCancel = () => {
+    // Implement cancel logic, perhaps navigating back or resetting changes
   };
 
   return (
@@ -66,9 +88,6 @@ export function Layout() {
         {showToolbar && (
           <div className="bg-[#333333] text-white h-14 px-4 flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium">
-                {currentQuote?.number || "Nouveau devis"}
-              </span>
               <div className="flex items-center space-x-2 bg-[#444444] rounded-md">
                 <Button
                   variant="ghost"
@@ -96,20 +115,58 @@ export function Layout() {
             </div>
 
             <div className="flex items-center space-x-2">
+              {mode === "preview" && (
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="text-white hover:bg-[#4a4a4a]"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="text-white hover:bg-[#4a4a4a]"
+                  >
+                    <Download className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="text-white hover:bg-[#4a4a4a]"
+                  >
+                    <Printer className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="text-white hover:bg-[#4a4a4a]"
+                  >
+                    Options
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>Modifier l'apparence</DropdownMenuItem>
+                  {/* Add more options as needed */}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <Button 
                 variant="ghost" 
                 size="sm"
                 className="text-white hover:bg-[#4a4a4a]"
-              >
-                Modifier l'apparence
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="text-white hover:bg-[#4a4a4a]"
+                onClick={handleCancel}
               >
                 Annuler
               </Button>
+
               <Button 
                 variant="default"
                 size="sm"
@@ -118,6 +175,7 @@ export function Layout() {
               >
                 Enregistrer
               </Button>
+
               <Button
                 variant="default"
                 size="sm"
@@ -127,6 +185,7 @@ export function Layout() {
                 Finaliser et envoyer
                 <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
+
               <Button
                 variant="ghost"
                 size="sm"
@@ -138,7 +197,7 @@ export function Layout() {
           </div>
         )}
         
-        <Outlet />
+        <Outlet context={{ mode }} />
       </div>
     </div>
   );
