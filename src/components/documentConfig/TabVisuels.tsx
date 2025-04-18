@@ -39,19 +39,19 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Logo section */}
       <section>
-        <h3 className="text-base font-medium mb-4">Logo</h3>
+        <h3 className="text-base font-medium mb-3">Logo</h3>
         <div className="flex items-start mb-4">
           <div className="mr-4">
             {config.logo.url ? (
-              <div className="w-16 h-16 flex items-center justify-center border border-gray-200 rounded bg-white">
+              <div className="w-20 h-20 flex items-center justify-center border border-gray-200 rounded bg-white">
                 <img src={config.logo.url} alt="Logo" className="max-w-full max-h-full object-contain" />
               </div>
             ) : (
-              <div className="w-16 h-16 bg-gray-100 flex items-center justify-center rounded-full text-center">
-                <span className="text-gray-400 text-[10px]">VOTRE LOGO</span>
+              <div className="w-20 h-20 bg-gray-100 flex items-center justify-center rounded-full text-center">
+                <span className="text-gray-400 text-xs">VOTRE LOGO</span>
               </div>
             )}
           </div>
@@ -92,8 +92,8 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
                   variant="outline"
                   size="icon"
                   className={cn(
-                    "border-gray-200",
-                    config.logo.alignment === "left" && "border-blue-500 text-blue-500"
+                    "border-gray-200 h-8 w-8",
+                    config.logo.alignment === "left" && "bg-blue-50 border-blue-200"
                   )}
                   onClick={() => handleLogoChange({ alignment: "left" })}
                 >
@@ -113,8 +113,8 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
                   variant="outline"
                   size="icon"
                   className={cn(
-                    "border-gray-200",
-                    config.logo.alignment === "center" && "border-blue-500 text-blue-500"
+                    "border-gray-200 h-8 w-8",
+                    config.logo.alignment === "center" && "bg-blue-50 border-blue-200"
                   )}
                   onClick={() => handleLogoChange({ alignment: "center" })}
                 >
@@ -134,8 +134,8 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
                   variant="outline"
                   size="icon"
                   className={cn(
-                    "border-gray-200",
-                    config.logo.alignment === "right" && "border-blue-500 text-blue-500"
+                    "border-gray-200 h-8 w-8",
+                    config.logo.alignment === "right" && "bg-blue-50 border-blue-200"
                   )}
                   onClick={() => handleLogoChange({ alignment: "right" })}
                 >
@@ -164,7 +164,7 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
       </section>
 
       {/* Header elements order section */}
-      <section>
+      <section className="pt-4 border-t border-gray-100">
         <h3 className="text-base font-medium mb-3">Ordre des éléments de l'en-tête</h3>
         <div className="flex flex-wrap gap-2 mb-3">
           {[1, 2, 3, 4, 5, 6].map((num) => (
@@ -173,7 +173,7 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
               className={cn(
                 "w-8 h-8 rounded-full border text-sm",
                 num === 1
-                  ? "border-blue-500 text-blue-500"
+                  ? "border-blue-400 text-blue-600 bg-blue-50"
                   : "border-gray-300 text-gray-500 hover:bg-gray-50"
               )}
             >
@@ -194,13 +194,15 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
       </section>
 
       {/* Table style section */}
-      <section>
+      <section className="pt-4 border-t border-gray-100">
         <h3 className="text-base font-medium mb-3">Style des tableaux</h3>
         <div className="flex gap-4">
           <button
             className={cn(
-              "w-48 h-16 border rounded p-2",
-              config.tableStyle === "style1" ? "border-blue-500" : "border-gray-300"
+              "w-40 h-16 border rounded p-2",
+              config.tableStyle === "style1" 
+                ? "border-blue-300" 
+                : "border-gray-300"
             )}
             onClick={() => handleTableStyleChange("style1")}
           >
@@ -213,8 +215,10 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
           </button>
           <button
             className={cn(
-              "w-48 h-16 border rounded p-2",
-              config.tableStyle === "style2" ? "border-blue-500" : "border-gray-300"
+              "w-40 h-16 border rounded p-2",
+              config.tableStyle === "style2" 
+                ? "border-blue-300" 
+                : "border-gray-300"
             )}
             onClick={() => handleTableStyleChange("style2")}
           >
@@ -229,7 +233,7 @@ const TabVisuels = ({ config, updateConfig }: TabVisuelsProps) => {
       </section>
 
       {/* Colors section */}
-      <section>
+      <section className="pt-4 border-t border-gray-100">
         <h3 className="text-base font-medium mb-3">Couleurs</h3>
         <div className="grid grid-cols-10 gap-2">
           {[

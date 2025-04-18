@@ -1,7 +1,6 @@
 
 import React, { useState } from "react";
 import { X, ChevronLeft } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "./ui/tabs";
 
 // Tab components
 import TabMesDocuments from "./documentConfig/TabMesDocuments";
@@ -196,16 +195,31 @@ export default function DocumentAppearanceConfig({
 
         {/* Middle section for tab content */}
         <div className="w-[400px] overflow-y-auto p-6 bg-white border-r border-gray-200">
-          <h2 className="text-lg font-medium mb-6">
-            {activeTab === "mes-documents" ? "Mes documents" : 
-             activeTab === "visuels" ? "Visuels" :
-             activeTab === "entreprise" ? "Entreprise" :
-             activeTab === "labels" ? "Labels" :
-             activeTab === "entetes" ? "Entêtes" :
-             activeTab === "pieds-pages" ? "Pieds de pages" :
-             activeTab === "devis" ? "Devis" :
-             activeTab === "factures" ? "Factures" : "Visuels"}
-          </h2>
+          {activeTab === "visuels" && (
+            <h2 className="text-lg font-medium mb-6">Visuels</h2>
+          )}
+          {activeTab === "mes-documents" && (
+            <h2 className="text-lg font-medium mb-6">Mes documents</h2>
+          )}
+          {activeTab === "entreprise" && (
+            <h2 className="text-lg font-medium mb-6">Entreprise</h2>
+          )}
+          {activeTab === "labels" && (
+            <h2 className="text-lg font-medium mb-6">Labels</h2>
+          )}
+          {activeTab === "entetes" && (
+            <h2 className="text-lg font-medium mb-6">Entêtes</h2>
+          )}
+          {activeTab === "pieds-pages" && (
+            <h2 className="text-lg font-medium mb-6">Pieds de pages</h2>
+          )}
+          {activeTab === "devis" && (
+            <h2 className="text-lg font-medium mb-6">Devis</h2>
+          )}
+          {activeTab === "factures" && (
+            <h2 className="text-lg font-medium mb-6">Factures</h2>
+          )}
+          
           {renderTabContent()}
         </div>
 
@@ -224,9 +238,10 @@ export default function DocumentAppearanceConfig({
 const QuotePreview = ({ config }: { config: DocumentConfig }) => {
   return (
     <div className="bg-white shadow p-6 w-full">
+      {/* Header section with logo and company info */}
       <div className="flex justify-between mb-6">
         <div className="flex items-start">
-          {!config.logo.noLogo && (
+          {!config.logo.noLogo && config.logo.url && (
             <div 
               className={`mr-4 ${
                 config.logo.alignment === "left" ? "self-start" : 
@@ -235,13 +250,7 @@ const QuotePreview = ({ config }: { config: DocumentConfig }) => {
               }`}
               style={{ width: `${config.logo.size}px` }}
             >
-              {config.logo.url ? (
-                <img src={config.logo.url} alt="Logo" className="max-w-full" />
-              ) : (
-                <div className="bg-gray-200 rounded-full flex items-center justify-center aspect-square">
-                  <span className="text-gray-400 text-xs text-center">VOTRE LOGO</span>
-                </div>
-              )}
+              <img src={config.logo.url} alt="Logo" className="max-w-full" />
             </div>
           )}
           
@@ -249,7 +258,7 @@ const QuotePreview = ({ config }: { config: DocumentConfig }) => {
             <h1 className="text-xl font-medium" style={{ color: config.color }}>Devis demo</h1>
             <p className="text-sm">N°{config.quote.number}</p>
             <p className="text-sm">Date de création: 27/06/2019</p>
-            <p className="text-sm">Échéance au: 13/06/2019</p>
+            <p className="text-sm">Échéance au: 27/07/2019</p>
           </div>
         </div>
         
@@ -406,13 +415,13 @@ const QuotePreview = ({ config }: { config: DocumentConfig }) => {
             <span className="mr-8 text-sm">TVA 10,00 %</span>
             <span className="text-sm">222,99 €</span>
           </div>
-          <div className="flex justify-between mb-4">
+          <div className="flex justify-between mb-1">
             <span className="mr-8 text-sm">TVA 20,00 %</span>
             <span className="text-sm">107,55 €</span>
           </div>
           <div className="flex justify-between font-medium px-4 py-2" style={{ backgroundColor: config.color + "66" }}>
-            <span className="mr-8 text-sm">TOTAL NET TTC</span>
-            <span className="text-sm">3098,17 €</span>
+            <span className="mr-8">TOTAL NET TTC</span>
+            <span>3098,17 €</span>
           </div>
         </div>
       </div>
