@@ -40,6 +40,12 @@ export interface QuoteItem {
   position?: number;
   type?: 'Titre' | 'Sous-titre' | 'Fourniture' | 'Main d\'oeuvre' | 'Ouvrage' | 'Texte' | 'Saut de page';
   details?: string;
+  // Add the editable state properties
+  isEditable?: boolean;
+  isEditableQty?: boolean;
+  isEditableUnit?: boolean;
+  isEditablePU?: boolean;
+  isEditableTVA?: boolean;
 }
 
 export interface Quote {
