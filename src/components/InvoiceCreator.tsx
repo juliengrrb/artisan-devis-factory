@@ -1,11 +1,27 @@
 
 import React, { useMemo, useEffect, useState } from "react";
+import { 
+  AlertTriangle, 
+  Edit, 
+  Eye, 
+  Plus, 
+  X, 
+  ChevronDown, 
+  Pencil, 
+  CirclePlus, 
+  Settings, 
+  Trash2 
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea, EditableTextarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { AlertTriangle, Edit, Eye, Plus, X } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { useAppContext } from "@/context/AppContext";
 import { useNavigate } from "react-router-dom";
+import { Client, QuoteItem, Project } from "@/types";
 
 // Ce composant remplace entièrement l'ancien éditeur de devis
 export default function InvoiceCreator() {
@@ -25,15 +41,39 @@ export default function InvoiceCreator() {
 
   // Modes édition/prévisualisation
   const [mode, setMode] = useState<"edit" | "preview">("edit");
-  // Description additionnelle, footer, warning, etc.
+  
+  // Visibility states
   const [showDescription, setShowDescription] = useState<boolean>(false);
+  const [showDiscount, setShowDiscount] = useState<boolean>(false);
+  const [showDepositInput, setShowDepositInput] = useState<boolean>(false);
+  
+  // Dropdowns
+  const [showClientDropdown, setShowClientDropdown] = useState<boolean>(false);
+  const [showProjectDropdown, setShowProjectDropdown] = useState<boolean>(false);
 
   // On permet d'éditer la description (petit état local sinon on override tout le quote)
   const [description, setDescription] = useState("");
+  const [depositPercentage, setDepositPercentage] = useState<number>(10);
 
   useEffect(() => {
-    if (currentQuote?.description) setDescription(currentQuote.description);
-  }, [currentQuote?.description]);
+    // Toujours avoir un devis courant existant pour édition
+    if (!currentQuote) createQuote();
+    
+    // Initialiser les données du formulaire depuis le devis courant
+    if (currentQuote) {
+      if (currentQuote.description) {
+        setDescription(currentQuote.description);
+        setShowDescription(true);
+      }
+      
+      if (currentQuote.paymentConditions) {
+        const match = currentQuote.paymentConditions.match(/Acompte de (\d+) %/);
+        if (match && match[1]) {
+          setDepositPercentage(parseInt(match[1]));
+        }
+      }
+    }
+  }, [currentQuote, createQuote]);
 
   // Utilitaires pour l'affichage
   const formatDate = (date?: string | Date) => {
@@ -41,80 +81,179 @@ export default function InvoiceCreator() {
     const d = typeof date === "string" ? new Date(date) : date;
     return d.toLocaleDateString("fr-FR");
   };
+  
   const formatCurrency = (n?: number) => (n ? n.toLocaleString("fr-FR", { minimumFractionDigits: 2 }) + " €" : "0,00 €");
 
+  // Calcul des totaux
+  const subtotalHT = currentQuote?.totalHT || 0;
+  const totalTTC = currentQuote?.totalTTC || 0;
+  
+  // Calcul du montant de l'acompte
+  const depositAmount = (totalTTC * depositPercentage) / 100;
+
+  // Informations TVA
+  const tvaTotals = [
+    { rate: 10, amount: currentQuote?.totalTVA10 || 0 },
+    { rate: 20, amount: currentQuote?.totalTVA20 || 0 }
+  ].filter(tva => tva.amount > 0);
+
   // Table des items du devis
-  const tableRows = useMemo(
-    () =>
-      currentQuote?.items?.length
-        ? currentQuote.items.map((item, idx) => (
-            <tr key={item.id} className="border-b">
-              <td className="border px-4 py-2">{idx + 1}</td>
-              <td className="border px-4 py-2">{mode === "edit" ? (
-                <input
-                  value={item.designation}
-                  onChange={e => updateQuoteItem({ ...item, designation: e.target.value })}
-                  className="w-full border-none bg-transparent"
-                  placeholder="Désignation"
-                />
-              ) : item.designation}</td>
-              <td className="border px-4 py-2 text-right">{mode === "edit" ? (
-                <input
+  const tableRows = useMemo(() => {
+    if (!currentQuote?.items?.length) return null;
+    
+    return currentQuote.items.map((item, idx) => (
+      <React.Fragment key={item.id}>
+        <tr className={cn(
+          "group hover:bg-gray-50",
+          item.level === 1 ? "bg-blue-50" : "",
+          item.level === 2 ? "bg-blue-50/50" : "",
+        )}>
+          <td className="border px-4 py-2 text-center">
+            <div className="flex items-center justify-center">
+              {item.level < 3 && (
+                <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              )}
+              <span>{idx + 1}</span>
+            </div>
+          </td>
+          <td className="border px-4 py-2" style={{ paddingLeft: `${(item.level || 0) * 16 + 16}px` }}>
+            {mode === "edit" ? (
+              <input
+                value={item.designation}
+                onChange={e => updateQuoteItem({ ...item, designation: e.target.value })}
+                className="w-full border-none bg-transparent"
+                placeholder="Désignation"
+              />
+            ) : item.designation}
+          </td>
+          <td className="border px-4 py-2 text-right">
+            {item.level === 3 ? (
+              mode === "edit" ? (
+                <Input
                   type="number"
-                  style={{ width: "60px" }}
                   min="0"
                   value={item.quantity ?? ""}
                   onChange={e => updateQuoteItem({ ...item, quantity: parseFloat(e.target.value) || 0 })}
-                  className="text-right border-none bg-transparent"
+                  className="h-8 w-full text-right border-none bg-transparent"
                   placeholder="0"
                 />
-              ) : item.quantity}</td>
-              <td className="border px-4 py-2">{mode === "edit" ? (
-                <input
-                  value={item.unit || ""}
-                  onChange={e => updateQuoteItem({ ...item, unit: e.target.value })}
-                  className="text-center border-none bg-transparent"
-                  style={{ width: "60px" }}
-                  placeholder="Unité"
-                />
-              ) : item.unit}</td>
-              <td className="border px-4 py-2 text-right">{mode === "edit" ? (
-                <input
+              ) : item.quantity
+            ) : null}
+          </td>
+          <td className="border px-4 py-2">
+            {item.level === 3 ? (
+              mode === "edit" ? (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="w-full justify-between h-8">
+                      {item.unit || "Unité"}
+                      <ChevronDown className="h-3 w-3 ml-1" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-48 p-0">
+                    <div className="max-h-[200px] overflow-y-auto">
+                      {["u", "h", "m", "m²", "m³"].map((unit) => (
+                        <div
+                          key={unit}
+                          className="p-2 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => updateQuoteItem({ ...item, unit })}
+                        >
+                          {unit}
+                        </div>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              ) : item.unit
+            ) : null}
+          </td>
+          <td className="border px-4 py-2 text-right">
+            {item.level === 3 ? (
+              mode === "edit" ? (
+                <Input
                   type="number"
-                  value={item.unitPrice ?? ""}
-                  style={{ width: "70px" }}
                   min="0"
+                  value={item.unitPrice ?? ""}
                   onChange={e => updateQuoteItem({ ...item, unitPrice: parseFloat(e.target.value) || 0 })}
-                  className="text-right border-none bg-transparent"
+                  className="h-8 w-full text-right border-none bg-transparent"
                   placeholder="0,00"
                 />
-              ) : formatCurrency(item.unitPrice)}</td>
-              <td className="border px-4 py-2 text-right">{formatCurrency(item.totalHT)}</td>
-              {mode === "edit" && (
-                <td className="border px-2 py-2">
-                  <Button variant="ghost" size="sm" onClick={() => deleteQuoteItem(item.id!)}>
-                    <X className="h-4 w-4 text-red-500" />
-                  </Button>
-                </td>
+              ) : formatCurrency(item.unitPrice)
+            ) : null}
+          </td>
+          <td className="border px-4 py-2 text-center">
+            {item.level === 3 ? (
+              mode === "edit" ? (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="w-full justify-between h-8">
+                      {item.vat}%
+                      <ChevronDown className="h-3 w-3 ml-1" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-48 p-0">
+                    <div className="max-h-[200px] overflow-y-auto">
+                      {[0, 5.5, 10, 20].map((rate) => (
+                        <div
+                          key={rate}
+                          className="p-2 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => updateQuoteItem({ ...item, vat: rate })}
+                        >
+                          {rate}%
+                        </div>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              ) : `${item.vat}%`
+            ) : null}
+          </td>
+          <td className="border px-4 py-2 text-right">
+            <div className="flex items-center justify-end">
+              <span>{formatCurrency(item.totalHT)}</span>
+              {mode === "edit" && item.level === 3 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0 ml-1 opacity-0 group-hover:opacity-100"
+                  onClick={() => deleteQuoteItem(item.id!)}
+                >
+                  <Trash2 className="h-4 w-4 text-red-500" />
+                </Button>
               )}
-            </tr>
-          ))
-        : null,
-    [currentQuote?.items, mode, updateQuoteItem, deleteQuoteItem]
-  );
+            </div>
+          </td>
+        </tr>
+        {item.details && (
+          <tr className="bg-gray-50">
+            <td className="border px-4 py-2"></td>
+            <td className="border px-4 py-2" colSpan={6}>
+              <div className="text-sm text-gray-600">{item.details}</div>
+              {mode === "edit" && (
+                <Button variant="outline" size="sm" className="mt-2 text-blue-500 bg-white">
+                  <Settings className="h-4 w-4 mr-1" /> Configurer les éléments
+                </Button>
+              )}
+            </td>
+          </tr>
+        )}
+      </React.Fragment>
+    ));
+  }, [currentQuote?.items, mode, updateQuoteItem, deleteQuoteItem]);
 
   // Ajout dynamique d'un item
-  function addItem(type: string) {
+  function addItem(type: "Fourniture" | "Main d'oeuvre" | "Ouvrage" | "Titre" | "Sous-titre" | "Texte" | "Saut de page") {
     addQuoteItem({
-      designation: type === "Section" ? "Nouvelle section" : "",
+      designation: type === "Titre" || type === "Sous-titre" ? "Nouvelle section" : "",
       quantity: type === "Fourniture" || type === "Main d'oeuvre" || type === "Ouvrage" ? 1 : 0,
       unit: "m²",
       unitPrice: 0,
       vat: 20,
       totalHT: 0,
       type,
-      level: type === "Section" ? 1 : 3,
-      // parentId: à gérer si structure...
+      level: type === "Titre" ? 1 : type === "Sous-titre" ? 2 : 3,
     });
   }
 
@@ -125,42 +264,69 @@ export default function InvoiceCreator() {
     }
   }
 
+  // Mise à jour des conditions de paiement
+  function updatePaymentConditions() {
+    if (currentQuote) {
+      const paymentConditions = `Acompte de ${depositPercentage} % soit ${depositAmount.toFixed(2)} € TTC\nMéthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire`;
+      updateQuote({ ...currentQuote, paymentConditions });
+    }
+    setShowDepositInput(false);
+  }
+
+  // Gestion du client et du projet sélectionnés
+  const selectedClient = currentQuote?.clientId ? clients.find(c => c.id === currentQuote.clientId) : null;
+  const selectedProject = currentQuote?.projectId ? projects.find(p => p.id === currentQuote.projectId) : null;
+
   // Menu header (navigation, options, save, cancel)
   const handleSave = () => {
-    // Déjà persisté en temps réel dans updateQuote
-    // On peut forcer un save manuel ou show toast, etc
+    if (currentQuote) {
+      if (description !== currentQuote.description) {
+        updateQuote({ ...currentQuote, description });
+      }
+      updatePaymentConditions();
+    }
   };
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       {/* Top Barre Nav */}
-      <header className="flex items-center justify-between border-b bg-white px-4 py-2">
+      <header className="flex items-center justify-between border-b bg-white px-4 py-2 sticky top-0 z-10">
         <div className="flex items-center space-x-4">
           <h1 className="text-lg font-medium">Nouveau devis</h1>
           <div className="h-8 border-r" />
-          <Button variant={mode === "edit" ? "ghost" : "outline"} size="sm" className="text-blue-500 flex items-center gap-1" onClick={() => setMode("edit")}>
-            <Edit className="h-4 w-4" />
+          <Button 
+            variant={mode === "edit" ? "default" : "ghost"} 
+            size="sm" 
+            className={mode === "edit" ? "text-blue-500 bg-blue-50" : "text-gray-500"} 
+            onClick={() => setMode("edit")}
+          >
+            <Edit className="h-4 w-4 mr-1" />
             <span>Édition</span>
           </Button>
-          <Button variant={mode === "preview" ? "ghost" : "outline"} size="sm" className="flex items-center gap-1" onClick={() => setMode("preview")}>
-            <Eye className="h-4 w-4" />
+          <Button 
+            variant={mode === "preview" ? "default" : "ghost"} 
+            size="sm" 
+            className={mode === "preview" ? "text-blue-500 bg-blue-50" : "text-gray-500"}
+            onClick={() => setMode("preview")}
+          >
+            <Eye className="h-4 w-4 mr-1" />
             <span>Prévisualisation</span>
           </Button>
         </div>
         <div className="flex items-center space-x-2">
           <div className="relative">
             <Button variant="outline" size="sm">
-              Options <span className="ml-1">▼</span>
+              Options <ChevronDown className="h-3 w-3 ml-1" />
             </Button>
           </div>
           <Button variant="outline" size="sm" onClick={() => navigate("/")}>
             Annuler
           </Button>
-          <Button variant="primary" size="sm" className="bg-blue-500 text-white hover:bg-blue-600" onClick={handleSave}>
+          <Button variant="blue" size="sm" onClick={handleSave}>
             Enregistrer
           </Button>
-          <Button variant="success" size="sm" className="bg-green-500 text-white hover:bg-green-600">
-            Finaliser et envoyer <span className="ml-1">▼</span>
+          <Button variant="blue" size="sm" className="bg-green-500 text-white hover:bg-green-600">
+            Finaliser et envoyer <ChevronDown className="h-3 w-3 ml-1" />
           </Button>
           <Button variant="ghost" size="sm" onClick={() => { setCurrentQuote(null); navigate("/"); }}>
             <X className="h-5 w-5" />
@@ -190,89 +356,189 @@ export default function InvoiceCreator() {
             </div>
           </div>
           {/* Bloc devis */}
-          <div className="bg-white p-6 rounded-md border">
+          <div className="bg-white p-6 rounded-md border shadow-sm">
             {/* En-tête devis */}
             <div className="flex justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold">Devis n°{currentQuote?.number || ""}</h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl font-bold">Devis n°{currentQuote?.number || ""}</h2>
+                  <Button variant="ghost" size="sm" className="p-0 h-6 w-6">
+                    <Pencil className="h-4 w-4 text-gray-500" />
+                  </Button>
+                </div>
                 <p className="text-sm text-gray-600">En date du {formatDate(currentQuote?.date)}</p>
-                <p className="text-sm text-gray-600">Valable jusqu&apos;au {formatDate(currentQuote?.validUntil)}</p>
-                <p className="text-sm text-gray-600">
-                  Début des travaux le{" "}
-                  <a href="#" className="text-blue-500">
-                    définir
-                  </a>
-                </p>
-                <p className="text-sm text-gray-600">
-                  Durée estimée à{" "}
-                  <a href="#" className="text-blue-500">
-                    définir
-                  </a>
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm text-gray-600">Valable jusqu'au {formatDate(currentQuote?.validUntil)}</p>
+                  <Button variant="ghost" size="sm" className="p-0 h-6 w-6">
+                    <Pencil className="h-4 w-4 text-gray-500" />
+                  </Button>
+                </div>
               </div>
               <div className="space-y-2 w-80">
-                <Select value={currentQuote?.clientId} onValueChange={v => updateQuoteField("clientId", v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un client" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clients.map((client) => (
-                      <SelectItem value={client.id} key={client.id}>{client.firstName} {client.lastName}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={currentQuote?.projectId} onValueChange={v => updateQuoteField("projectId", v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un chantier" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {projects.map(project => (
-                      <SelectItem value={project.id} key={project.id}>{project.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Popover open={showClientDropdown} onOpenChange={setShowClientDropdown}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-between"
+                      onClick={() => setShowClientDropdown(true)}
+                    >
+                      {selectedClient ? `${selectedClient.firstName} ${selectedClient.lastName}` : "Sélectionner un client"}
+                      <ChevronDown className="h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-0" align="end">
+                    <div className="p-2">
+                      <Input placeholder="Rechercher..." className="mb-2" />
+                      <div className="max-h-[200px] overflow-y-auto">
+                        {clients.map((client) => (
+                          <div
+                            key={client.id}
+                            className="p-2 hover:bg-gray-100 cursor-pointer rounded"
+                            onClick={() => {
+                              updateQuoteField("clientId", client.id);
+                              setShowClientDropdown(false);
+                            }}
+                          >
+                            {client.firstName} {client.lastName}
+                          </div>
+                        ))}
+                      </div>
+                      <Button
+                        className="w-full mt-2 bg-blue-500 text-white hover:bg-blue-600"
+                        onClick={() => {
+                          setShowClientDropdown(false);
+                        }}
+                      >
+                        Nouveau client
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+
+                <Popover open={showProjectDropdown} onOpenChange={setShowProjectDropdown}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-between"
+                      onClick={() => setShowProjectDropdown(true)}
+                    >
+                      {selectedProject ? selectedProject.name : "Sélectionner un chantier"}
+                      <ChevronDown className="h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-0" align="end">
+                    <div className="p-2">
+                      <Input placeholder="Rechercher..." className="mb-2" />
+                      <div className="max-h-[200px] overflow-y-auto">
+                        {selectedClient &&
+                          projects
+                            .filter((project) => project.client === selectedClient.id)
+                            .map((project) => (
+                              <div
+                                key={project.id}
+                                className="p-2 hover:bg-gray-100 cursor-pointer rounded"
+                                onClick={() => {
+                                  updateQuoteField("projectId", project.id);
+                                  setShowProjectDropdown(false);
+                                }}
+                              >
+                                {project.name}
+                              </div>
+                            ))}
+                        {(!selectedClient ||
+                          projects.filter((project) => selectedClient && project.client === selectedClient.id)
+                            .length === 0) && <div className="p-2 text-gray-500">Aucun résultat trouvé</div>}
+                      </div>
+                      <Button
+                        className="w-full mt-2 bg-blue-500 text-white hover:bg-blue-600"
+                        onClick={() => {
+                          setShowProjectDropdown(false);
+                        }}
+                      >
+                        Nouveau chantier
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
+
+            {/* Client et informations projet */}
+            {selectedClient && (
+              <div className="mb-4 text-right">
+                <p className="font-medium">
+                  {selectedClient.civility} {selectedClient.firstName} {selectedClient.lastName}
+                </p>
+                <p>{selectedClient.address}</p>
+                <p>
+                  {selectedClient.zipCode} {selectedClient.city}
+                </p>
+              </div>
+            )}
+
+            {selectedProject && (
+              <div className="mb-4">
+                <p className="font-medium">{selectedProject.name}</p>
+                <p className="text-sm text-gray-600">{selectedProject.description}</p>
+              </div>
+            )}
+
             {/* Ajout description */}
-            <div className="mb-4">
-              {mode === "edit" && (
-                <Button variant="ghost" size="sm" className="text-blue-500" onClick={() => setShowDescription(d => !d)}>
-                  <Plus className="h-4 w-4 mr-1" />{" "}
-                  {showDescription ? "Cacher la description" : "Ajouter une description"}
+            {!showDescription ? (
+              <div className="mb-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-blue-500 flex items-center"
+                  onClick={() => setShowDescription(true)}
+                >
+                  <CirclePlus className="h-4 w-4 mr-1" />
+                  Ajouter une description
                 </Button>
-              )}
-              {showDescription && (
-                <Textarea 
-                  value={description}
-                  onChange={e => setDescription(e.target.value)}
-                  className="w-full my-2"
-                  onBlur={() => currentQuote && updateQuote({ ...currentQuote, description })}
-                />
-              )}
-              {(mode === "preview" && currentQuote?.description) && (
-                <div className="text-sm text-gray-700 bg-gray-50 rounded p-2 mb-2">
-                  {currentQuote.description}
+              </div>
+            ) : (
+              <div className="mb-4">
+                <div className="flex items-center mb-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-blue-500 flex items-center"
+                    onClick={() => setShowDescription(false)}
+                  >
+                    Masquer la description
+                  </Button>
                 </div>
-              )}
-            </div>
+                {mode === "edit" ? (
+                  <Textarea 
+                    value={description}
+                    onChange={e => setDescription(e.target.value)}
+                    className="w-full my-2"
+                    onBlur={() => currentQuote && updateQuote({ ...currentQuote, description })}
+                  />
+                ) : (
+                  <div className="whitespace-pre-line bg-gray-50 rounded p-3 border">{description}</div>
+                )}
+              </div>
+            )}
+
             {/* Table des items */}
             <div className="mb-6 overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-blue-500 text-white">
-                    <th className="border px-4 py-2 text-left">N°</th>
+                    <th className="border px-4 py-2 text-left w-16">N°</th>
                     <th className="border px-4 py-2 text-left">Désignation</th>
-                    <th className="border px-4 py-2 text-right">Qté</th>
-                    <th className="border px-4 py-2 text-left">Unité</th>
-                    <th className="border px-4 py-2 text-right">Prix U. HT</th>
-                    <th className="border px-4 py-2 text-right">Total HT</th>
-                    {mode === "edit" && <th className="border px-2"></th>}
+                    <th className="border px-4 py-2 text-right w-24">Qté</th>
+                    <th className="border px-4 py-2 text-left w-24">Unité</th>
+                    <th className="border px-4 py-2 text-right w-28">Prix U. HT</th>
+                    <th className="border px-4 py-2 text-center w-24">TVA</th>
+                    <th className="border px-4 py-2 text-right w-28">Total HT</th>
                   </tr>
                 </thead>
                 <tbody>
                   {tableRows && tableRows.length > 0 ? tableRows : (
                     <tr className="bg-white h-16">
-                      <td colSpan={mode === "edit" ? 7 : 6} className="py-6 text-center text-gray-500">
+                      <td colSpan={7} className="border px-4 py-8 text-center text-gray-500">
                         Cliquez sur un des boutons ci-dessous pour ajouter un élément à votre document
                       </td>
                     </tr>
@@ -280,21 +546,27 @@ export default function InvoiceCreator() {
                 </tbody>
               </table>
             </div>
+
             {/* Ajout rapide d'item */}
-            <div className="flex mb-6 space-x-2">
-              <Button variant="outline" size="sm" className="text-blue-500" onClick={() => addItem("Fourniture")}>
-                <Plus className="h-4 w-4 mr-1" /> Fourniture
-              </Button>
-              <Button variant="outline" size="sm" className="text-blue-500" onClick={() => addItem("Main d'oeuvre")}>
-                <Plus className="h-4 w-4 mr-1" /> Main d'oeuvre
-              </Button>
-              <Button variant="outline" size="sm" className="text-blue-500" onClick={() => addItem("Ouvrage")}>
-                <Plus className="h-4 w-4 mr-1" /> Ouvrage
-              </Button>
-              <Button variant="outline" size="sm" className="text-blue-500" onClick={() => addItem("Section")}>
-                Section
-              </Button>
-              <div className="ml-auto space-x-2">
+            <div className="flex mb-6 justify-between">
+              <div className="space-x-2">
+                <Button variant="outline" size="sm" className="text-blue-500" onClick={() => addItem("Fourniture")}>
+                  <Plus className="h-4 w-4 mr-1" /> Fourniture
+                </Button>
+                <Button variant="outline" size="sm" className="text-blue-500" onClick={() => addItem("Main d'oeuvre")}>
+                  <Plus className="h-4 w-4 mr-1" /> Main d'oeuvre
+                </Button>
+                <Button variant="outline" size="sm" className="text-blue-500" onClick={() => addItem("Ouvrage")}>
+                  <Plus className="h-4 w-4 mr-1" /> Ouvrage
+                </Button>
+              </div>
+              <div className="space-x-2">
+                <Button variant="outline" size="sm" onClick={() => addItem("Titre")}>
+                  Titre
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => addItem("Sous-titre")}>
+                  Sous-titre
+                </Button>
                 <Button variant="outline" size="sm" onClick={() => addItem("Texte")}>
                   Texte
                 </Button>
@@ -303,19 +575,63 @@ export default function InvoiceCreator() {
                 </Button>
               </div>
             </div>
+
+            <div className="text-right mb-4">
+              {!showDiscount ? (
+                <Button variant="ghost" size="sm" className="text-blue-500" onClick={() => setShowDiscount(true)}>
+                  <CirclePlus className="h-4 w-4 mr-1" /> Ajouter une remise
+                </Button>
+              ) : (
+                <Button variant="ghost" size="sm" className="text-blue-500" onClick={() => setShowDiscount(false)}>
+                  <Trash2 className="h-4 w-4 mr-1" /> Supprimer la remise
+                </Button>
+              )}
+            </div>
+
             {/* Paiement/total */}
             <div className="flex justify-between mb-6">
               <div className="w-1/2">
-                <h3 className="text-lg font-medium mb-2">
-                  Conditions de paiement{" "}
-                  <Button variant="ghost" size="sm" className="text-blue-500 p-0 h-auto">
-                    <Plus className="h-4 w-4 mr-1" /> Ajouter une condition
-                  </Button>
-                </h3>
-                <p className="text-sm mb-2">Méthodes de paiement acceptées : Chèque, Espèces</p>
+                <h3 className="text-lg font-medium mb-2">Conditions de paiement</h3>
+                {!showDepositInput ? (
+                  <p className="text-sm mb-2">
+                    Acompte de {depositPercentage} % soit {depositAmount.toFixed(2)} € TTC
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="ml-2 p-0 h-6 w-6"
+                      onClick={() => setShowDepositInput(true)}
+                    >
+                      <Pencil className="h-4 w-4 text-gray-500" />
+                    </Button>
+                  </p>
+                ) : (
+                  <div className="flex items-center mb-2 gap-2">
+                    <span className="text-sm">Acompte de</span>
+                    <Input
+                      type="number"
+                      value={depositPercentage}
+                      onChange={(e) => setDepositPercentage(parseInt(e.target.value) || 0)}
+                      className="w-16 h-8"
+                    />
+                    <span className="text-sm">%</span>
+                    <span className="text-sm">({depositAmount.toFixed(2)} € TTC)</span>
+                    <Button
+                      size="sm"
+                      className="bg-blue-500 text-white hover:bg-blue-600"
+                      onClick={updatePaymentConditions}
+                    >
+                      Valider
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => setShowDepositInput(false)}>
+                      Annuler
+                    </Button>
+                  </div>
+                )}
+                <p className="text-sm mb-2">Méthodes de paiement acceptées : Chèque, Virement bancaire, Carte bancaire</p>
                 <Button variant="ghost" size="sm" className="text-blue-500 p-0 h-auto">
                   <Plus className="h-4 w-4 mr-1" /> Ajouter texte libre
                 </Button>
+
                 <h3 className="text-lg font-medium mt-4 mb-2">
                   Gestion des déchets{" "}
                   <Button variant="ghost" size="sm" className="text-blue-500 p-0 h-auto">
@@ -324,18 +640,27 @@ export default function InvoiceCreator() {
                 </h3>
               </div>
               <div className="w-1/3">
-                <div className="bg-gray-50 p-4 rounded">
+                <div className="bg-gray-50 p-4 rounded border">
                   <div className="flex justify-between mb-2">
                     <span>Total net HT</span>
-                    <span>{formatCurrency(currentQuote?.totalHT)}</span>
+                    <span>{formatCurrency(subtotalHT)}</span>
                   </div>
+
+                  {tvaTotals.map((tva, index) => (
+                    <div key={index} className="flex justify-between mb-2">
+                      <span>TVA {tva.rate} %</span>
+                      <span>{tva.amount.toFixed(2)} €</span>
+                    </div>
+                  ))}
+
                   <div className="flex justify-between font-bold text-white bg-blue-500 p-2 rounded">
                     <span>NET À PAYER</span>
-                    <span>{formatCurrency(currentQuote?.totalTTC)}</span>
+                    <span>{formatCurrency(totalTTC)}</span>
                   </div>
                 </div>
               </div>
             </div>
+
             {/* Bas de page */}
             <div className="mt-8">
               <h3 className="text-lg font-medium mb-2">Notes de bas de page</h3>
