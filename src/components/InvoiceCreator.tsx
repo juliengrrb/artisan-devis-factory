@@ -1,3 +1,4 @@
+
 import React, { useMemo, useEffect, useState } from "react";
 import { 
   Edit, 
@@ -22,6 +23,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { useAppContext } from "@/context/AppContext";
 import { useNavigate } from "react-router-dom";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 // Interfaces locales
 interface Client {
@@ -46,6 +48,7 @@ interface Project {
   address?: string;
 }
 
+// Interface mise à jour avec les propriétés d'édition
 interface LineItem {
   id: string;
   designation: string;
@@ -180,27 +183,74 @@ export default function InvoiceCreator() {
   // Utilitaire : numérotation automatique
   const buildNumber = (item: any, index: number, items: any[]) => {
     if(item.type === "Titre") {
-      return `${index+1}`;
+      // Pour les titres, on utilise juste leur position
+      const titleIndex = items.filter((it, idx) => it.type === "Titre" && idx <= index).length;
+      return `${titleIndex}`;
     }
+    
     if(item.type === "Sous-titre") {
-      // Trouver l'index du dernier titre avant ce sous-titre
-      let titleIdx = 0;
-      for(let i=index; i>=0; i--) {
-        if (items[i].type === "Titre") { titleIdx = i+1; break; }
+      // Pour les sous-titres, on cherche le dernier titre avant
+      let lastTitleIndex = 0;
+      for(let i = index; i >= 0; i--) {
+        if(items[i].type === "Titre") {
+          lastTitleIndex = items.filter((it, idx) => it.type === "Titre" && idx <= i).length;
+          break;
+        }
       }
-      return `${titleIdx}.${items.filter((it, k) => k<=index && it.type==="Sous-titre").length}`;
+      
+      // Compter combien de sous-titres après ce titre et avant cet index
+      let subTitleCount = 0;
+      let foundTitle = false;
+      for(let i = 0; i < index; i++) {
+        if(!foundTitle && items[i].type === "Titre") {
+          if(items.filter((it, idx) => it.type === "Titre" && idx <= i).length === lastTitleIndex) {
+            foundTitle = true;
+          }
+        }
+        
+        if(foundTitle && items[i].type === "Sous-titre") {
+          subTitleCount++;
+        }
+      }
+      
+      return `${lastTitleIndex}.${subTitleCount + 1}`;
     }
+    
     if(item.type === "Fourniture" || item.type === "Main d'oeuvre" || item.type === "Ouvrage") {
-      // parent titre & sous-titre (affichage X.Y.Z)
-      let titleIdx = 0; let sousIdx = 0;
-      for(let i=index; i>=0; i--) {
-        if (items[i].type==="Titre") { titleIdx = i+1; break; }
+      // Pour les autres types, on cherche le dernier sous-titre ou titre
+      let prefix = "";
+      let itemCount = 0;
+      
+      // Chercher le dernier titre ou sous-titre
+      for(let i = index; i >= 0; i--) {
+        if(items[i].type === "Sous-titre") {
+          // Utiliser le numéro du sous-titre comme préfixe
+          prefix = buildNumber(items[i], i, items);
+          break;
+        } else if(items[i].type === "Titre") {
+          // Si on trouve un titre sans sous-titre avant, on utilise le titre
+          prefix = buildNumber(items[i], i, items);
+          break;
+        }
       }
-      for(let i=index; i>=0; i--) {
-        if (items[i].type==="Sous-titre") { sousIdx = i+1-titleIdx; break;}
+      
+      // Compter combien d'éléments du même type après le préfixe et avant cet index
+      let foundAnchor = false;
+      for(let i = 0; i < index; i++) {
+        if(!foundAnchor && (items[i].type === "Titre" || items[i].type === "Sous-titre")) {
+          if(buildNumber(items[i], i, items) === prefix) {
+            foundAnchor = true;
+          }
+        }
+        
+        if(foundAnchor && (items[i].type === "Fourniture" || items[i].type === "Main d'oeuvre" || items[i].type === "Ouvrage")) {
+          itemCount++;
+        }
       }
-      return `${titleIdx}.${sousIdx+1}.${items.filter((it, k) => k<=index && (it.type==="Fourniture"||it.type==="Main d'oeuvre"||it.type==="Ouvrage")).length}`;
+      
+      return `${prefix}.${itemCount + 1}`;
     }
+    
     return "";
   };
 
@@ -229,6 +279,28 @@ export default function InvoiceCreator() {
     [items[index], items[newIndex]] = [items[newIndex], items[index]];
     updateQuote({ ...currentQuote, items });
   }
+
+  // Gestion des touches "Enter" pour valider les inputs
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>, 
+    item: any, 
+    field: string, 
+    editField: string
+  ) => {
+    if (e.key === 'Enter') {
+      // Mettre à jour l'item et désactiver l'édition
+      const updates: any = {
+        [field]: e.currentTarget.value,
+        [editField]: false
+      };
+      
+      if (field === 'quantity' || field === 'unitPrice') {
+        updates[field] = parseFloat(e.currentTarget.value) || 0;
+      }
+      
+      updateQuoteItem({ ...item, ...updates });
+    }
+  };
 
   // Table des items du devis
   const tableRows = useMemo(() => {
@@ -274,11 +346,12 @@ export default function InvoiceCreator() {
           {item.isEditable ? (
             <Input
               autoFocus
-              value={item.designation}
+              value={item.designation || ""}
               placeholder="Saisir..."
               className="w-full border-b border-blue-300"
               onBlur={e => { updateQuoteItem({ ...item, designation: e.target.value, isEditable: false })}}
               onChange={e => updateQuoteItem({ ...item, designation: e.target.value })}
+              onKeyDown={e => handleKeyDown(e, item, 'designation', 'isEditable')}
             />
           ) : (
             <span>{item.designation || <span className="text-gray-300">Cliquer pour saisir</span>}</span>
@@ -297,8 +370,9 @@ export default function InvoiceCreator() {
                 value={item.quantity || ""}
                 placeholder="Qté"
                 className="w-full border-b border-blue-300"
-                onChange={e => updateQuoteItem({ ...item, quantity: parseFloat(e.target.value), isEditableQty:true })}
-                onBlur={e => updateQuoteItem({ ...item, quantity: parseFloat(e.target.value), isEditableQty: false })}
+                onChange={e => updateQuoteItem({ ...item, quantity: parseFloat(e.target.value) || 0, isEditableQty:true })}
+                onBlur={e => updateQuoteItem({ ...item, quantity: parseFloat(e.target.value) || 0, isEditableQty: false })}
+                onKeyDown={e => handleKeyDown(e, item, 'quantity', 'isEditableQty')}
               />
             ) : (
               <span className={item.quantity ? "" : "text-gray-300"}>{item.quantity || "Qté"}</span>
@@ -319,6 +393,7 @@ export default function InvoiceCreator() {
                 className="w-full border-b border-blue-300"
                 onBlur={e => updateQuoteItem({ ...item, unit: e.target.value, isEditableUnit: false })}
                 onChange={e => updateQuoteItem({ ...item, unit: e.target.value, isEditableUnit:true })}
+                onKeyDown={e => handleKeyDown(e, item, 'unit', 'isEditableUnit')}
               />
             ) : (
               <span className={item.unit ? "" : "text-gray-300"}>{item.unit || "Unité"}</span>
@@ -339,8 +414,9 @@ export default function InvoiceCreator() {
                 value={item.unitPrice || ""}
                 placeholder="Prix U. HT"
                 className="w-full border-b border-blue-300"
-                onBlur={e => updateQuoteItem({ ...item, unitPrice: parseFloat(e.target.value), isEditablePU:false })}
-                onChange={e => updateQuoteItem({ ...item, unitPrice: parseFloat(e.target.value), isEditablePU:true })}
+                onBlur={e => updateQuoteItem({ ...item, unitPrice: parseFloat(e.target.value) || 0, isEditablePU:false })}
+                onChange={e => updateQuoteItem({ ...item, unitPrice: parseFloat(e.target.value) || 0, isEditablePU:true })}
+                onKeyDown={e => handleKeyDown(e, item, 'unitPrice', 'isEditablePU')}
               />
             ) : (
               <span className={item.unitPrice ? "" : "text-gray-300"}>{item.unitPrice || "Prix U. HT"}</span>
@@ -361,8 +437,9 @@ export default function InvoiceCreator() {
                 value={item.vat || ""}
                 placeholder="TVA"
                 className="w-full border-b border-blue-300"
-                onBlur={e => updateQuoteItem({ ...item, vat: parseFloat(e.target.value), isEditableTVA:false })}
-                onChange={e => updateQuoteItem({ ...item, vat: parseFloat(e.target.value), isEditableTVA:true })}
+                onBlur={e => updateQuoteItem({ ...item, vat: parseFloat(e.target.value) || 0, isEditableTVA:false })}
+                onChange={e => updateQuoteItem({ ...item, vat: parseFloat(e.target.value) || 0, isEditableTVA:true })}
+                onKeyDown={e => handleKeyDown(e, item, 'vat', 'isEditableTVA')}
               />
             ) : (
               <span className={item.vat ? "" : "text-gray-300"}>{item.vat || "TVA"}</span>
@@ -508,7 +585,7 @@ export default function InvoiceCreator() {
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
-      {/* Top Barre Nav */}
+      {/* Top Barre Nav - Une seule barre au lieu de deux */}
       <header className="flex items-center justify-between border-b bg-white px-4 py-2 sticky top-0 z-10">
         <div className="flex items-center space-x-4">
           <h1 className="text-lg font-medium">Nouveau devis</h1>
@@ -1244,3 +1321,4 @@ export default function InvoiceCreator() {
     </div>
   );
 }
+
