@@ -14,14 +14,53 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea, EditableTextarea } from "@/components/ui/textarea";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { useAppContext } from "@/context/AppContext";
 import { useNavigate } from "react-router-dom";
-import { Client, QuoteItem, Project } from "@/types";
+
+// Interfaces locales
+interface Client {
+  id: string;
+  firstName: string;
+  lastName: string;
+  civility: string;
+  address: string;
+  zipCode: string;
+  city: string;
+  email?: string;
+  phone?: string;
+  type?: "particulier" | "professionnel";
+}
+
+interface Project {
+  id: string;
+  name: string;
+  description?: string;
+  client: string; // client ID
+  differentAddress?: boolean;
+  address?: string;
+}
+
+interface LineItem {
+  id: string;
+  designation: string;
+  quantity?: number;
+  unit?: string;
+  unitPrice?: number;
+  vat?: number;
+  totalHT: number;
+  type: "Titre" | "Sous-titre" | "Texte" | "Fourniture" | "Main d'oeuvre" | "Ouvrage" | "Saut de page";
+  level: number;
+  parentId?: string;
+  details?: string[];
+}
 
 // Ce composant remplace entièrement l'ancien éditeur de devis
 export default function InvoiceCreator() {
@@ -51,9 +90,47 @@ export default function InvoiceCreator() {
   const [showClientDropdown, setShowClientDropdown] = useState<boolean>(false);
   const [showProjectDropdown, setShowProjectDropdown] = useState<boolean>(false);
 
+  // Dialog modals
+  const [showNumberFormatModal, setShowNumberFormatModal] = useState<boolean>(false);
+  const [showValidityModal, setShowValidityModal] = useState<boolean>(false);
+  const [showClientModal, setShowClientModal] = useState<boolean>(false);
+  const [showProjectModal, setShowProjectModal] = useState<boolean>(false);
+
   // On permet d'éditer la description (petit état local sinon on override tout le quote)
   const [description, setDescription] = useState("");
   const [depositPercentage, setDepositPercentage] = useState<number>(10);
+  const [globalDiscount, setGlobalDiscount] = useState<number>(0);
+  const [discountType, setDiscountType] = useState<"percentage" | "amount">("percentage");
+
+  // State for client form
+  const [clientType, setClientType] = useState<"particulier" | "professionnel">("particulier");
+  const [clientTitle, setClientTitle] = useState("M");
+  const [clientLastName, setClientLastName] = useState("");
+  const [clientFirstName, setClientFirstName] = useState("");
+  const [clientAddress, setClientAddress] = useState("");
+  const [clientAddressComplement, setClientAddressComplement] = useState("");
+  const [clientPostalCode, setClientPostalCode] = useState("");
+  const [clientCity, setClientCity] = useState("");
+  const [clientCountry, setClientCountry] = useState("France");
+  const [clientEmail, setClientEmail] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
+
+  // State for project form
+  const [projectName, setProjectName] = useState("");
+  const [projectDifferentAddress, setProjectDifferentAddress] = useState(false);
+  const [projectNotes, setProjectNotes] = useState("");
+
+  // Number format
+  const [numberPrefix, setNumberPrefix] = useState("DEV");
+  const [numberSeparator, setNumberSeparator] = useState("-");
+  const [dateFormat, setDateFormat] = useState("year+month");
+  const [numberLength, setNumberLength] = useState("5");
+  const [currentNumber, setCurrentNumber] = useState("28");
+  const [quoteDate, setQuoteDate] = useState(new Date().toLocaleDateString("fr-FR"));
+  const [validUntil, setValidUntil] = useState(
+    new Date(new Date().setDate(new Date().getDate() + 30)).toLocaleDateString("fr-FR")
+  );
+  const [validityPeriod, setValidityPeriod] = useState("30 Jours");
 
   useEffect(() => {
     // Toujours avoir un devis courant existant pour édition
@@ -287,6 +364,100 @@ export default function InvoiceCreator() {
     }
   };
 
+  // Fonction pour créer un nouveau client
+  const createNewClient = () => {
+    // Simulation d'ajout d'un client
+    const newClient = {
+      id: `client-${Date.now()}`,
+      civility: clientTitle,
+      firstName: clientFirstName,
+      lastName: clientLastName,
+      address: clientAddress,
+      zipCode: clientPostalCode,
+      city: clientCity,
+      email: clientEmail,
+      phone: clientPhone
+    };
+    
+    // Reset form
+    setClientTitle("M");
+    setClientFirstName("");
+    setClientLastName("");
+    setClientAddress("");
+    setClientPostalCode("");
+    setClientCity("");
+    setClientEmail("");
+    setClientPhone("");
+    
+    // Close modal
+    setShowClientModal(false);
+    
+    // Simulation: Add to clients
+    // Dans une vraie app, on appellerait une fonction du contexte comme addClient(newClient)
+    alert("Le client serait ajouté ici (simulation)");
+  };
+
+  // Fonction pour créer un nouveau projet
+  const createNewProject = () => {
+    if (!selectedClient) {
+      alert("Veuillez d'abord sélectionner un client");
+      return;
+    }
+    
+    // Simulation d'ajout d'un projet
+    const newProject = {
+      id: `project-${Date.now()}`,
+      name: projectName,
+      description: projectNotes,
+      client: selectedClient.id,
+      differentAddress: projectDifferentAddress,
+    };
+    
+    // Reset form
+    setProjectName("");
+    setProjectNotes("");
+    setProjectDifferentAddress(false);
+    
+    // Close modal
+    setShowProjectModal(false);
+    
+    // Simulation: Add to projects
+    // Dans une vraie app, on appellerait une fonction du contexte comme addProject(newProject)
+    alert("Le projet serait ajouté ici (simulation)");
+  };
+
+  // Format du numéro de devis
+  const generateQuoteNumber = () => {
+    const yearMonth = dateFormat === "year+month" 
+      ? `${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}` 
+      : new Date().getFullYear().toString();
+    
+    const paddedNumber = currentNumber.padStart(parseInt(numberLength), '0');
+    
+    return `${numberPrefix}${numberSeparator}${yearMonth}${numberSeparator}${paddedNumber}`;
+  };
+
+  // Mise à jour de la période de validité
+  const updateValidityPeriod = () => {
+    const today = new Date();
+    let futureDate = new Date();
+    
+    if (validityPeriod === "15 Jours") {
+      futureDate.setDate(today.getDate() + 15);
+    } else if (validityPeriod === "30 Jours") {
+      futureDate.setDate(today.getDate() + 30);
+    } else if (validityPeriod === "45 Jours") {
+      futureDate.setDate(today.getDate() + 45);
+    } else if (validityPeriod === "60 Jours") {
+      futureDate.setDate(today.getDate() + 60);
+    } else if (validityPeriod === "90 Jours") {
+      futureDate.setDate(today.getDate() + 90);
+    }
+    
+    setValidUntil(futureDate.toLocaleDateString('fr-FR'));
+    setShowValidityModal(false);
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       {/* Top Barre Nav */}
@@ -361,15 +532,25 @@ export default function InvoiceCreator() {
             <div className="flex justify-between mb-6">
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-bold">Devis n°{currentQuote?.number || ""}</h2>
-                  <Button variant="ghost" size="sm" className="p-0 h-6 w-6">
+                  <h2 className="text-xl font-bold">Devis n°{currentQuote?.number || generateQuoteNumber()}</h2>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="p-0 h-6 w-6"
+                    onClick={() => setShowNumberFormatModal(true)}
+                  >
                     <Pencil className="h-4 w-4 text-gray-500" />
                   </Button>
                 </div>
-                <p className="text-sm text-gray-600">En date du {formatDate(currentQuote?.date)}</p>
+                <p className="text-sm text-gray-600">En date du {formatDate(currentQuote?.date) || quoteDate}</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-sm text-gray-600">Valable jusqu'au {formatDate(currentQuote?.validUntil)}</p>
-                  <Button variant="ghost" size="sm" className="p-0 h-6 w-6">
+                  <p className="text-sm text-gray-600">Valable jusqu'au {formatDate(currentQuote?.validUntil) || validUntil}</p>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="p-0 h-6 w-6"
+                    onClick={() => setShowValidityModal(true)}
+                  >
                     <Pencil className="h-4 w-4 text-gray-500" />
                   </Button>
                 </div>
@@ -386,7 +567,7 @@ export default function InvoiceCreator() {
                       <ChevronDown className="h-4 w-4 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-80 p-0" align="end">
+                  <PopoverContent className="w-80 p-0 z-50 bg-white" align="end">
                     <div className="p-2">
                       <Input placeholder="Rechercher..." className="mb-2" />
                       <div className="max-h-[200px] overflow-y-auto">
@@ -407,6 +588,7 @@ export default function InvoiceCreator() {
                         className="w-full mt-2 bg-blue-500 text-white hover:bg-blue-600"
                         onClick={() => {
                           setShowClientDropdown(false);
+                          setShowClientModal(true);
                         }}
                       >
                         Nouveau client
@@ -426,7 +608,7 @@ export default function InvoiceCreator() {
                       <ChevronDown className="h-4 w-4 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-80 p-0" align="end">
+                  <PopoverContent className="w-80 p-0 z-50 bg-white" align="end">
                     <div className="p-2">
                       <Input placeholder="Rechercher..." className="mb-2" />
                       <div className="max-h-[200px] overflow-y-auto">
@@ -453,6 +635,7 @@ export default function InvoiceCreator() {
                         className="w-full mt-2 bg-blue-500 text-white hover:bg-blue-600"
                         onClick={() => {
                           setShowProjectDropdown(false);
+                          setShowProjectModal(true);
                         }}
                       >
                         Nouveau chantier
@@ -646,6 +829,38 @@ export default function InvoiceCreator() {
                     <span>{formatCurrency(subtotalHT)}</span>
                   </div>
 
+                  {showDiscount && (
+                    <>
+                      <div className="flex items-center justify-between mb-2">
+                        <span>Remise globale</span>
+                        <div className="flex items-center">
+                          <Input
+                            type="number"
+                            value={globalDiscount}
+                            onChange={(e) => setGlobalDiscount(parseFloat(e.target.value) || 0)}
+                            className="w-20 h-8 mr-2"
+                          />
+                          <Select
+                            value={discountType}
+                            onValueChange={(value) => setDiscountType(value as "percentage" | "amount")}
+                          >
+                            <SelectTrigger className="w-20 h-8">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="percentage">%</SelectItem>
+                              <SelectItem value="amount">€ HT</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div className="flex justify-between mb-2">
+                        <span>Remise HT</span>
+                        <span>{formatCurrency(discountType === "percentage" ? subtotalHT * globalDiscount / 100 : globalDiscount)}</span>
+                      </div>
+                    </>
+                  )}
+
                   {tvaTotals.map((tva, index) => (
                     <div key={index} className="flex justify-between mb-2">
                       <span>TVA {tva.rate} %</span>
@@ -673,6 +888,339 @@ export default function InvoiceCreator() {
           </div>
         </main>
       </div>
+
+      {/* Client Modal */}
+      <Dialog open={showClientModal} onOpenChange={setShowClientModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Nouveau client</DialogTitle>
+          </DialogHeader>
+
+          <div className="py-4">
+            <div className="mb-4">
+              <h3 className="text-sm font-medium mb-2">Statut</h3>
+              <div className="flex">
+                <Button
+                  type="button"
+                  variant={clientType === "particulier" ? "default" : "outline"}
+                  className={clientType === "particulier" ? "rounded-r-none bg-blue-500 text-white" : "rounded-r-none"}
+                  onClick={() => setClientType("particulier")}
+                >
+                  Particulier
+                </Button>
+                <Button
+                  type="button"
+                  variant={clientType === "professionnel" ? "default" : "outline"}
+                  className={
+                    clientType === "professionnel" ? "rounded-l-none bg-blue-500 text-white" : "rounded-l-none"
+                  }
+                  onClick={() => setClientType("professionnel")}
+                >
+                  Professionnel
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              <div>
+                <h3 className="text-sm font-medium mb-2">Civilité</h3>
+                <div className="flex">
+                  <Button
+                    type="button"
+                    variant={clientTitle === "M" ? "default" : "outline"}
+                    className={clientTitle === "M" ? "rounded-r-none bg-blue-500 text-white" : "rounded-r-none"}
+                    onClick={() => setClientTitle("M")}
+                  >
+                    M
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={clientTitle === "Mme" ? "default" : "outline"}
+                    className={
+                      clientTitle === "Mme"
+                        ? "rounded-l-none rounded-r-none bg-blue-500 text-white"
+                        : "rounded-l-none rounded-r-none"
+                    }
+                    onClick={() => setClientTitle("Mme")}
+                  >
+                    Mme
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={clientTitle === "M et Mme" ? "default" : "outline"}
+                    className={clientTitle === "M et Mme" ? "rounded-l-none bg-blue-500 text-white" : "rounded-l-none"}
+                    onClick={() => setClientTitle("M et Mme")}
+                  >
+                    M et Mme
+                  </Button>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium mb-2">Nom *</h3>
+                <Input value={clientLastName} onChange={(e) => setClientLastName(e.target.value)} />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium mb-2">Prénom</h3>
+                <Input value={clientFirstName} onChange={(e) => setClientFirstName(e.target.value)} />
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="text-sm font-medium mb-2">Adresse</h3>
+              <Input
+                className="mb-2"
+                placeholder="Rue et numéro de rue"
+                value={clientAddress}
+                onChange={(e) => setClientAddress(e.target.value)}
+              />
+              <Input
+                className="mb-2"
+                placeholder="Complément d'adresse (Bât, Appt...)"
+                value={clientAddressComplement}
+                onChange={(e) => setClientAddressComplement(e.target.value)}
+              />
+
+              <div className="grid grid-cols-2 gap-4 mb-2">
+                <Input
+                  placeholder="Code postal"
+                  value={clientPostalCode}
+                  onChange={(e) => setClientPostalCode(e.target.value)}
+                />
+                <Input placeholder="Ville" value={clientCity} onChange={(e) => setClientCity(e.target.value)} />
+              </div>
+
+              <Select value={clientCountry} onValueChange={setClientCountry}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Pays" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="France">France</SelectItem>
+                  <SelectItem value="Belgique">Belgique</SelectItem>
+                  <SelectItem value="Suisse">Suisse</SelectItem>
+                  <SelectItem value="Luxembourg">Luxembourg</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-sm font-medium mb-2">Adresse email</h3>
+                <Input value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium mb-2">Téléphone</h3>
+                <Input value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} />
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowClientModal(false)}>
+              Annuler
+            </Button>
+            <Button
+              className="bg-blue-500 text-white hover:bg-blue-600"
+              onClick={createNewClient}
+            >
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Project Modal */}
+      <Dialog open={showProjectModal} onOpenChange={setShowProjectModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Nouveau chantier</DialogTitle>
+          </DialogHeader>
+
+          <div className="py-4">
+            <div className="mb-4">
+              <h3 className="text-sm font-medium mb-2">Client</h3>
+              <Input 
+                value={selectedClient ? `${selectedClient.firstName} ${selectedClient.lastName}` : ""} 
+                disabled 
+              />
+            </div>
+
+            <div className="mb-4">
+              <h3 className="text-sm font-medium mb-2">Nom du chantier *</h3>
+              <Input
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                placeholder="Rénovation du restaurant rue"
+              />
+            </div>
+
+            <div className="mb-4 flex items-center">
+              <Checkbox
+                id="different-address"
+                checked={projectDifferentAddress}
+                onCheckedChange={(checked) => setProjectDifferentAddress(checked as boolean)}
+              />
+              <label
+                htmlFor="different-address"
+                className="ml-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Le chantier est à une adresse différente de celle du client
+              </label>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="text-sm font-medium mb-2">Notes</h3>
+              <Textarea value={projectNotes} onChange={(e) => setProjectNotes(e.target.value)} className="h-32" />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowProjectModal(false)}>
+              Annuler
+            </Button>
+            <Button
+              className="bg-blue-500 text-white hover:bg-blue-600"
+              onClick={createNewProject}
+            >
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Number Format Modal */}
+      <Dialog open={showNumberFormatModal} onOpenChange={setShowNumberFormatModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Format du numéro de devis</DialogTitle>
+          </DialogHeader>
+
+          <div className="py-4">
+            <div className="mb-4">
+              <h3 className="text-sm font-medium mb-2">Préfixe</h3>
+              <Input value={numberPrefix} onChange={(e) => setNumberPrefix(e.target.value)} placeholder="DEV" />
+            </div>
+
+            <div className="mb-4">
+              <h3 className="text-sm font-medium mb-2">Séparateur</h3>
+              <RadioGroup value={numberSeparator} onValueChange={setNumberSeparator} className="flex space-x-4">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="-" id="separator-dash" />
+                  <Label htmlFor="separator-dash">-</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="/" id="separator-slash" />
+                  <Label htmlFor="separator-slash">/</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="" id="separator-none" />
+                  <Label htmlFor="separator-none">Aucun</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="text-sm font-medium mb-2">Format de la date</h3>
+              <RadioGroup value={dateFormat} onValueChange={setDateFormat} className="flex space-x-4">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="year" id="date-year" />
+                  <Label htmlFor="date-year">Année</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="year+month" id="date-year-month" />
+                  <Label htmlFor="date-year-month">Année + Mois</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="text-sm font-medium mb-2">Longueur de numérotation</h3>
+              <RadioGroup value={numberLength} onValueChange={setNumberLength} className="flex space-x-4">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="3" id="length-3" />
+                  <Label htmlFor="length-3">3</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="4" id="length-4" />
+                  <Label htmlFor="length-4">4</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="5" id="length-5" />
+                  <Label htmlFor="length-5">5</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="6" id="length-6" />
+                  <Label htmlFor="length-6">6</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="text-sm font-medium mb-2">Numéro courant</h3>
+              <Input value={currentNumber} onChange={(e) => setCurrentNumber(e.target.value)} type="number" />
+            </div>
+
+            <div className="p-4 border rounded-md bg-gray-50 text-center">
+              <p className="text-xl font-medium">
+                {numberPrefix}
+                {numberSeparator}
+                {dateFormat === "year" ? "2025" : "202504"}
+                {numberSeparator}
+                {currentNumber.padStart(parseInt(numberLength), "0")}
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowNumberFormatModal(false)}>
+              Annuler
+            </Button>
+            <Button
+              className="bg-blue-500 text-white hover:bg-blue-600"
+              onClick={() => setShowNumberFormatModal(false)}
+            >
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Validity Period Modal */}
+      <Dialog open={showValidityModal} onOpenChange={setShowValidityModal}>
+        <DialogContent className="max-w-md">
+          <div className="py-4">
+            <Select value={validityPeriod} onValueChange={setValidityPeriod}>
+              <SelectTrigger>
+                <SelectValue placeholder="Durée de validité" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="15 Jours">15 Jours</SelectItem>
+                <SelectItem value="30 Jours">30 Jours</SelectItem>
+                <SelectItem value="45 Jours">45 Jours</SelectItem>
+                <SelectItem value="60 Jours">60 Jours</SelectItem>
+                <SelectItem value="90 Jours">90 Jours</SelectItem>
+                <SelectItem value="custom">Date personnalisée</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {validityPeriod === "custom" && <Input type="date" className="mt-2" />}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowValidityModal(false)}>
+              Annuler
+            </Button>
+            <Button
+              className="bg-blue-500 text-white hover:bg-blue-600"
+              onClick={updateValidityPeriod}
+            >
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
