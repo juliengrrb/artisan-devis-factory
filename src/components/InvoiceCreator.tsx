@@ -1,7 +1,5 @@
-
 import React, { useMemo, useEffect, useState } from "react";
 import { 
-  AlertTriangle, 
   Edit, 
   Eye, 
   Plus, 
@@ -60,6 +58,11 @@ interface LineItem {
   level: number;
   parentId?: string;
   details?: string[];
+  isEditable?: boolean;
+  isEditableQty?: boolean;
+  isEditableUnit?: boolean;
+  isEditablePU?: boolean;
+  isEditableTVA?: boolean;
 }
 
 // Ce composant remplace entièrement l'ancien éditeur de devis
@@ -174,165 +177,210 @@ export default function InvoiceCreator() {
     { rate: 20, amount: currentQuote?.totalTVA20 || 0 }
   ].filter(tva => tva.amount > 0);
 
+  // Utilitaire : numérotation automatique
+  const buildNumber = (item: any, index: number, items: any[]) => {
+    if(item.type === "Titre") {
+      return `${index+1}`;
+    }
+    if(item.type === "Sous-titre") {
+      // Trouver l'index du dernier titre avant ce sous-titre
+      let titleIdx = 0;
+      for(let i=index; i>=0; i--) {
+        if (items[i].type === "Titre") { titleIdx = i+1; break; }
+      }
+      return `${titleIdx}.${items.filter((it, k) => k<=index && it.type==="Sous-titre").length}`;
+    }
+    if(item.type === "Fourniture" || item.type === "Main d'oeuvre" || item.type === "Ouvrage") {
+      // parent titre & sous-titre (affichage X.Y.Z)
+      let titleIdx = 0; let sousIdx = 0;
+      for(let i=index; i>=0; i--) {
+        if (items[i].type==="Titre") { titleIdx = i+1; break; }
+      }
+      for(let i=index; i>=0; i--) {
+        if (items[i].type==="Sous-titre") { sousIdx = i+1-titleIdx; break;}
+      }
+      return `${titleIdx}.${sousIdx+1}.${items.filter((it, k) => k<=index && (it.type==="Fourniture"||it.type==="Main d'oeuvre"||it.type==="Ouvrage")).length}`;
+    }
+    return "";
+  };
+
+  // Ajout dynamique d'un item : TOUTES LES VALEURS PAR DEFAUT SONT VIDES, l'utilisateur peut éditer instantanément SANS SUPPRIMER DE VALEUR INITIALE
+  function addItem(type: "Fourniture" | "Main d'oeuvre" | "Ouvrage" | "Titre" | "Sous-titre" | "Saut de page") {
+    addQuoteItem({
+      designation: "",
+      quantity: undefined,
+      unit: "",
+      unitPrice: undefined,
+      vat: undefined,
+      totalHT: 0,
+      type,
+      level: type === "Titre" ? 1 : type === "Sous-titre" ? 2 : 3,
+      isEditable: true, // Pour entrée en mode édition immédiat
+    });
+  }
+
+  // Déplacement des lignes (ajout des petits boutons montée/descente)
+  // Nouvelle fonction pour déplacer une ligne
+  function moveItem(index: number, direction: -1 | 1) {
+    if (!currentQuote?.items) return;
+    const items = [...currentQuote.items];
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= items.length) return;
+    [items[index], items[newIndex]] = [items[newIndex], items[index]];
+    updateQuote({ ...currentQuote, items });
+  }
+
   // Table des items du devis
   const tableRows = useMemo(() => {
     if (!currentQuote?.items?.length) return null;
     
     return currentQuote.items.map((item, idx) => (
-      <React.Fragment key={item.id}>
-        <tr className={cn(
-          "group hover:bg-gray-50",
-          item.level === 1 ? "bg-blue-50" : "",
-          item.level === 2 ? "bg-blue-50/50" : "",
-        )}>
-          <td className="border px-4 py-2 text-center">
-            <div className="flex items-center justify-center">
-              {item.level < 3 && (
-                <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
-                  <ChevronDown className="h-3 w-3" />
-                </Button>
-              )}
-              <span>{idx + 1}</span>
-            </div>
-          </td>
-          <td className="border px-4 py-2" style={{ paddingLeft: `${(item.level || 0) * 16 + 16}px` }}>
-            {mode === "edit" ? (
-              <input
-                value={item.designation}
-                onChange={e => updateQuoteItem({ ...item, designation: e.target.value })}
-                className="w-full border-none bg-transparent"
-                placeholder="Désignation"
+      <tr className={cn(
+        "group hover:bg-gray-50",
+        item.type === "Titre" ? "bg-blue-50" : "",
+        item.type === "Sous-titre" ? "bg-blue-50/50" : "",
+      )} key={item.id}>
+        <td className="border px-4 py-2 text-center flex flex-col items-center">
+          <div className="flex items-center justify-center gap-1">
+            <span className="cursor-move text-gray-400">
+              {/* Icon poignée */}
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="7" cy="7" r="1.5" fill="#aaa"/><circle cx="7" cy="12" r="1.5" fill="#aaa"/><circle cx="7" cy="17" r="1.5" fill="#aaa"/><circle cx="12" cy="7" r="1.5" fill="#aaa"/><circle cx="12" cy="12" r="1.5" fill="#aaa"/><circle cx="12" cy="17" r="1.5" fill="#aaa"/></svg>
+            </span>
+            <span className="font-medium text-gray-700">{buildNumber(item, idx, currentQuote.items)}</span>
+          </div>
+          <div className="flex flex-col items-center gap-1 mt-1">
+            <button
+              className="text-gray-400 hover:text-blue-500 p-0.5"
+              disabled={idx===0}
+              onClick={() => moveItem(idx, -1)}
+              tabIndex={-1}
+            >
+              <svg width="16" height="16"><polygon points="8,4 12,10 4,10" fill="#aaa" /></svg>
+            </button>
+            <button
+              className="text-gray-400 hover:text-blue-500 p-0.5"
+              disabled={idx===currentQuote.items.length-1}
+              onClick={() => moveItem(idx, 1)}
+              tabIndex={-1}
+            >
+              <svg width="16" height="16"><polygon points="4,6 12,6 8,12" fill="#aaa" /></svg>
+            </button>
+          </div>
+        </td>
+        {/* Cellule Désignation - CLIQUABLE pour éditer directement, aucune valeur initiale imposée */}
+        <td className="border px-4 py-2"
+          onClick={() => updateQuoteItem({ ...item, isEditable: true })}
+        >
+          {item.isEditable ? (
+            <Input
+              autoFocus
+              value={item.designation}
+              placeholder="Saisir..."
+              className="w-full border-b border-blue-300"
+              onBlur={e => { updateQuoteItem({ ...item, designation: e.target.value, isEditable: false })}}
+              onChange={e => updateQuoteItem({ ...item, designation: e.target.value })}
+            />
+          ) : (
+            <span>{item.designation || <span className="text-gray-300">Cliquer pour saisir</span>}</span>
+          )}
+        </td>
+        {/* Quantité uniquement si pas "Titre"/"Sous-titre", editable direct */}
+        <td className="border px-4 py-2 text-right"
+          onClick={() => updateQuoteItem({ ...item, isEditableQty: true })}
+        >
+          {(item.type === "Fourniture" || item.type === "Main d'oeuvre" || item.type === "Ouvrage") ?
+            item.isEditableQty ? (
+              <Input
+                autoFocus
+                type="number"
+                min={0}
+                value={item.quantity || ""}
+                placeholder="Qté"
+                className="w-full border-b border-blue-300"
+                onChange={e => updateQuoteItem({ ...item, quantity: parseFloat(e.target.value), isEditableQty:true })}
+                onBlur={e => updateQuoteItem({ ...item, quantity: parseFloat(e.target.value), isEditableQty: false })}
               />
-            ) : item.designation}
-          </td>
-          <td className="border px-4 py-2 text-right">
-            {item.level === 3 ? (
-              mode === "edit" ? (
-                <Input
-                  type="number"
-                  min="0"
-                  value={item.quantity ?? ""}
-                  onChange={e => updateQuoteItem({ ...item, quantity: parseFloat(e.target.value) || 0 })}
-                  className="h-8 w-full text-right border-none bg-transparent"
-                  placeholder="0"
-                />
-              ) : item.quantity
-            ) : null}
-          </td>
-          <td className="border px-4 py-2">
-            {item.level === 3 ? (
-              mode === "edit" ? (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className="w-full justify-between h-8">
-                      {item.unit || "Unité"}
-                      <ChevronDown className="h-3 w-3 ml-1" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-48 p-0">
-                    <div className="max-h-[200px] overflow-y-auto">
-                      {["u", "h", "m", "m²", "m³"].map((unit) => (
-                        <div
-                          key={unit}
-                          className="p-2 hover:bg-gray-100 cursor-pointer"
-                          onClick={() => updateQuoteItem({ ...item, unit })}
-                        >
-                          {unit}
-                        </div>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              ) : item.unit
-            ) : null}
-          </td>
-          <td className="border px-4 py-2 text-right">
-            {item.level === 3 ? (
-              mode === "edit" ? (
-                <Input
-                  type="number"
-                  min="0"
-                  value={item.unitPrice ?? ""}
-                  onChange={e => updateQuoteItem({ ...item, unitPrice: parseFloat(e.target.value) || 0 })}
-                  className="h-8 w-full text-right border-none bg-transparent"
-                  placeholder="0,00"
-                />
-              ) : formatCurrency(item.unitPrice)
-            ) : null}
-          </td>
-          <td className="border px-4 py-2 text-center">
-            {item.level === 3 ? (
-              mode === "edit" ? (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className="w-full justify-between h-8">
-                      {item.vat}%
-                      <ChevronDown className="h-3 w-3 ml-1" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-48 p-0">
-                    <div className="max-h-[200px] overflow-y-auto">
-                      {[0, 5.5, 10, 20].map((rate) => (
-                        <div
-                          key={rate}
-                          className="p-2 hover:bg-gray-100 cursor-pointer"
-                          onClick={() => updateQuoteItem({ ...item, vat: rate })}
-                        >
-                          {rate}%
-                        </div>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              ) : `${item.vat}%`
-            ) : null}
-          </td>
-          <td className="border px-4 py-2 text-right">
-            <div className="flex items-center justify-end">
-              <span>{formatCurrency(item.totalHT)}</span>
-              {mode === "edit" && item.level === 3 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0 ml-1 opacity-0 group-hover:opacity-100"
-                  onClick={() => deleteQuoteItem(item.id!)}
-                >
-                  <Trash2 className="h-4 w-4 text-red-500" />
-                </Button>
-              )}
-            </div>
-          </td>
-        </tr>
-        {item.details && (
-          <tr className="bg-gray-50">
-            <td className="border px-4 py-2"></td>
-            <td className="border px-4 py-2" colSpan={6}>
-              <div className="text-sm text-gray-600">{item.details}</div>
-              {mode === "edit" && (
-                <Button variant="outline" size="sm" className="mt-2 text-blue-500 bg-white">
-                  <Settings className="h-4 w-4 mr-1" /> Configurer les éléments
-                </Button>
-              )}
-            </td>
-          </tr>
-        )}
-      </React.Fragment>
+            ) : (
+              <span className={item.quantity ? "" : "text-gray-300"}>{item.quantity || "Qté"}</span>
+            )
+            : null
+          }
+        </td>
+        {/* Unité - editable direct */}
+        <td className="border px-4 py-2"
+          onClick={() => updateQuoteItem({ ...item, isEditableUnit:true })}
+        >
+          {(item.type === "Fourniture" || item.type === "Main d'oeuvre" || item.type === "Ouvrage") ?
+            item.isEditableUnit ? (
+              <Input
+                autoFocus
+                value={item.unit || ""}
+                placeholder="Unité"
+                className="w-full border-b border-blue-300"
+                onBlur={e => updateQuoteItem({ ...item, unit: e.target.value, isEditableUnit: false })}
+                onChange={e => updateQuoteItem({ ...item, unit: e.target.value, isEditableUnit:true })}
+              />
+            ) : (
+              <span className={item.unit ? "" : "text-gray-300"}>{item.unit || "Unité"}</span>
+            ) : null
+          }
+        </td>
+        {/* Prix unitaire HT - editable direct */}
+        <td className="border px-4 py-2 text-right"
+          onClick={() => updateQuoteItem({ ...item, isEditablePU:true })}
+        >
+          {(item.type === "Fourniture" || item.type === "Main d'oeuvre" || item.type === "Ouvrage") ?
+            item.isEditablePU ? (
+              <Input
+                autoFocus
+                type="number"
+                min={0}
+                step="0.01"
+                value={item.unitPrice || ""}
+                placeholder="Prix U. HT"
+                className="w-full border-b border-blue-300"
+                onBlur={e => updateQuoteItem({ ...item, unitPrice: parseFloat(e.target.value), isEditablePU:false })}
+                onChange={e => updateQuoteItem({ ...item, unitPrice: parseFloat(e.target.value), isEditablePU:true })}
+              />
+            ) : (
+              <span className={item.unitPrice ? "" : "text-gray-300"}>{item.unitPrice || "Prix U. HT"}</span>
+            ) : null
+          }
+        </td>
+        {/* TVA - editable direct */}
+        <td className="border px-4 py-2 text-center"
+          onClick={() => updateQuoteItem({ ...item, isEditableTVA:true })}
+        >
+          {(item.type === "Fourniture" || item.type === "Main d'oeuvre" || item.type === "Ouvrage") ?
+            item.isEditableTVA ? (
+              <Input
+                autoFocus
+                type="number"
+                min={0}
+                max={100}
+                value={item.vat || ""}
+                placeholder="TVA"
+                className="w-full border-b border-blue-300"
+                onBlur={e => updateQuoteItem({ ...item, vat: parseFloat(e.target.value), isEditableTVA:false })}
+                onChange={e => updateQuoteItem({ ...item, vat: parseFloat(e.target.value), isEditableTVA:true })}
+              />
+            ) : (
+              <span className={item.vat ? "" : "text-gray-300"}>{item.vat || "TVA"}</span>
+            ) : null
+          }
+        </td>
+        {/* Total HT simple */}
+        <td className="border px-4 py-2 text-right">
+          <span>
+            {(item.type === "Fourniture" || item.type === "Main d'oeuvre" || item.type === "Ouvrage") ?
+              ((item.quantity && item.unitPrice) ? (item.quantity * item.unitPrice).toFixed(2) : "0.00")
+              : ""}
+            €
+          </span>
+        </td>
+      </tr>
     ));
-  }, [currentQuote?.items, mode, updateQuoteItem, deleteQuoteItem]);
-
-  // Ajout dynamique d'un item
-  function addItem(type: "Fourniture" | "Main d'oeuvre" | "Ouvrage" | "Titre" | "Sous-titre" | "Texte" | "Saut de page") {
-    addQuoteItem({
-      designation: type === "Titre" || type === "Sous-titre" ? "Nouvelle section" : "",
-      quantity: type === "Fourniture" || type === "Main d'oeuvre" || type === "Ouvrage" ? 1 : 0,
-      unit: "m²",
-      unitPrice: 0,
-      vat: 20,
-      totalHT: 0,
-      type,
-      level: type === "Titre" ? 1 : type === "Sous-titre" ? 2 : 3,
-    });
-  }
+  }, [currentQuote?.items, updateQuoteItem]);
 
   // Sélection dynamique client/chantier
   function updateQuoteField(field: string, value: any) {
@@ -506,26 +554,8 @@ export default function InvoiceCreator() {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar gauche */}
-        <aside className="w-48 border-r bg-white p-4 shrink-0">
-          <h2 className="mb-4 text-sm font-medium">Bibliothèque</h2>
-          <Button className="w-full bg-lime-500 hover:bg-lime-600 text-white">Cliquez-ici</Button>
-        </aside>
         {/* Contenu principal */}
         <main className="flex-1 overflow-auto p-6">
-          {/* Message warning */}
-          <div className="mb-6 rounded-md bg-yellow-50 p-4 border-l-4 border-yellow-400">
-            <div className="flex">
-              <AlertTriangle className="h-5 w-5 text-yellow-400" />
-              <p className="ml-3 text-sm text-yellow-800">
-                Certaines mentions légales obligatoires sur vos documents ne sont pas renseignées (5 manquantes).{" "}
-                <a href="#" className="text-blue-500 hover:underline">
-                  Configurer maintenant
-                </a>
-                .
-              </p>
-            </div>
-          </div>
           {/* Bloc devis */}
           <div className="bg-white p-6 rounded-md border shadow-sm">
             {/* En-tête devis */}
@@ -750,9 +780,6 @@ export default function InvoiceCreator() {
                 <Button variant="outline" size="sm" onClick={() => addItem("Sous-titre")}>
                   Sous-titre
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => addItem("Texte")}>
-                  Texte
-                </Button>
                 <Button variant="outline" size="sm" onClick={() => addItem("Saut de page")}>
                   Saut de page
                 </Button>
@@ -814,13 +841,6 @@ export default function InvoiceCreator() {
                 <Button variant="ghost" size="sm" className="text-blue-500 p-0 h-auto">
                   <Plus className="h-4 w-4 mr-1" /> Ajouter texte libre
                 </Button>
-
-                <h3 className="text-lg font-medium mt-4 mb-2">
-                  Gestion des déchets{" "}
-                  <Button variant="ghost" size="sm" className="text-blue-500 p-0 h-auto">
-                    Définir
-                  </Button>
-                </h3>
               </div>
               <div className="w-1/3">
                 <div className="bg-gray-50 p-4 rounded border">
